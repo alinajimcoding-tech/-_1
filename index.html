@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منظومة كفالة مشتريات الموظفين | بوابة المواطن</title>
+    <!-- مكتبة Supabase الرسمية المحدثة -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg: #060911;
+            --surface: #0e1526;
+            --surface-card: #151f38;
+            --border: #1f2e4d;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --primary: #2563eb;
+            --primary-glow: rgba(37, 99, 235, 0.35);
+            --emerald: #10b981;
+            --rose: #f43f5e;
+            --amber: #f59e0b;
+        }
+        :root[data-theme="light"] {
+            --bg: #f4f6fb;
+            --surface: #ffffff;
+            --surface-card: #f8fafc;
+            --border: #e2e8f0;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --primary: #2563eb;
+            --primary-glow: rgba(37, 99, 235, 0.2);
+            --emerald: #059669;
+            --rose: #e11d48;
+            --amber: #d97706;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; transition: 0.2s; }
+        body { background: var(--bg); color: var(--text-main); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+        .hidden { display: none !important; }
+
+        .navbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+        .brand { font-weight: 900; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+        .live-status { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--emerald); font-weight: 700; background: rgba(16,185,129,0.1); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(16,185,129,0.25); }
+        .pulse-dot { width: 7px; height: 7px; background: var(--emerald); border-radius: 50%; box-shadow: 0 0 8px var(--emerald); animation: pulse 1.8s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
+
+        .nav-actions { display: flex; align-items: center; gap: 10px; }
+        .user-tag { background: var(--surface-card); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; color: var(--primary); }
+        .btn-ctrl { background: var(--surface-card); border: 1px solid var(--border); color: var(--text-main); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; }
+        .btn-ctrl:hover { border-color: var(--primary); }
+
+        .hero { text-align: center; padding: 50px 20px 30px; max-width: 800px; margin: 0 auto; }
+        .hero h1 { font-size: 32px; font-weight: 900; margin-bottom: 12px; letter-spacing: -0.5px; }
+        .hero p { color: var(--text-sub); font-size: 14px; margin-bottom: 24px; }
+
+        .grid-options { max-width: 950px; margin: 0 auto 40px; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+        .action-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+        .action-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+        .action-card h3 { font-size: 17px; margin-bottom: 8px; font-weight: 800; }
+        .action-card p { font-size: 13px; color: var(--text-sub); margin-bottom: 20px; flex-grow: 1; }
+
+        .btn { width: 100%; padding: 11px 16px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; border: none; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 14px var(--primary-glow); }
+        .btn-secondary { background: var(--surface-card); color: var(--text-main); border: 1px solid var(--border); }
+        .btn-emerald { background: var(--emerald); color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,0.3); }
+
+        .view-panel { max-width: 540px; margin: 20px auto; background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 28px; box-shadow: 0 16px 36px rgba(0,0,0,0.25); }
+        .input-group { margin-bottom: 14px; text-align: start; }
+        .input-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-sub); margin-bottom: 5px; }
+        .input-field { width: 100%; background: var(--bg); border: 1px solid var(--border); padding: 11px 14px; border-radius: 9px; color: var(--text-main); font-size: 13px; outline: none; }
+        .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+
+        .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+        .upload-box { background: var(--bg); border: 1px dashed var(--border); border-radius: 10px; padding: 12px; text-align: center; }
+        .upload-box input { display: none; }
+        .upload-box label { font-size: 11px; color: var(--primary); cursor: pointer; display: block; font-weight: 700; }
+        .upload-preview { width: 100%; height: 65px; object-fit: cover; border-radius: 6px; margin-top: 8px; display: none; border: 1px solid var(--border); }
+
+        .camera-box { background: var(--bg); border: 1px dashed var(--border); border-radius: 10px; padding: 12px; text-align: center; margin-bottom: 14px; }
+        video { width: 100%; max-height: 180px; border-radius: 8px; object-fit: cover; display: none; }
+        #captured-photo { width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin: 6px auto; display: none; }
+
+        .fintech-card {
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            padding: 22px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            text-align: start;
+        }
+        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .chip-emv { width: 38px; height: 28px; background: linear-gradient(135deg, #fcd34d 0%, #b45309 100%); border-radius: 5px; border: 1px solid #78350f; position: relative; }
+        .chip-emv::after { content: ""; position: absolute; inset: 4px; border: 1px solid rgba(0,0,0,0.3); border-radius: 2px; }
+        .card-body { text-align: center; margin: 10px 0; }
+        .qr-card-holder { background: #ffffff; padding: 8px; border-radius: 12px; display: inline-block; box-shadow: 0 8px 16px rgba(0,0,0,0.25); }
+
+        .credit-progress-box { margin-top: 10px; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
+        .progress-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow: hidden; margin: 4px 0; }
+        .progress-bar-fill { height: 100%; background: var(--emerald); width: 100%; transition: width 0.4s ease; }
+
+        .dynamic-code-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.35); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); margin-top: 8px; font-size: 11px; }
+        .card-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 10px; }
+
+        .mini-statement { margin-top: 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+        .statement-row { display: flex; justify-content: space-between; font-size: 11px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+        .statement-row:last-child { border-bottom: none; }
+
+        .req-card { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; text-align: start; }
+        .req-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+        .req-status { font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
+        .status-pending { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
+        .status-approved { background: rgba(16, 185, 129, 0.15); color: var(--emerald); }
+        .status-rejected { background: rgba(244, 63, 94, 0.15); color: var(--rose); }
+
+        .toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+        .toast { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 12px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .toast.success { border-color: var(--emerald); color: var(--emerald); }
+        .toast.error { border-color: var(--rose); color: var(--rose); }
+
+        footer { margin-top: auto; padding: 20px; text-align: center; font-size: 12px; color: var(--text-sub); border-top: 1px solid var(--border); background: var(--surface); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="brand">
+            <span>اتحاد الغرف التجارية | بوابة المواطن</span>
+            <div class="live-status"><div class="pulse-dot"></div> السيرفر السحابي متصل</div>
+        </div>
+        <div class="nav-actions">
+            <div id="nav-user-info" class="hidden">
+                <span id="nav-user-name" class="user-tag">المواطن</span>
+                <button class="btn-ctrl" onclick="handleCitizenLogout()">خروج</button>
+            </div>
+            <button id="nav-login-btn" class="btn-ctrl" onclick="showView('auth')">دخول / تسجيل</button>
+            <button class="btn-ctrl" onclick="toggleTheme()">المظهر</button>
+        </div>
+    </nav>
+
+    <div id="view-home">
+        <section class="hero">
+            <h1>المنظومة الرقمية لكفالة مشتريات الموظفين</h1>
+            <p>سقف ائتماني استهلاكي بنسبة 50% من صافي الراتب يُمنح للموظف الحكومي بنظام الـ QR Code الذكي بعد التدقيق المباشر من الغرفة التجارية.</p>
+        </section>
+
+        <div class="grid-options">
+            <div class="action-card">
+                <div>
+                    <h3>تقديم طلب سقف مشتريات</h3>
+                    <p>رفع مفردات الراتب، بطاقة الماستركارد، والتحقق البيومتري لإصدار الهوية الرقمية المعتمدة.</p>
+                </div>
+                <button class="btn btn-primary" onclick="checkAuthAndProceed('reg')">تقديم الطلب</button>
+            </div>
+
+            <div class="action-card">
+                <div>
+                    <h3>سجل طلباتي والبطاقة</h3>
+                    <p>متابعة حالة طلباتك، استعراض الهوية الرقمية، وكشف الحركات المصغر فور الاعتماد.</p>
+                </div>
+                <button class="btn btn-secondary" onclick="checkAuthAndProceed('my-requests')">عرض طلباتي</button>
+            </div>
+
+            <div class="action-card">
+                <div>
+                    <h3>دليل المتاجر المعتمدة</h3>
+                    <p>استعراض المحال والسوبرماركت المشاركة في المنظومة للشراء المباشر.</p>
+                </div>
+                <button class="btn btn-emerald" onclick="showView('stores')">تصفح المتاجر</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تسجيل الدخول والحساب -->
+    <div id="view-auth" class="view-panel hidden">
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <button id="tab-login" class="btn btn-primary" style="flex:1;" onclick="switchAuthTab('login')">تسجيل الدخول</button>
+            <button id="tab-signup" class="btn btn-secondary" style="flex:1;" onclick="switchAuthTab('signup')">إنشاء حساب جديد</button>
+        </div>
+
+        <div id="auth-login-form">
+            <div class="input-group">
+                <label>رقم الهاتف:</label>
+                <input type="text" id="login-phone" class="input-field" placeholder="07XXXXXXXXX">
+            </div>
+            <div class="input-group">
+                <label>كلمة المرور:</label>
+                <input type="password" id="login-pass" class="input-field" placeholder="كلمة المرور">
+            </div>
+            <button class="btn btn-primary" onclick="handleCitizenLogin()">دخول للحساب</button>
+        </div>
+
+        <div id="auth-signup-form" class="hidden">
+            <div class="input-group">
+                <label>الاسم الرباعي الكامل:</label>
+                <input type="text" id="signup-name" class="input-field" placeholder="الاسم الرسمي">
+            </div>
+            <div class="input-group">
+                <label>رقم الهاتف:</label>
+                <input type="text" id="signup-phone" class="input-field" placeholder="07XXXXXXXXX">
+            </div>
+            <div class="input-group">
+                <label>كلمة المرور:</label>
+                <input type="password" id="signup-pass" class="input-field" placeholder="تعيين كلمة مرور">
+            </div>
+            <button class="btn btn-emerald" onclick="handleCitizenSignup()">إنشاء الحساب</button>
+        </div>
+
+        <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 10px;">رجوع للرئيسية</button>
+    </div>
+
+    <!-- قسم سجل طلباتي -->
+    <div id="view-my-requests" class="view-panel hidden" style="max-width: 600px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h2 style="font-size: 16px; font-weight: 800;">سجل طلبات الشراء الخاصة بي</h2>
+            <button class="btn-ctrl" onclick="showView('reg')">+ طلب جديد</button>
+        </div>
+        <div id="my-requests-list"></div>
+        <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 8px;">رجوع للرئيسية</button>
+    </div>
+
+    <!-- نافذة تقديم الطلب -->
+    <div id="view-reg" class="view-panel hidden">
+        <h2 style="font-size: 16px; margin-bottom: 14px; text-align: center; font-weight: 800;">تقديم طلب سقف مشتريات</h2>
+        
+        <div class="input-group">
+            <label>الاسم الرباعي الكامل</label>
+            <input type="text" id="reg-name" class="input-field" readonly>
+        </div>
+        <div class="input-group">
+            <label>الوزارة / الدائرة الحكومية</label>
+            <input type="text" id="reg-dept" class="input-field" placeholder="مثال: وزارة التربية">
+        </div>
+        <div class="input-group">
+            <label>رقم بطاقة الماستركارد (16 رقماً)</label>
+            <input type="text" id="reg-card" class="input-field" placeholder="•••• •••• •••• ••••">
+        </div>
+
+        <div class="upload-grid">
+            <div class="upload-box">
+                <label for="card-front-file">ماستركارد (الوجه الأمامي)</label>
+                <input type="file" id="card-front-file" accept="image/*" onchange="previewCard(this, 'front-prev')">
+                <img id="front-prev" class="upload-preview">
+            </div>
+            <div class="upload-box">
+                <label for="card-back-file">ماستركارد (الوجه الخلفي)</label>
+                <input type="file" id="card-back-file" accept="image/*" onchange="previewCard(this, 'back-prev')">
+                <img id="back-prev" class="upload-preview">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>الراتب الإجمالي الاسمي (د.ع)</label>
+            <input type="number" id="reg-gross" class="input-field" placeholder="950000">
+        </div>
+        <div class="input-group">
+            <label>مجموع السلف الحالية (د.ع)</label>
+            <input type="number" id="reg-deduct" class="input-field" value="0">
+        </div>
+        <div class="input-group">
+            <label>رمز PIN السري للشراء (4 أرقام)</label>
+            <input type="password" id="reg-pin" maxlength="4" class="input-field" placeholder="****">
+        </div>
+
+        <div class="camera-box">
+            <span style="font-size:11px; color:var(--text-sub); display:block; margin-bottom:6px;">التحقق البيومتري الحي (KYC)</span>
+            <video id="live-stream" autoplay playsinline></video>
+            <img id="captured-photo">
+            <canvas id="pic-canvas" class="hidden"></canvas>
+            <button type="button" class="btn btn-secondary" id="btn-cam-open" onclick="startCamera()">تشغيل الكاميرا</button>
+            <button type="button" class="btn btn-primary hidden" id="btn-cam-snap" onclick="snapPhoto()">تثبيت الصورة</button>
+        </div>
+
+        <button class="btn btn-primary" id="btn-submit-reg" onclick="submitRegistration()">إرسال الطلب للتدقيق المركزي</button>
+        <button class="btn btn-secondary" onclick="showView('my-requests')" style="margin-top: 8px;">إلغاء والعودة</button>
+    </div>
+
+    <!-- نافذة استعراض البطاقة + كشف الحركات -->
+    <div id="view-card-modal" class="view-panel hidden" style="max-width: 480px;">
+        <div id="card-to-export" class="fintech-card">
+            <div class="card-top">
+                <div class="chip-emv"></div>
+                <div style="text-align: left;">
+                    <span style="font-size: 10px; opacity: 0.8; letter-spacing: 1px; display: block;">SMART PASS</span>
+                    <b style="font-size: 11px; color: #93c5fd;">اتحاد الغرف التجارية</b>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <div class="qr-card-holder">
+                    <canvas id="emp-qr-code"></canvas>
+                </div>
+                
+                <div class="dynamic-code-badge">
+                    <span>رمز الأمان اللحظي (OTP):</span>
+                    <b id="dyn-sec-code" style="color: #fcd34d; font-size: 14px; letter-spacing: 2px;">---</b>
+                    <span id="dyn-timer" style="opacity: 0.7;">(60s)</span>
+                </div>
+            </div>
+
+            <div class="credit-progress-box">
+                <div style="display: flex; justify-content: space-between; font-size: 10px;">
+                    <span>المستهلك: <b id="prog-spent">0 د.ع</b></span>
+                    <span>المتبقي: <b id="prog-remain" style="color:#34d399;">0 د.ع</b></span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="prog-fill" class="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <div class="card-bottom">
+                <div>
+                    <span style="font-size: 9px; opacity: 0.7; display: block;">حامل البطاقة</span>
+                    <b id="pass-name" style="font-size: 13px;">-</b>
+                    <div id="pass-dept" style="font-size: 10px; color: #94a3b8;">-</div>
+                </div>
+                <div style="text-align: left;">
+                    <span style="font-size: 9px; opacity: 0.7; display: block;">السقف المعتمد</span>
+                    <b id="pass-limit" style="font-size: 13px; color: #93c5fd;">-</b>
+                    <div style="font-size: 9px; color: #fcd34d;">دورة التجديد: شهرياً</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mini-statement">
+            <b style="font-size: 12px; display: block; margin-bottom: 8px;">آخر حركات الشراء المنفذة:</b>
+            <div id="mini-statement-body"></div>
+        </div>
+
+        <button class="btn btn-primary" onclick="downloadSmartCard()" style="margin-top: 14px;">حفظ البطاقة كصورة</button>
+        <button class="btn btn-secondary" onclick="showView('my-requests')" style="margin-top: 8px;">رجوع لطلباتي</button>
+    </div>
+
+    <!-- قسم دليل المتاجر المعتمدة -->
+    <div id="view-stores" class="view-panel hidden" style="max-width: 600px;">
+        <h2 style="font-size: 16px; margin-bottom: 14px; text-align: center; font-weight: 800;">دليل المتاجر ونقاط البيع المعتمدة</h2>
+        <div id="stores-directory-list"></div>
+        <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
+    </div>
+
+    <div class="toast-container" id="toast-box"></div>
+
+    <footer>
+        نظام كفالة المشتريات الموحد | مشفر وفق معايير 256-bit SSL | معتمد من اتحاد الغرف التجارية العراقية
+    </footer>
+
+    <script>
+        const SUPABASE_URL = "https://fttknbkhepebbavczwgb.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_ICutFiPEaHnXqyGXwjdkZg_QzjIbA0Z";
+        
+        let supabaseClient = null;
+        function getSupabase() {
+            if (supabaseClient) return supabaseClient;
+            try {
+                if (window.supabase && typeof window.supabase.createClient === 'function') {
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                }
+            } catch(e) {
+                console.warn("Supabase initialization:", e);
+            }
+            return supabaseClient;
+        }
+
+        let currentCitizen = JSON.parse(localStorage.getItem('union_current_citizen') || 'null');
+        let cameraStream = null;
+        let capturedPhotoUrl = "";
+        let cardFrontFile = null;
+        let cardBackFile = null;
+        let activeCardReq = null;
+        let otpInterval = null;
+        let realtimeChannel = null;
+
+        function playTone(freq, type = 'sine', duration = 0.15) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + duration);
+                osc.stop(ctx.currentTime + duration);
+            } catch(e){}
+        }
+
+        function showToast(msg, type = "info") {
+            const box = document.getElementById('toast-box');
+            if (!box) return;
+            const el = document.createElement('div');
+            el.className = `toast ${type}`;
+            el.innerText = msg;
+            box.appendChild(el);
+            setTimeout(() => { el.remove(); }, 3500);
+        }
+
+        function toggleTheme() {
+            const cur = document.documentElement.getAttribute('data-theme');
+            document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+        }
+
+        function showView(v) {
+            const views = ['view-home', 'view-auth', 'view-my-requests', 'view-reg', 'view-card-modal', 'view-stores'];
+            views.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            if (otpInterval) clearInterval(otpInterval);
+
+            if (v === 'home') document.getElementById('view-home').classList.remove('hidden');
+            if (v === 'auth') document.getElementById('view-auth').classList.remove('hidden');
+            if (v === 'reg') {
+                if (currentCitizen) document.getElementById('reg-name').value = currentCitizen.name;
+                document.getElementById('view-reg').classList.remove('hidden');
+            }
+            if (v === 'my-requests') {
+                renderMyRequests();
+                document.getElementById('view-my-requests').classList.remove('hidden');
+            }
+            if (v === 'card-modal') document.getElementById('view-card-modal').classList.remove('hidden');
+            if (v === 'stores') {
+                renderStoresDirectory();
+                document.getElementById('view-stores').classList.remove('hidden');
+            }
+        }
+
+        function updateNavState() {
+            const userInfo = document.getElementById('nav-user-info');
+            const loginBtn = document.getElementById('nav-login-btn');
+            const userName = document.getElementById('nav-user-name');
+
+            if (currentCitizen) {
+                if (userInfo) userInfo.classList.remove('hidden');
+                if (loginBtn) loginBtn.classList.add('hidden');
+                if (userName) userName.innerText = currentCitizen.name;
+                initRealtimeForCitizen();
+            } else {
+                if (userInfo) userInfo.classList.add('hidden');
+                if (loginBtn) loginBtn.classList.remove('hidden');
+            }
+        }
+
+        function switchAuthTab(tab) {
+            if (tab === 'login') {
+                document.getElementById('auth-login-form').classList.remove('hidden');
+                document.getElementById('auth-signup-form').classList.add('hidden');
+                document.getElementById('tab-login').className = "btn btn-primary";
+                document.getElementById('tab-signup').className = "btn btn-secondary";
+            } else {
+                document.getElementById('auth-login-form').classList.add('hidden');
+                document.getElementById('auth-signup-form').classList.remove('hidden');
+                document.getElementById('tab-login').className = "btn btn-secondary";
+                document.getElementById('tab-signup').className = "btn btn-primary";
+            }
+        }
+
+        function checkAuthAndProceed(targetView) {
+            if (!currentCitizen) {
+                showToast("يرجى تسجيل الدخول أو إنشاء حساب أولاً", "error");
+                showView('auth');
+            } else {
+                showView(targetView);
+            }
+        }
+
+        async function handleCitizenSignup() {
+            const name = document.getElementById('signup-name').value.trim();
+            const phone = document.getElementById('signup-phone').value.trim();
+            const pass = document.getElementById('signup-pass').value.trim();
+
+            if (!name || !phone || !pass) {
+                showToast("يرجى ملء جميع الحقول المطلوبة", "error");
+                return;
+            }
+
+            const sb = getSupabase();
+            try {
+                if (sb) {
+                    const { data: existing } = await sb.from('citizens').select('id').eq('phone', phone).maybeSingle();
+                    if (existing) {
+                        showToast("رقم الهاتف مسجل مسبقاً، تفضل بتسجيل الدخول", "error");
+                        return;
+                    }
+                    const { error } = await sb.from('citizens').insert([{ name, phone, password: pass }]);
+                    if (error) throw error;
+                }
+
+                currentCitizen = { name, phone };
+                localStorage.setItem('union_current_citizen', JSON.stringify(currentCitizen));
+                updateNavState();
+                showToast("تم إنشاء حسابك بنجاح", "success");
+                showView('my-requests');
+            } catch(e) {
+                showToast(`خطأ: ${e.message}`, "error");
+            }
+        }
+
+        async function handleCitizenLogin() {
+            const phone = document.getElementById('login-phone').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+
+            if (!phone || !pass) {
+                showToast("أدخل رقم الهاتف وكلمة المرور", "error");
+                return;
+            }
+
+            const sb = getSupabase();
+            try {
+                if (sb) {
+                    const { data: user, error } = await sb.from('citizens').select('*').eq('phone', phone).eq('password', pass).maybeSingle();
+                    if (error || !user) {
+                        showToast("رقم الهاتف أو كلمة المرور غير صحيحة", "error");
+                        return;
+                    }
+                    currentCitizen = { name: user.name, phone: user.phone };
+                } else {
+                    currentCitizen = { name: "مواطن معتمد", phone };
+                }
+
+                localStorage.setItem('union_current_citizen', JSON.stringify(currentCitizen));
+                updateNavState();
+                showToast(`مرحباً بك، ${currentCitizen.name}`, "success");
+                showView('my-requests');
+            } catch(e) {
+                showToast("فشل تسجيل الدخول", "error");
+            }
+        }
+
+        function handleCitizenLogout() {
+            currentCitizen = null;
+            localStorage.removeItem('union_current_citizen');
+            const sb = getSupabase();
+            if (realtimeChannel && sb) {
+                try { sb.removeChannel(realtimeChannel); } catch(e){}
+            }
+            updateNavState();
+            showToast("تم تسجيل الخروج بنجاح", "info");
+            showView('home');
+        }
+
+        function initRealtimeForCitizen() {
+            const sb = getSupabase();
+            if (!sb || !currentCitizen) return;
+            try {
+                if (realtimeChannel) sb.removeChannel(realtimeChannel);
+
+                realtimeChannel = sb
+                    .channel(`citizen-${currentCitizen.phone}`)
+                    .on('postgres_changes', {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'requests',
+                        filter: `phone=eq.${currentCitizen.phone}`
+                    }, payload => {
+                        if (payload.new.status === 'approved') {
+                            playTone(880, 'triangle', 0.3);
+                            showToast("تهانينا! تمت الموافقة على طلبك واعتماد هويتك الرقمية", "success");
+                        } else if (payload.new.status === 'rejected') {
+                            showToast(`تم رفض الطلب: ${payload.new.decision_note || 'عدم مطابقة الشروط'}`, "error");
+                        }
+                        renderMyRequests();
+                    })
+                    .subscribe();
+            } catch(e) {}
+        }
+
+        async function renderMyRequests() {
+            const container = document.getElementById('my-requests-list');
+            if (!container) return;
+            container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub);">جاري المزامنة مع السيرفر...</div>`;
+
+            const sb = getSupabase();
+            try {
+                let myReqs = [];
+                if (sb && currentCitizen) {
+                    const { data, error } = await sb.from('requests').select('*').eq('phone', currentCitizen.phone).order('created_at', { ascending: false });
+                    if (!error && data) myReqs = data;
+                }
+
+                container.innerHTML = "";
+                if (myReqs.length === 0) {
+                    container.innerHTML = `<div style="text-align:center; padding:24px; color:var(--text-sub); font-size:13px;">لا توجد طلبات سابقة. اضغط (+ طلب جديد) للتقديم.</div>`;
+                    return;
+                }
+
+                myReqs.forEach((r) => {
+                    let statusBadge = "";
+                    let actionBtn = "";
+
+                    if (r.status === 'pending') {
+                        statusBadge = `<span class="req-status status-pending">قيد التدقيق</span>`;
+                    } else if (r.status === 'approved') {
+                        statusBadge = `<span class="req-status status-approved">معتمد</span>`;
+                        actionBtn = `<button class="btn btn-emerald" style="padding:7px 12px; font-size:11px; margin-top:8px;" onclick="openCardView('${r.id}')">استعراض الهوية الرقمية (QR)</button>`;
+                    } else if (r.status === 'rejected') {
+                        statusBadge = `<span class="req-status status-rejected">مرفوض</span>`;
+                    }
+
+                    container.innerHTML += `
+                        <div class="req-card">
+                            <div class="req-head">
+                                <b style="font-size:13px;">طلب رقم: #${r.id}</b>
+                                ${statusBadge}
+                            </div>
+                            <div style="font-size:12px; color:var(--text-sub); display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                                <div>الدائرة: <b>${r.dept}</b></div>
+                                <div>صافي الراتب: <b>${(parseFloat(r.net_salary) || 0).toLocaleString()} د.ع</b></div>
+                                <div>السقف الممنوح: <b>${(parseFloat(r.credit_limit) || 0).toLocaleString()} د.ع</b></div>
+                                <div>الرصيد المتاح: <b style="color:var(--emerald);">${(parseFloat(r.balance) || 0).toLocaleString()} د.ع</b></div>
+                            </div>
+                            ${r.decision_note ? `<div style="font-size:11px; color:var(--rose); margin-top:6px;">سبب الرفض: ${r.decision_note}</div>` : ''}
+                            ${actionBtn}
+                        </div>
+                    `;
+                });
+            } catch(e) {
+                container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--rose);">تعذر جلب البيانات من السيرفر</div>`;
+            }
+        }
+
+        async function openCardView(reqId) {
+            const sb = getSupabase();
+            try {
+                let r = null;
+                if (sb) {
+                    const { data } = await sb.from('requests').select('*').eq('id', reqId).single();
+                    r = data;
+                }
+                if (!r) return;
+                activeCardReq = r;
+
+                document.getElementById('pass-name').innerText = r.name;
+                document.getElementById('pass-dept').innerText = `${r.dept} | #${r.id}`;
+                document.getElementById('pass-limit').innerText = `${(parseFloat(r.credit_limit) || 0).toLocaleString()} د.ع`;
+
+                const totalLimit = parseFloat(r.credit_limit) || 1;
+                const currentBal = parseFloat(r.balance) || 0;
+                const spent = Math.max(0, totalLimit - currentBal);
+                const remainPercent = Math.max(0, Math.min(100, (currentBal / totalLimit) * 100));
+
+                document.getElementById('prog-spent').innerText = `${spent.toLocaleString()} د.ع`;
+                document.getElementById('prog-remain').innerText = `${currentBal.toLocaleString()} د.ع (${Math.round(remainPercent)}%)`;
+                document.getElementById('prog-fill').style.width = `${remainPercent}%`;
+
+                updateDynamicOtp();
+                if (otpInterval) clearInterval(otpInterval);
+                let timerSec = 60;
+                otpInterval = setInterval(() => {
+                    timerSec--;
+                    const tEl = document.getElementById('dyn-timer');
+                    if (tEl) tEl.innerText = `(${timerSec}s)`;
+                    if (timerSec <= 0) {
+                        updateDynamicOtp();
+                        timerSec = 60;
+                    }
+                }, 1000);
+
+                const statementBox = document.getElementById('mini-statement-body');
+                statementBox.innerHTML = "";
+                if (sb) {
+                    const { data: txs } = await sb.from('transactions').select('*').eq('request_id', r.id).eq('is_refunded', false).order('created_at', { ascending: false }).limit(3);
+                    if (!txs || txs.length === 0) {
+                        statementBox.innerHTML = `<div style="color:var(--text-sub); font-size:11px; text-align:center;">لم تقم بأي حركات شراء حتى الآن</div>`;
+                    } else {
+                        txs.forEach(t => {
+                            statementBox.innerHTML += `
+                                <div class="statement-row">
+                                    <span><b>${t.store_name}</b> (${new Date(t.created_at).toLocaleDateString('ar-EG')})</span>
+                                    <b style="color:var(--rose);">- ${(parseFloat(t.amount) || 0).toLocaleString()} د.ع</b>
+                                </div>
+                            `;
+                        });
+                    }
+                }
+
+                showView('card-modal');
+            } catch(e){}
+        }
+
+        async function updateDynamicOtp() {
+            if (!activeCardReq) return;
+            const code = String(Math.floor(100 + Math.random() * 900));
+            const cEl = document.getElementById('dyn-sec-code');
+            if (cEl) cEl.innerText = code;
+
+            const sb = getSupabase();
+            if (sb) {
+                try {
+                    await sb.from('requests').update({ current_otp: code }).eq('id', activeCardReq.id);
+                } catch(e){}
+            }
+
+            const canvas = document.getElementById('emp-qr-code');
+            if (canvas) {
+                new QRious({
+                    element: canvas,
+                    value: encodeURIComponent(JSON.stringify({ id: activeCardReq.id, name: activeCardReq.name, otp: code })),
+                    size: 125,
+                    level: 'L'
+                });
+            }
+        }
+
+        async function renderStoresDirectory() {
+            const container = document.getElementById('stores-directory-list');
+            container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub);">جاري جلب قائمة المتاجر...</div>`;
+
+            const sb = getSupabase();
+            if (sb) {
+                const { data: stores } = await sb.from('stores').select('*').order('created_at', { ascending: false });
+                container.innerHTML = "";
+                if (!stores || stores.length === 0) {
+                    container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-sub); font-size:13px;">لا توجد متاجر معتمدة مسجلة بعد.</div>`;
+                    return;
+                }
+                stores.forEach(st => {
+                    container.innerHTML += `
+                        <div class="req-card">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                <b style="font-size:14px; color:var(--primary);">${st.name}</b>
+                                <span style="font-size:11px; color:var(--emerald); font-weight:700;">متجر معتمد</span>
+                            </div>
+                            <div style="font-size:12px; color:var(--text-sub);">العنوان: ${st.address || 'غير محدد'}</div>
+                            <div style="font-size:11px; color:var(--text-sub); margin-top:3px;">المنتجات: ${st.products || 'مواد استهلاكية'}</div>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        function downloadSmartCard() {
+            html2canvas(document.getElementById('card-to-export'), { scale: 3 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Smart-Card-${currentCitizen ? currentCitizen.name : 'Citizen'}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+                showToast("تم حفظ بطاقتك بنجاح", "success");
+            });
+        }
+
+        function previewCard(input, previewId) {
+            if (input.files && input.files[0]) {
+                if (previewId === 'front-prev') cardFrontFile = input.files[0];
+                if (previewId === 'back-prev') cardBackFile = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById(previewId);
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function startCamera() {
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.getElementById('live-stream');
+                video.srcObject = cameraStream;
+                video.style.display = 'block';
+                document.getElementById('btn-cam-open').classList.add('hidden');
+                document.getElementById('btn-cam-snap').classList.remove('hidden');
+            } catch (err) {
+                showToast("يرجى إعطاء صلاحية الكاميرا للتحقق البيومتري", "error");
+            }
+        }
+
+        function snapPhoto() {
+            const video = document.getElementById('live-stream');
+            const canvas = document.getElementById('pic-canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            capturedPhotoUrl = canvas.toDataURL('image/png');
+            document.getElementById('captured-photo').src = capturedPhotoUrl;
+            document.getElementById('captured-photo').style.display = 'block';
+            video.style.display = 'none';
+            if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
+            document.getElementById('btn-cam-snap').classList.add('hidden');
+            showToast("تم التقاط وتثبيت الصورة بنجاح", "success");
+        }
+
+        async function uploadFileToStorage(fileOrBlob, prefix) {
+            const sb = getSupabase();
+            if (!fileOrBlob || !sb) return "";
+            const ext = fileOrBlob.name ? fileOrBlob.name.split('.').pop() : 'png';
+            const fileName = `${prefix}_${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
+            const { error } = await sb.storage.from('union-docs').upload(fileName, fileOrBlob);
+            if (error) throw error;
+            const { data } = sb.storage.from('union-docs').getPublicUrl(fileName);
+            return data.publicUrl;
+        }
+
+        async function submitRegistration() {
+            const dept = document.getElementById('reg-dept').value.trim();
+            const card = document.getElementById('reg-card').value.trim();
+            const gross = parseFloat(document.getElementById('reg-gross').value);
+            const deduct = parseFloat(document.getElementById('reg-deduct').value) || 0;
+            const pin = document.getElementById('reg-pin').value.trim();
+            const submitBtn = document.getElementById('btn-submit-reg');
+
+            if (!dept || isNaN(gross) || gross <= 0 || !pin) {
+                showToast("يرجى إكمال البيانات وتعيين رمز الـ PIN", "error");
+                return;
+            }
+
+            const sb = getSupabase();
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerText = "جاري رفع المستندات للسيرفر...";
+                showToast("جاري رفع المستندات والصور السحابية...", "info");
+
+                let kycBlob = null;
+                if (capturedPhotoUrl) {
+                    const res = await fetch(capturedPhotoUrl);
+                    kycBlob = await res.blob();
+                }
+
+                const [frontUrl, backUrl, kycUrl] = await Promise.all([
+                    uploadFileToStorage(cardFrontFile, `front_${currentCitizen.phone}`),
+                    uploadFileToStorage(cardBackFile, `back_${currentCitizen.phone}`),
+                    uploadFileToStorage(kycBlob, `kyc_${currentCitizen.phone}`)
+                ]);
+
+                const netSalary = Math.max(0, gross - deduct);
+                const limit = netSalary * 0.5;
+
+                if (sb) {
+                    const { data, error } = await sb.from('requests').insert([{
+                        phone: currentCitizen.phone,
+                        name: currentCitizen.name,
+                        dept: dept,
+                        card_number: card,
+                        card_front_url: frontUrl,
+                        card_back_url: backUrl,
+                        kyc_photo_url: kycUrl,
+                        gross_salary: gross,
+                        deductions: deduct,
+                        net_salary: netSalary,
+                        credit_limit: limit,
+                        balance: limit,
+                        pin: pin,
+                        status: "pending",
+                        is_frozen: false
+                    }]).select();
+
+                    if (error) throw error;
+                    showToast(`تم إرسال طلبك #${data[0].id} بنجاح للتدقيق المركزي`, "success");
+                }
+
+                showView('my-requests');
+            } catch(e) {
+                showToast(`فشل الإرسال: ${e.message}`, "error");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "إرسال الطلب للتدقيق المركزي";
+            }
+        }
+
+        window.onload = function() {
+            updateNavState();
+        };
+    </script>
+</body>
+</html>
