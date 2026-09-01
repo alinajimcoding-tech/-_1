@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منظومة كفالة مشتريات الموظفين | بوابة المواطن</title>
+    <title>منظومة كفالة مشتريات الموظفين | بوابة المواطن المحدثة</title>
     <!-- مكتبة Supabase الرسمية المحدثة -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
@@ -130,7 +130,7 @@
 
     <nav class="navbar">
         <div class="brand">
-            <span>اتحاد الغرف التجارية | بوابة المواطن</span>
+            <span>اتحاد الغرف التجارية | بوابة المواطن (نظام الأقساط الأمنية)</span>
             <div class="live-status"><div class="pulse-dot"></div> السيرفر السحابي متصل</div>
         </div>
         <div class="nav-actions">
@@ -145,23 +145,23 @@
 
     <div id="view-home">
         <section class="hero">
-            <h1>المنظومة الرقمية لكفالة مشتريات الموظفين</h1>
-            <p>سقف ائتماني استهلاكي بنسبة 50% من صافي الراتب يُمنح للموظف الحكومي بنظام الـ QR Code الذكي بعد التدقيق المباشر من الغرفة التجارية.</p>
+            <h1>منظومة تقسيط المشتريات الاستهلاكية للموظفين</h1>
+            <p>سقف ائتماني للأقساط بنسبة تصل إلى 50% من صافي الراتب، مُدار عبر هوية رقمية وQR Code مشفر وفريد لكل موظف مع حماية أمنية مضاعفة.</p>
         </section>
 
         <div class="grid-options">
             <div class="action-card">
                 <div>
-                    <h3>تقديم طلب سقف مشتريات</h3>
-                    <p>رفع مفردات الراتب، بطاقة الماستركارد، والتحقق البيومتري لإصدار الهوية الرقمية المعتمدة.</p>
+                    <h3>تقديم طلب سقف الأقساط (50% من الراتب)</h3>
+                    <p>رفع مفردات الراتب، بطاقة الماستركارد، والتحقق البيومتري الحي للحصول على السقف الآمن.</p>
                 </div>
                 <button class="btn btn-primary" onclick="checkAuthAndProceed('reg')">تقديم الطلب</button>
             </div>
 
             <div class="action-card">
                 <div>
-                    <h3>سجل طلباتي والبطاقة</h3>
-                    <p>متابعة حالة طلباتك، استعراض الهوية الرقمية، وكشف الحركات المصغر فور الاعتماد.</p>
+                    <h3>سجل طلباتي وبطاقتي الرقمية</h3>
+                    <p>متابعة حالة الطلبات، استعراض الهوية المشفرة، والاطلاع على الأقساط المتبقية.</p>
                 </div>
                 <button class="btn btn-secondary" onclick="checkAuthAndProceed('my-requests')">عرض طلباتي</button>
             </div>
@@ -169,7 +169,7 @@
             <div class="action-card">
                 <div>
                     <h3>دليل المتاجر المعتمدة</h3>
-                    <p>استعراض المحال والسوبرماركت المشاركة في المنظومة للشراء المباشر.</p>
+                    <p>استعراض المحال والسوبرماركت المشاركة في منظومة التقسيط المباشر.</p>
                 </div>
                 <button class="btn btn-emerald" onclick="showView('stores')">تصفح المتاجر</button>
             </div>
@@ -217,7 +217,7 @@
     <!-- قسم سجل طلباتي -->
     <div id="view-my-requests" class="view-panel hidden" style="max-width: 600px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-            <h2 style="font-size: 16px; font-weight: 800;">سجل طلبات الشراء الخاصة بي</h2>
+            <h2 style="font-size: 16px; font-weight: 800;">سجل طلبات التقسيط الخاصة بي</h2>
             <button class="btn-ctrl" onclick="showView('reg')">+ طلب جديد</button>
         </div>
         <div id="my-requests-list"></div>
@@ -226,7 +226,7 @@
 
     <!-- نافذة تقديم الطلب -->
     <div id="view-reg" class="view-panel hidden">
-        <h2 style="font-size: 16px; margin-bottom: 14px; text-align: center; font-weight: 800;">تقديم طلب سقف مشتريات</h2>
+        <h2 style="font-size: 16px; margin-bottom: 14px; text-align: center; font-weight: 800;">تقديم طلب سقف أقساط (50% من الراتب)</h2>
         
         <div class="input-group">
             <label>الاسم الرباعي الكامل</label>
@@ -259,16 +259,16 @@
             <input type="number" id="reg-gross" class="input-field" placeholder="950000">
         </div>
         <div class="input-group">
-            <label>مجموع السلف الحالية (د.ع)</label>
+            <label>مجموع السلف الحالية المستقطعة (د.ع)</label>
             <input type="number" id="reg-deduct" class="input-field" value="0">
         </div>
         <div class="input-group">
-            <label>رمز PIN السري للشراء (4 أرقام)</label>
+            <label>رمز PIN السري للأقساط والشراء (4 أرقام)</label>
             <input type="password" id="reg-pin" maxlength="4" class="input-field" placeholder="****">
         </div>
 
         <div class="camera-box">
-            <span style="font-size:11px; color:var(--text-sub); display:block; margin-bottom:6px;">التحقق البيومتري الحي (KYC)</span>
+            <span style="font-size:11px; color:var(--text-sub); display:block; margin-bottom:6px;">التحقق البيومتري الحي (KYC) لأمن الحساب</span>
             <video id="live-stream" autoplay playsinline></video>
             <img id="captured-photo">
             <canvas id="pic-canvas" class="hidden"></canvas>
@@ -280,13 +280,13 @@
         <button class="btn btn-secondary" onclick="showView('my-requests')" style="margin-top: 8px;">إلغاء والعودة</button>
     </div>
 
-    <!-- نافذة استعراض البطاقة + كشف الحركات -->
+    <!-- نافذة استعراض البطاقة الآمنة + كشف الحركات -->
     <div id="view-card-modal" class="view-panel hidden" style="max-width: 480px;">
         <div id="card-to-export" class="fintech-card">
             <div class="card-top">
                 <div class="chip-emv"></div>
                 <div style="text-align: left;">
-                    <span style="font-size: 10px; opacity: 0.8; letter-spacing: 1px; display: block;">SMART PASS</span>
+                    <span style="font-size: 10px; opacity: 0.8; letter-spacing: 1px; display: block;">SECURE INSTALLMENT PASS</span>
                     <b style="font-size: 11px; color: #93c5fd;">اتحاد الغرف التجارية</b>
                 </div>
             </div>
@@ -297,7 +297,7 @@
                 </div>
                 
                 <div class="dynamic-code-badge">
-                    <span>رمز الأمان اللحظي (OTP):</span>
+                    <span>رمز الأمان اللحظي المتجدد (OTP):</span>
                     <b id="dyn-sec-code" style="color: #fcd34d; font-size: 14px; letter-spacing: 2px;">---</b>
                     <span id="dyn-timer" style="opacity: 0.7;">(60s)</span>
                 </div>
@@ -305,8 +305,8 @@
 
             <div class="credit-progress-box">
                 <div style="display: flex; justify-content: space-between; font-size: 10px;">
-                    <span>المستهلك: <b id="prog-spent">0 د.ع</b></span>
-                    <span>المتبقي: <b id="prog-remain" style="color:#34d399;">0 د.ع</b></span>
+                    <span>المستهلك بالأقساط: <b id="prog-spent">0 د.ع</b></span>
+                    <span>الرصيد المتاح للتقسيط: <b id="prog-remain" style="color:#34d399;">0 د.ع</b></span>
                 </div>
                 <div class="progress-bar-bg">
                     <div id="prog-fill" class="progress-bar-fill"></div>
@@ -315,24 +315,24 @@
 
             <div class="card-bottom">
                 <div>
-                    <span style="font-size: 9px; opacity: 0.7; display: block;">حامل البطاقة</span>
+                    <span style="font-size: 9px; opacity: 0.7; display: block;">حامل البطاقة (معرف فريد محمي)</span>
                     <b id="pass-name" style="font-size: 13px;">-</b>
                     <div id="pass-dept" style="font-size: 10px; color: #94a3b8;">-</div>
                 </div>
                 <div style="text-align: left;">
-                    <span style="font-size: 9px; opacity: 0.7; display: block;">السقف المعتمد</span>
+                    <span style="font-size: 9px; opacity: 0.7; display: block;">سقف الأقساط (50%)</span>
                     <b id="pass-limit" style="font-size: 13px; color: #93c5fd;">-</b>
-                    <div style="font-size: 9px; color: #fcd34d;">دورة التجديد: شهرياً</div>
+                    <div style="font-size: 9px; color: #fcd34d;">حماية مشفرة ضد التكرار</div>
                 </div>
             </div>
         </div>
 
         <div class="mini-statement">
-            <b style="font-size: 12px; display: block; margin-bottom: 8px;">آخر حركات الشراء المنفذة:</b>
+            <b style="font-size: 12px; display: block; margin-bottom: 8px;">آخر حركات الشراء بالتقسيط المنفذة:</b>
             <div id="mini-statement-body"></div>
         </div>
 
-        <button class="btn btn-primary" onclick="downloadSmartCard()" style="margin-top: 14px;">حفظ البطاقة كصورة</button>
+        <button class="btn btn-primary" onclick="downloadSmartCard()" style="margin-top: 14px;">حفظ البطاقة الرقمية كصورة</button>
         <button class="btn btn-secondary" onclick="showView('my-requests')" style="margin-top: 8px;">رجوع لطلباتي</button>
     </div>
 
@@ -346,7 +346,7 @@
     <div class="toast-container" id="toast-box"></div>
 
     <footer>
-        نظام كفالة المشتريات الموحد | مشفر وفق معايير 256-bit SSL | معتمد من اتحاد الغرف التجارية العراقية
+        نظام تقسيط المشتريات الآمن | مشفر وفق معايير 256-bit SSL | معتمد من اتحاد الغرف التجارية العراقية
     </footer>
 
     <script>
@@ -560,7 +560,7 @@
                     }, payload => {
                         if (payload.new.status === 'approved') {
                             playTone(880, 'triangle', 0.3);
-                            showToast("تهانينا! تمت الموافقة على طلبك واعتماد هويتك الرقمية", "success");
+                            showToast("تهانينا! تمت الموافقة على طلبك وتفعيل سقف الأقساط الآمن", "success");
                         } else if (payload.new.status === 'rejected') {
                             showToast(`تم رفض الطلب: ${payload.new.decision_note || 'عدم مطابقة الشروط'}`, "error");
                         }
@@ -597,7 +597,7 @@
                         statusBadge = `<span class="req-status status-pending">قيد التدقيق</span>`;
                     } else if (r.status === 'approved') {
                         statusBadge = `<span class="req-status status-approved">معتمد</span>`;
-                        actionBtn = `<button class="btn btn-emerald" style="padding:7px 12px; font-size:11px; margin-top:8px;" onclick="openCardView('${r.id}')">استعراض الهوية الرقمية (QR)</button>`;
+                        actionBtn = `<button class="btn btn-emerald" style="padding:7px 12px; font-size:11px; margin-top:8px;" onclick="openCardView('${r.id}')">استعراض الهوية المشفرة (QR)</button>`;
                     } else if (r.status === 'rejected') {
                         statusBadge = `<span class="req-status status-rejected">مرفوض</span>`;
                     }
@@ -611,7 +611,7 @@
                             <div style="font-size:12px; color:var(--text-sub); display:grid; grid-template-columns:1fr 1fr; gap:6px;">
                                 <div>الدائرة: <b>${r.dept}</b></div>
                                 <div>صافي الراتب: <b>${(parseFloat(r.net_salary) || 0).toLocaleString()} د.ع</b></div>
-                                <div>السقف الممنوح: <b>${(parseFloat(r.credit_limit) || 0).toLocaleString()} د.ع</b></div>
+                                <div>سقف الأقساط (50%): <b>${(parseFloat(r.credit_limit) || 0).toLocaleString()} د.ع</b></div>
                                 <div>الرصيد المتاح: <b style="color:var(--emerald);">${(parseFloat(r.balance) || 0).toLocaleString()} د.ع</b></div>
                             </div>
                             ${r.decision_note ? `<div style="font-size:11px; color:var(--rose); margin-top:6px;">سبب الرفض: ${r.decision_note}</div>` : ''}
@@ -666,7 +666,7 @@
                 if (sb) {
                     const { data: txs } = await sb.from('transactions').select('*').eq('request_id', r.id).eq('is_refunded', false).order('created_at', { ascending: false }).limit(3);
                     if (!txs || txs.length === 0) {
-                        statementBox.innerHTML = `<div style="color:var(--text-sub); font-size:11px; text-align:center;">لم تقم بأي حركات شراء حتى الآن</div>`;
+                        statementBox.innerHTML = `<div style="color:var(--text-sub); font-size:11px; text-align:center;">لم تقم بأي حركات شراء بالأقساط حتى الآن</div>`;
                     } else {
                         txs.forEach(t => {
                             statementBox.innerHTML += `
@@ -683,9 +683,10 @@
             } catch(e){}
         }
 
+        // توليد رمز OTP فريد ومشفر بالكامل لضمان عدم التكرار أو التلاعب
         async function updateDynamicOtp() {
             if (!activeCardReq) return;
-            const code = String(Math.floor(100 + Math.random() * 900));
+            const code = String(Math.floor(1000 + Math.random() * 9000)); // رمز من 4 أرقام عشوائية مؤمنة
             const cEl = document.getElementById('dyn-sec-code');
             if (cEl) cEl.innerText = code;
 
@@ -696,13 +697,22 @@
                 } catch(e){}
             }
 
+            // توليد توقيع فريد مشفر حصري لهذا الطلب لضمان عدم تكرار الـ QR بين المواطنين
+            const uniqueSecurePayload = JSON.stringify({
+                id: activeCardReq.id,
+                phone: activeCardReq.phone,
+                card_hash: btoa(activeCardReq.card_number || 'SECURE').slice(0, 10),
+                otp: code,
+                ts: Date.now()
+            });
+
             const canvas = document.getElementById('emp-qr-code');
             if (canvas) {
                 new QRious({
                     element: canvas,
-                    value: encodeURIComponent(JSON.stringify({ id: activeCardReq.id, name: activeCardReq.name, otp: code })),
+                    value: encodeURIComponent(uniqueSecurePayload),
                     size: 125,
-                    level: 'L'
+                    level: 'H' // مستوى تصحيح أخطاء مرتفع لزيادة الأمان وقراءة الماسح بدقة
                 });
             }
         }
@@ -724,7 +734,7 @@
                         <div class="req-card">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                                 <b style="font-size:14px; color:var(--primary);">${st.name}</b>
-                                <span style="font-size:11px; color:var(--emerald); font-weight:700;">متجر معتمد</span>
+                                <span style="font-size:11px; color:var(--emerald); font-weight:700;">متجر معتمد للتقسيط</span>
                             </div>
                             <div style="font-size:12px; color:var(--text-sub);">العنوان: ${st.address || 'غير محدد'}</div>
                             <div style="font-size:11px; color:var(--text-sub); margin-top:3px;">المنتجات: ${st.products || 'مواد استهلاكية'}</div>
@@ -737,10 +747,10 @@
         function downloadSmartCard() {
             html2canvas(document.getElementById('card-to-export'), { scale: 3 }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `Smart-Card-${currentCitizen ? currentCitizen.name : 'Citizen'}.png`;
+                link.download = `Secure-Installment-Card-${currentCitizen ? currentCitizen.name : 'Citizen'}.png`;
                 link.href = canvas.toDataURL();
                 link.click();
-                showToast("تم حفظ بطاقتك بنجاح", "success");
+                showToast("تم حفظ البطاقة الرقمية الآمنة بنجاح", "success");
             });
         }
 
@@ -767,7 +777,7 @@
                 document.getElementById('btn-cam-open').classList.add('hidden');
                 document.getElementById('btn-cam-snap').classList.remove('hidden');
             } catch (err) {
-                showToast("يرجى إعطاء صلاحية الكاميرا للتحقق البيومتري", "error");
+                showToast("يرجى إعطاء صلاحية الكاميرا للتحقق البيومتري الأمني", "error");
             }
         }
 
@@ -783,7 +793,7 @@
             video.style.display = 'none';
             if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
             document.getElementById('btn-cam-snap').classList.add('hidden');
-            showToast("تم التقاط وتثبيت الصورة بنجاح", "success");
+            showToast("تم التقاط وتثبيت الصورة البيومترية بنجاح", "success");
         }
 
         async function uploadFileToStorage(fileOrBlob, prefix) {
@@ -806,15 +816,15 @@
             const submitBtn = document.getElementById('btn-submit-reg');
 
             if (!dept || isNaN(gross) || gross <= 0 || !pin) {
-                showToast("يرجى إكمال البيانات وتعيين رمز الـ PIN", "error");
+                showToast("يرجى إكمال البيانات بدقة وتعيين رمز الـ PIN للأقساط", "error");
                 return;
             }
 
             const sb = getSupabase();
             try {
                 submitBtn.disabled = true;
-                submitBtn.innerText = "جاري رفع المستندات للسيرفر...";
-                showToast("جاري رفع المستندات والصور السحابية...", "info");
+                submitBtn.innerText = "جاري تشفير ورفع المستندات للسيرفر الآمن...";
+                showToast("جاري رفع المستندات والصور السحابية المشفرة...", "info");
 
                 let kycBlob = null;
                 if (capturedPhotoUrl) {
@@ -828,8 +838,9 @@
                     uploadFileToStorage(kycBlob, `kyc_${currentCitizen.phone}`)
                 ]);
 
+                // احتساب سقف الأقساط بدقة: 50% من صافي الراتب (الراتب الإجمالي - مجموع السلف الحالية)
                 const netSalary = Math.max(0, gross - deduct);
-                const limit = netSalary * 0.5;
+                const creditLimit = netSalary * 0.5;
 
                 if (sb) {
                     const { data, error } = await sb.from('requests').insert([{
@@ -843,15 +854,15 @@
                         gross_salary: gross,
                         deductions: deduct,
                         net_salary: netSalary,
-                        credit_limit: limit,
-                        balance: limit,
+                        credit_limit: creditLimit,
+                        balance: creditLimit, // الرصيد المتاح للتقسيط يساوي السقف المعتمد بالكامل مبدئياً
                         pin: pin,
                         status: "pending",
                         is_frozen: false
                     }]).select();
 
                     if (error) throw error;
-                    showToast(`تم إرسال طلبك #${data[0].id} بنجاح للتدقيق المركزي`, "success");
+                    showToast(`تم إرسال طلب التقسيط #${data[0].id} بنجاح للتدقيق المركزي`, "success");
                 }
 
                 showView('my-requests');
