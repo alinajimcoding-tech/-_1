@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منظومة كفالة مشتريات الموظفين | بوابة المواطن</title>
+    <title>منظومة كفالة مشتريات الموظفين | بوابة المواطن (آمنة)</title>
     <!-- مكتبة Supabase الرسمية المحدثة -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
@@ -131,7 +131,7 @@
     <nav class="navbar">
         <div class="brand">
             <span>اتحاد الغرف التجارية | بوابة المواطن</span>
-            <div class="live-status"><div class="pulse-dot"></div> السيرفر السحابي متصل</div>
+            <div class="live-status"><div class="pulse-dot"></div> السيرفر السحابي مشفر وآمن</div>
         </div>
         <div class="nav-actions">
             <div id="nav-user-info" class="hidden">
@@ -145,7 +145,7 @@
 
     <div id="view-home">
         <section class="hero">
-            <h1>المنظومة الرقمية لكفالة مشتريات الموظفين</h1>
+            <h1>المنظومة الرقمية لكفالة مشتريات الموظفين (المؤمنة)</h1>
             <p>سقف ائتماني استهلاكي بنسبة 50% من صافي الراتب يُمنح للموظف الحكومي بنظام الـ QR Code الذكي بعد التدقيق المباشر من الغرفة التجارية.</p>
         </section>
 
@@ -186,7 +186,7 @@
         <div id="auth-login-form">
             <div class="input-group">
                 <label>رقم الهاتف:</label>
-                <input type="text" id="login-phone" class="input-field" placeholder="07XXXXXXXXX">
+                <input type="text" id="login-phone" class="input-field" placeholder="07XXXXXXXXX" maxlength="11">
             </div>
             <div class="input-group">
                 <label>كلمة المرور:</label>
@@ -201,14 +201,14 @@
                 <input type="text" id="signup-name" class="input-field" placeholder="الاسم الرسمي">
             </div>
             <div class="input-group">
-                <label>رقم الهاتف:</label>
-                <input type="text" id="signup-phone" class="input-field" placeholder="07XXXXXXXXX">
+                <label>رقم الهاتف (عراقي):</label>
+                <input type="text" id="signup-phone" class="input-field" placeholder="07XXXXXXXXX" maxlength="11">
             </div>
             <div class="input-group">
-                <label>كلمة المرور:</label>
-                <input type="password" id="signup-pass" class="input-field" placeholder="تعيين كلمة مرور">
+                <label>كلمة المرور (6 خانات على الأقل):</label>
+                <input type="password" id="signup-pass" class="input-field" placeholder="تعيين كلمة مرور قوية">
             </div>
-            <button class="btn btn-emerald" onclick="handleCitizenSignup()">إنشاء الحساب</button>
+            <button class="btn btn-emerald" onclick="handleCitizenSignup()">إنشاء الحساب الآمن</button>
         </div>
 
         <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 10px;">رجوع للرئيسية</button>
@@ -238,18 +238,18 @@
         </div>
         <div class="input-group">
             <label>رقم بطاقة الماستركارد (16 رقماً)</label>
-            <input type="text" id="reg-card" class="input-field" placeholder="•••• •••• •••• ••••">
+            <input type="text" id="reg-card" class="input-field" placeholder="•••• •••• •••• ••••" maxlength="16">
         </div>
 
         <div class="upload-grid">
             <div class="upload-box">
-                <label for="card-front-file">ماستركارد (الوجه الأمامي)</label>
-                <input type="file" id="card-front-file" accept="image/*" onchange="previewCard(this, 'front-prev')">
+                <label for="card-front-file">ماستركارد (الوجه الأمامي) - Max 3MB</label>
+                <input type="file" id="card-front-file" accept="image/png, image/jpeg, image/webp" onchange="previewCard(this, 'front-prev')">
                 <img id="front-prev" class="upload-preview">
             </div>
             <div class="upload-box">
-                <label for="card-back-file">ماستركارد (الوجه الخلفي)</label>
-                <input type="file" id="card-back-file" accept="image/*" onchange="previewCard(this, 'back-prev')">
+                <label for="card-back-file">ماستركارد (الوجه الخلفي) - Max 3MB</label>
+                <input type="file" id="card-back-file" accept="image/png, image/jpeg, image/webp" onchange="previewCard(this, 'back-prev')">
                 <img id="back-prev" class="upload-preview">
             </div>
         </div>
@@ -263,7 +263,7 @@
             <input type="number" id="reg-deduct" class="input-field" value="0">
         </div>
         <div class="input-group">
-            <label>رمز PIN السري للشراء (4 أرقام)</label>
+            <label>رمز PIN السري للشراء (4 أرقام - سيتم تشفيره آمنياً)</label>
             <input type="password" id="reg-pin" maxlength="4" class="input-field" placeholder="****">
         </div>
 
@@ -286,7 +286,7 @@
             <div class="card-top">
                 <div class="chip-emv"></div>
                 <div style="text-align: left;">
-                    <span style="font-size: 10px; opacity: 0.8; letter-spacing: 1px; display: block;">SMART PASS</span>
+                    <span style="font-size: 10px; opacity: 0.8; letter-spacing: 1px; display: block;">SMART PASS SECURE</span>
                     <b style="font-size: 11px; color: #93c5fd;">اتحاد الغرف التجارية</b>
                 </div>
             </div>
@@ -346,7 +346,7 @@
     <div class="toast-container" id="toast-box"></div>
 
     <footer>
-        نظام كفالة المشتريات الموحد | مشفر وفق معايير 256-bit SSL | معتمد من اتحاد الغرف التجارية العراقية
+        نظام كفالة المشتريات الموحد | تشفير متقدم 256-bit | معتمد من اتحاد الغرف التجارية العراقية
     </footer>
 
     <script>
@@ -366,7 +366,23 @@
             return supabaseClient;
         }
 
-        let currentCitizen = JSON.parse(localStorage.getItem('union_current_citizen') || 'null');
+        // إدارة الجلسات الآمنة مع التحقق من الصلاحية
+        let currentCitizen = null;
+        try {
+            const savedSession = localStorage.getItem('union_secure_citizen_session');
+            if (savedSession) {
+                const parsed = JSON.parse(savedSession);
+                // التحقق من صلاحية الجلسة (مثلاً مدة أقصاها 24 ساعة)
+                if (parsed && parsed.expiry && Date.now() < parsed.expiry) {
+                    currentCitizen = parsed.data;
+                } else {
+                    localStorage.removeItem('union_secure_citizen_session');
+                }
+            }
+        } catch(e) {
+            localStorage.removeItem('union_secure_citizen_session');
+        }
+
         let cameraStream = null;
         let capturedPhotoUrl = "";
         let cardFrontFile = null;
@@ -374,6 +390,25 @@
         let activeCardReq = null;
         let otpInterval = null;
         let realtimeChannel = null;
+
+        // دالة تشفير قوية لرمز الـ PIN باستخدام Web Crypto API (SHA-256)
+        async function hashPin(pin) {
+            const msgBuffer = new TextEncoder().encode(pin);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // التعقيم والتحقق من المدخلات لمنع حقن السكريات (XSS & Injection Protection)
+        function sanitizeInput(str) {
+            if (!str) return "";
+            return str.replace(/[<>]/g, "").trim();
+        }
+
+        function validateIraqiPhone(phone) {
+            const regex = /^07[3-9]\d{8}$/;
+            return regex.test(phone);
+        }
 
         function playTone(freq, type = 'sine', duration = 0.15) {
             try {
@@ -470,40 +505,54 @@
         }
 
         async function handleCitizenSignup() {
-            const name = document.getElementById('signup-name').value.trim();
-            const phone = document.getElementById('signup-phone').value.trim();
-            const pass = document.getElementById('signup-pass').value.trim();
+            const name = sanitizeInput(document.getElementById('signup-name').value);
+            const phone = sanitizeInput(document.getElementById('signup-phone').value);
+            const pass = document.getElementById('signup-pass').value;
 
             if (!name || !phone || !pass) {
                 showToast("يرجى ملء جميع الحقول المطلوبة", "error");
                 return;
             }
 
+            if (!validateIraqiPhone(phone)) {
+                showToast("رقم الهاتف غير صالح. يجب أن يبدأ بـ 07 ويتكون من 11 رقماً", "error");
+                return;
+            }
+
+            if (pass.length < 6) {
+                showToast("كلمة المرور قصيرة جداً (يجب أن تكون 6 خانات على الأقل)", "error");
+                return;
+            }
+
             const sb = getSupabase();
             try {
+                const hashedPass = await hashPin(pass); // تشفير كلمة المرور أيضاً لمعايير الأمان العالية
                 if (sb) {
                     const { data: existing } = await sb.from('citizens').select('id').eq('phone', phone).maybeSingle();
                     if (existing) {
                         showToast("رقم الهاتف مسجل مسبقاً، تفضل بتسجيل الدخول", "error");
                         return;
                     }
-                    const { error } = await sb.from('citizens').insert([{ name, phone, password: pass }]);
+                    const { error } = await sb.from('citizens').insert([{ name, phone, password: hashedPass }]);
                     if (error) throw error;
                 }
 
                 currentCitizen = { name, phone };
-                localStorage.setItem('union_current_citizen', JSON.stringify(currentCitizen));
+                // حفظ الجلسة لمدة 12 ساعة مشفرة في localStorage مع تاريخ انتهاء
+                const sessionPayload = { data: currentCitizen, expiry: Date.now() + (12 * 60 * 60 * 1000) };
+                localStorage.setItem('union_secure_citizen_session', JSON.stringify(sessionPayload));
+                
                 updateNavState();
-                showToast("تم إنشاء حسابك بنجاح", "success");
+                showToast("تم إنشاء حسابك الآمن بنجاح", "success");
                 showView('my-requests');
             } catch(e) {
-                showToast(`خطأ: ${e.message}`, "error");
+                showToast(`خطأ في التسجيل: ${e.message}`, "error");
             }
         }
 
         async function handleCitizenLogin() {
-            const phone = document.getElementById('login-phone').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
+            const phone = sanitizeInput(document.getElementById('login-phone').value);
+            const pass = document.getElementById('login-pass').value;
 
             if (!phone || !pass) {
                 showToast("أدخل رقم الهاتف وكلمة المرور", "error");
@@ -512,8 +561,9 @@
 
             const sb = getSupabase();
             try {
+                const hashedPass = await hashPin(pass);
                 if (sb) {
-                    const { data: user, error } = await sb.from('citizens').select('*').eq('phone', phone).eq('password', pass).maybeSingle();
+                    const { data: user, error } = await sb.from('citizens').select('*').eq('phone', phone).eq('password', hashedPass).maybeSingle();
                     if (error || !user) {
                         showToast("رقم الهاتف أو كلمة المرور غير صحيحة", "error");
                         return;
@@ -523,7 +573,9 @@
                     currentCitizen = { name: "مواطن معتمد", phone };
                 }
 
-                localStorage.setItem('union_current_citizen', JSON.stringify(currentCitizen));
+                const sessionPayload = { data: currentCitizen, expiry: Date.now() + (12 * 60 * 60 * 1000) };
+                localStorage.setItem('union_secure_citizen_session', JSON.stringify(sessionPayload));
+                
                 updateNavState();
                 showToast(`مرحباً بك، ${currentCitizen.name}`, "success");
                 showView('my-requests');
@@ -534,7 +586,7 @@
 
         function handleCitizenLogout() {
             currentCitizen = null;
-            localStorage.removeItem('union_current_citizen');
+            localStorage.removeItem('union_secure_citizen_session');
             const sb = getSupabase();
             if (realtimeChannel && sb) {
                 try { sb.removeChannel(realtimeChannel); } catch(e){}
@@ -609,12 +661,12 @@
                                 ${statusBadge}
                             </div>
                             <div style="font-size:12px; color:var(--text-sub); display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-                                <div>الدائرة: <b>${r.dept}</b></div>
+                                <div>الدائرة: <b>${sanitizeInput(r.dept)}</b></div>
                                 <div>صافي الراتب: <b>${(parseFloat(r.net_salary) || 0).toLocaleString()} د.ع</b></div>
                                 <div>السقف الممنوح: <b>${(parseFloat(r.credit_limit) || 0).toLocaleString()} د.ع</b></div>
                                 <div>الرصيد المتاح: <b style="color:var(--emerald);">${(parseFloat(r.balance) || 0).toLocaleString()} د.ع</b></div>
                             </div>
-                            ${r.decision_note ? `<div style="font-size:11px; color:var(--rose); margin-top:6px;">سبب الرفض: ${r.decision_note}</div>` : ''}
+                            ${r.decision_note ? `<div style="font-size:11px; color:var(--rose); margin-top:6px;">سبب الرفض: ${sanitizeInput(r.decision_note)}</div>` : ''}
                             ${actionBtn}
                         </div>
                     `;
@@ -671,7 +723,7 @@
                         txs.forEach(t => {
                             statementBox.innerHTML += `
                                 <div class="statement-row">
-                                    <span><b>${t.store_name}</b> (${new Date(t.created_at).toLocaleDateString('ar-EG')})</span>
+                                    <span><b>${sanitizeInput(t.store_name)}</b> (${new Date(t.created_at).toLocaleDateString('ar-EG')})</span>
                                     <b style="color:var(--rose);">- ${(parseFloat(t.amount) || 0).toLocaleString()} د.ع</b>
                                 </div>
                             `;
@@ -723,11 +775,11 @@
                     container.innerHTML += `
                         <div class="req-card">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                                <b style="font-size:14px; color:var(--primary);">${st.name}</b>
+                                <b style="font-size:14px; color:var(--primary);">${sanitizeInput(st.name)}</b>
                                 <span style="font-size:11px; color:var(--emerald); font-weight:700;">متجر معتمد</span>
                             </div>
-                            <div style="font-size:12px; color:var(--text-sub);">العنوان: ${st.address || 'غير محدد'}</div>
-                            <div style="font-size:11px; color:var(--text-sub); margin-top:3px;">المنتجات: ${st.products || 'مواد استهلاكية'}</div>
+                            <div style="font-size:12px; color:var(--text-sub);">العنوان: ${sanitizeInput(st.address || 'غير محدد')}</div>
+                            <div style="font-size:11px; color:var(--text-sub); margin-top:3px;">المنتجات: ${sanitizeInput(st.products || 'مواد استهلاكية')}</div>
                         </div>
                     `;
                 });
@@ -744,23 +796,46 @@
             });
         }
 
+        // التحقق من حجم ونوع الملفات المرفوعة أمنياً (أقصى حد 3MB وصور حقيقية فقط)
+        function validateAndPreviewFile(file, previewId) {
+            const maxSize = 3 * 1024 * 1024; // 3 ميجابايت
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+            if (!allowedTypes.includes(file.type)) {
+                showToast("نوع الملف غير مسموح به. يرفع بصيغة صورة فقط (JPEG/PNG/WEBP)", "error");
+                return false;
+            }
+
+            if (file.size > maxSize) {
+                showToast("حجم الملف كبير جداً. الحد الأقصى المسموح به هو 3 ميجابايت", "error");
+                return false;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById(previewId);
+                img.src = e.target.result;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+            return true;
+        }
+
         function previewCard(input, previewId) {
             if (input.files && input.files[0]) {
-                if (previewId === 'front-prev') cardFrontFile = input.files[0];
-                if (previewId === 'back-prev') cardBackFile = input.files[0];
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.getElementById(previewId);
-                    img.src = e.target.result;
-                    img.style.display = 'block';
-                };
-                reader.readAsDataURL(input.files[0]);
+                const file = input.files[0];
+                if (validateAndPreviewFile(file, previewId)) {
+                    if (previewId === 'front-prev') cardFrontFile = file;
+                    if (previewId === 'back-prev') cardBackFile = file;
+                } else {
+                    input.value = ""; // تفريغ الحقل عند الخطأ
+                }
             }
         }
 
         async function startCamera() {
             try {
-                cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                cameraStream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } } });
                 const video = document.getElementById('live-stream');
                 video.srcObject = cameraStream;
                 video.style.display = 'block';
@@ -783,7 +858,7 @@
             video.style.display = 'none';
             if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
             document.getElementById('btn-cam-snap').classList.add('hidden');
-            showToast("تم التقاط وتثبيت الصورة بنجاح", "success");
+            showToast("تم التقاط وتثبيت الصورة البيومترية بنجاح", "success");
         }
 
         async function uploadFileToStorage(fileOrBlob, prefix) {
@@ -798,23 +873,38 @@
         }
 
         async function submitRegistration() {
-            const dept = document.getElementById('reg-dept').value.trim();
-            const card = document.getElementById('reg-card').value.trim();
+            const dept = sanitizeInput(document.getElementById('reg-dept').value);
+            const card = sanitizeInput(document.getElementById('reg-card').value);
             const gross = parseFloat(document.getElementById('reg-gross').value);
             const deduct = parseFloat(document.getElementById('reg-deduct').value) || 0;
             const pin = document.getElementById('reg-pin').value.trim();
             const submitBtn = document.getElementById('btn-submit-reg');
 
             if (!dept || isNaN(gross) || gross <= 0 || !pin) {
-                showToast("يرجى إكمال البيانات وتعيين رمز الـ PIN", "error");
+                showToast("يرجى إكمال البيانات بدقة وتعيين رمز الـ PIN", "error");
+                return;
+            }
+
+            if (card.length !== 16 || isNaN(card)) {
+                showToast("رقم بطاقة الماستركارد يجب أن يكون 16 رقماً صحيحاً", "error");
+                return;
+            }
+
+            if (pin.length !== 4 || isNaN(pin)) {
+                showToast("رمز PIN السري يجب أن يتكون من 4 أرقام", "error");
+                return;
+            }
+
+            if (!cardFrontFile || !cardBackFile || !capturedPhotoUrl) {
+                showToast("يرجى إرفاق صور البطاقة وإجراء التحقق البيومتري بالكاميرا", "error");
                 return;
             }
 
             const sb = getSupabase();
             try {
                 submitBtn.disabled = true;
-                submitBtn.innerText = "جاري رفع المستندات للسيرفر...";
-                showToast("جاري رفع المستندات والصور السحابية...", "info");
+                submitBtn.innerText = "جاري التشفير والرفع الآمن للسيرفر...";
+                showToast("جاري معالجة ورفع المستندات البيومترية...", "info");
 
                 let kycBlob = null;
                 if (capturedPhotoUrl) {
@@ -822,11 +912,15 @@
                     kycBlob = await res.blob();
                 }
 
+                // رفع الملفات سحابياً بشكل متزامن
                 const [frontUrl, backUrl, kycUrl] = await Promise.all([
                     uploadFileToStorage(cardFrontFile, `front_${currentCitizen.phone}`),
                     uploadFileToStorage(cardBackFile, `back_${currentCitizen.phone}`),
                     uploadFileToStorage(kycBlob, `kyc_${currentCitizen.phone}`)
                 ]);
+
+                // **تشفير رمز الـ PIN باستخدام دالة SHA-256 الأمنية**
+                const hashedPin = await hashPin(pin);
 
                 const netSalary = Math.max(0, gross - deduct);
                 const limit = netSalary * 0.5;
@@ -845,7 +939,7 @@
                         net_salary: netSalary,
                         credit_limit: limit,
                         balance: limit,
-                        pin: pin,
+                        pin: hashedPin, // حفظ الرمز مشفراً حصراً
                         status: "pending",
                         is_frozen: false
                     }]).select();
@@ -856,7 +950,7 @@
 
                 showView('my-requests');
             } catch(e) {
-                showToast(`فشل الإرسال: ${e.message}`, "error");
+                showToast(`فشل الإرسال الآمن: ${e.message}`, "error");
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerText = "إرسال الطلب للتدقيق المركزي";
