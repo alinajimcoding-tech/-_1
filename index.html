@@ -37,93 +37,104 @@
             --amber: #d97706;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; transition: 0.2s; }
-        body { background: var(--bg); color: var(--text-main); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+        body { background: var(--bg); color: var(--text-main); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; padding: 12px; }
         .hidden { display: none !important; }
 
-        .navbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
-        .brand { font-weight: 900; font-size: 15px; display: flex; align-items: center; gap: 8px; }
-        .live-status { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--emerald); font-weight: 700; background: rgba(16,185,129,0.1); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(16,185,129,0.25); }
-        .pulse-dot { width: 7px; height: 7px; background: var(--emerald); border-radius: 50%; box-shadow: 0 0 8px var(--emerald); animation: pulse 1.8s infinite; }
+        .navbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); border-radius: 12px; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+        .brand { font-weight: 900; font-size: 14px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .live-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; color: var(--emerald); font-weight: 700; background: rgba(16,185,129,0.1); padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(16,185,129,0.25); }
+        .pulse-dot { width: 6px; height: 6px; background: var(--emerald); border-radius: 50%; box-shadow: 0 0 6px var(--emerald); animation: pulse 1.8s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
 
-        .nav-actions { display: flex; align-items: center; gap: 10px; }
-        .user-tag { background: var(--surface-card); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; color: var(--primary); }
-        .btn-ctrl { background: var(--surface-card); border: 1px solid var(--border); color: var(--text-main); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; }
+        .nav-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .user-tag { background: var(--surface-card); border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; color: var(--primary); }
+        .btn-ctrl { background: var(--surface-card); border: 1px solid var(--border); color: var(--text-main); padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 700; }
         .btn-ctrl:hover { border-color: var(--primary); }
 
-        .hero { text-align: center; padding: 50px 20px 30px; max-width: 800px; margin: 0 auto; }
-        .hero h1 { font-size: 32px; font-weight: 900; margin-bottom: 12px; letter-spacing: -0.5px; }
-        .hero p { color: var(--text-sub); font-size: 14px; margin-bottom: 24px; }
+        .hero { text-align: center; padding: 30px 10px 20px; max-width: 800px; margin: 0 auto; }
+        .hero h1 { font-size: 22px; font-weight: 900; margin-bottom: 8px; letter-spacing: -0.5px; }
+        .hero p { color: var(--text-sub); font-size: 12px; margin-bottom: 16px; }
 
-        .grid-options { max-width: 950px; margin: 0 auto 40px; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
-        .action-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
-        .action-card:hover { border-color: var(--primary); transform: translateY(-3px); }
-        .action-card h3 { font-size: 17px; margin-bottom: 8px; font-weight: 800; }
-        .action-card p { font-size: 13px; color: var(--text-sub); margin-bottom: 20px; flex-grow: 1; }
+        .grid-options { max-width: 950px; margin: 0 auto 30px; padding: 0 10px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+        .action-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+        .action-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .action-card h3 { font-size: 15px; margin-bottom: 6px; font-weight: 800; }
+        .action-card p { font-size: 12px; color: var(--text-sub); margin-bottom: 14px; flex-grow: 1; }
 
-        .btn { width: 100%; padding: 11px 16px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; border: none; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 14px var(--primary-glow); }
+        .btn { width: 100%; padding: 10px 14px; border-radius: 9px; font-size: 12px; font-weight: 800; cursor: pointer; border: none; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 12px var(--primary-glow); }
         .btn-secondary { background: var(--surface-card); color: var(--text-main); border: 1px solid var(--border); }
-        .btn-emerald { background: var(--emerald); color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,0.3); }
+        .btn-emerald { background: var(--emerald); color: #fff; box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
 
-        .view-panel { max-width: 540px; margin: 20px auto; background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 28px; box-shadow: 0 16px 36px rgba(0,0,0,0.25); }
-        .input-group { margin-bottom: 14px; text-align: start; }
-        .input-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-sub); margin-bottom: 5px; }
-        .input-field { width: 100%; background: var(--bg); border: 1px solid var(--border); padding: 11px 14px; border-radius: 9px; color: var(--text-main); font-size: 13px; outline: none; }
+        .view-panel { max-width: 520px; width: 100%; margin: 10px auto; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: 0 12px 30px rgba(0,0,0,0.25); }
+        .input-group { margin-bottom: 12px; text-align: start; }
+        .input-group label { display: block; font-size: 11px; font-weight: 700; color: var(--text-sub); margin-bottom: 4px; }
+        .input-field { width: 100%; background: var(--bg); border: 1px solid var(--border); padding: 10px 12px; border-radius: 8px; color: var(--text-main); font-size: 12px; outline: none; }
         .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
 
-        .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-        .upload-box { background: var(--bg); border: 1px dashed var(--border); border-radius: 10px; padding: 12px; text-align: center; }
+        .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .upload-box { background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 10px; text-align: center; }
         .upload-box input { display: none; }
-        .upload-box label { font-size: 11px; color: var(--primary); cursor: pointer; display: block; font-weight: 700; }
-        .upload-preview { width: 100%; height: 65px; object-fit: cover; border-radius: 6px; margin-top: 8px; display: none; border: 1px solid var(--border); }
+        .upload-box label { font-size: 10px; color: var(--primary); cursor: pointer; display: block; font-weight: 700; }
+        .upload-preview { width: 100%; height: 55px; object-fit: cover; border-radius: 6px; margin-top: 6px; display: none; border: 1px solid var(--border); }
 
-        .camera-box { background: var(--bg); border: 1px dashed var(--border); border-radius: 10px; padding: 12px; text-align: center; margin-bottom: 14px; }
-        video { width: 100%; max-height: 180px; border-radius: 8px; object-fit: cover; display: none; }
-        #captured-photo { width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin: 6px auto; display: none; }
+        .camera-box { background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 10px; text-align: center; margin-bottom: 12px; }
+        video { width: 100%; max-height: 150px; border-radius: 6px; object-fit: cover; display: none; }
+        #captured-photo { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); margin: 4px auto; display: none; }
 
         .fintech-card {
-            background: linear-gradient(135deg, rgba(30, 58, 138, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
             border: 1px solid rgba(255, 255, 255, 0.18);
             backdrop-filter: blur(16px);
-            border-radius: 20px;
-            padding: 22px;
+            border-radius: 16px;
+            padding: 16px;
             color: #fff;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 16px 30px rgba(0,0,0,0.4);
             text-align: start;
+            max-width: 100%;
         }
-        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-        .chip-emv { width: 38px; height: 28px; background: linear-gradient(135deg, #fcd34d 0%, #b45309 100%); border-radius: 5px; border: 1px solid #78350f; position: relative; }
-        .chip-emv::after { content: ""; position: absolute; inset: 4px; border: 1px solid rgba(0,0,0,0.3); border-radius: 2px; }
-        .card-body { text-align: center; margin: 10px 0; }
-        .qr-card-holder { background: #ffffff; padding: 8px; border-radius: 12px; display: inline-block; box-shadow: 0 8px 16px rgba(0,0,0,0.25); }
+        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .chip-emv { width: 34px; height: 24px; background: linear-gradient(135deg, #fcd34d 0%, #b45309 100%); border-radius: 4px; border: 1px solid #78350f; position: relative; }
+        .chip-emv::after { content: ""; position: absolute; inset: 3px; border: 1px solid rgba(0,0,0,0.3); border-radius: 2px; }
+        .card-body { text-align: center; margin: 8px 0; }
+        .qr-card-holder { background: #ffffff; padding: 6px; border-radius: 10px; display: inline-block; box-shadow: 0 6px 12px rgba(0,0,0,0.25); }
 
-        .credit-progress-box { margin-top: 10px; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
-        .progress-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow: hidden; margin: 4px 0; }
+        .credit-progress-box { margin-top: 8px; background: rgba(0,0,0,0.25); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
+        .progress-bar-bg { width: 100%; height: 5px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow: hidden; margin: 3px 0; }
         .progress-bar-fill { height: 100%; background: var(--emerald); width: 100%; transition: width 0.4s ease; }
 
-        .dynamic-code-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.35); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); margin-top: 8px; font-size: 11px; }
-        .card-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 10px; }
+        .dynamic-code-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.35); padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); margin-top: 6px; font-size: 10px; flex-wrap: wrap; justify-content: center; }
+        .card-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 8px; gap: 10px; }
 
-        .mini-statement { margin-top: 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
-        .statement-row { display: flex; justify-content: space-between; font-size: 11px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+        .mini-statement { margin-top: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px; }
+        .statement-row { display: flex; justify-content: space-between; font-size: 10px; padding: 5px 0; border-bottom: 1px solid var(--border); gap: 10px; }
         .statement-row:last-child { border-bottom: none; }
 
-        .req-card { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; text-align: start; }
-        .req-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-        .req-status { font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
+        .req-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 10px; text-align: start; }
+        .req-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid var(--border); padding-bottom: 5px; flex-wrap: wrap; gap: 6px; }
+        .req-status { font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; }
         .status-pending { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
         .status-approved { background: rgba(16, 185, 129, 0.15); color: var(--emerald); }
         .status-rejected { background: rgba(244, 63, 94, 0.15); color: var(--rose); }
 
-        .toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
-        .toast { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 12px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 6px; width: 90%; max-width: 400px; }
+        .toast { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; box-shadow: 0 8px 25px rgba(0,0,0,0.5); text-align: center; }
         .toast.success { border-color: var(--emerald); color: var(--emerald); }
         .toast.error { border-color: var(--rose); color: var(--rose); }
 
-        footer { margin-top: auto; padding: 20px; text-align: center; font-size: 12px; color: var(--text-sub); border-top: 1px solid var(--border); background: var(--surface); }
+        footer { margin-top: auto; padding: 16px; text-align: center; font-size: 11px; color: var(--text-sub); border-top: 1px solid var(--border); background: var(--surface); border-radius: 12px; }
+
+        /* Media Queries للتجاوب التام مع الأيباد والهواتف الصغيرة */
+        @media screen and (min-width: 768px) {
+            body { padding: 20px; }
+            .hero h1 { font-size: 28px; }
+            .hero p { font-size: 13px; }
+            .view-panel { max-width: 560px; padding: 26px; }
+            .upload-preview { height: 75px; }
+            video { max-height: 180px; }
+        }
     </style>
 </head>
 <body>
@@ -131,7 +142,7 @@
     <nav class="navbar">
         <div class="brand">
             <span>اتحاد الغرف التجارية | بوابة المواطن</span>
-            <div class="live-status"><div class="pulse-dot"></div> السيرفر السحابي مشفر وآمن</div>
+            <div class="live-status"><div class="pulse-dot"></div> السيرفر مشفر وآمن</div>
         </div>
         <div class="nav-actions">
             <div id="nav-user-info" class="hidden">
@@ -178,7 +189,7 @@
 
     <!-- نافذة تسجيل الدخول والحساب -->
     <div id="view-auth" class="view-panel hidden">
-        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+        <div style="display: flex; gap: 8px; margin-bottom: 14px;">
             <button id="tab-login" class="btn btn-primary" style="flex:1;" onclick="switchAuthTab('login')">تسجيل الدخول</button>
             <button id="tab-signup" class="btn btn-secondary" style="flex:1;" onclick="switchAuthTab('signup')">إنشاء حساب جديد</button>
         </div>
@@ -215,9 +226,9 @@
     </div>
 
     <!-- قسم سجل طلباتي -->
-    <div id="view-my-requests" class="view-panel hidden" style="max-width: 600px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-            <h2 style="font-size: 16px; font-weight: 800;">سجل طلبات الشراء الخاصة بي</h2>
+    <div id="view-my-requests" class="view-panel hidden" style="max-width: 580px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+            <h2 style="font-size: 15px; font-weight: 800;">سجل طلبات الشراء الخاصة بي</h2>
             <button class="btn-ctrl" onclick="showView('reg')">+ طلب جديد</button>
         </div>
         <div id="my-requests-list"></div>
@@ -226,7 +237,7 @@
 
     <!-- نافذة تقديم الطلب -->
     <div id="view-reg" class="view-panel hidden">
-        <h2 style="font-size: 16px; margin-bottom: 14px; text-align: center; font-weight: 800;">تقديم طلب سقف مشتريات</h2>
+        <h2 style="font-size: 15px; margin-bottom: 12px; text-align: center; font-weight: 800;">تقديم طلب سقف مشتريات</h2>
         
         <div class="input-group">
             <label>الاسم الرباعي الكامل</label>
@@ -268,7 +279,7 @@
         </div>
 
         <div class="camera-box">
-            <span style="font-size:11px; color:var(--text-sub); display:block; margin-bottom:6px;">التحقق البيومتري الحي (KYC)</span>
+            <span style="font-size: 10px; color: var(--text-sub); display: block; margin-bottom: 6px;">التحقق البيومتري الحي (KYC)</span>
             <video id="live-stream" autoplay playsinline></video>
             <img id="captured-photo">
             <canvas id="pic-canvas" class="hidden"></canvas>
@@ -281,13 +292,13 @@
     </div>
 
     <!-- نافذة استعراض البطاقة + كشف الحركات -->
-    <div id="view-card-modal" class="view-panel hidden" style="max-width: 480px;">
+    <div id="view-card-modal" class="view-panel hidden" style="max-width: 460px;">
         <div id="card-to-export" class="fintech-card">
             <div class="card-top">
                 <div class="chip-emv"></div>
                 <div style="text-align: left;">
-                    <span style="font-size: 10px; opacity: 0.8; letter-spacing: 1px; display: block;">SMART PASS SECURE</span>
-                    <b style="font-size: 11px; color: #93c5fd;">اتحاد الغرف التجارية</b>
+                    <span style="font-size: 9px; opacity: 0.8; letter-spacing: 1px; display: block;">SMART PASS SECURE</span>
+                    <b style="font-size: 10px; color: #93c5fd;">اتحاد الغرف التجارية</b>
                 </div>
             </div>
             
@@ -298,7 +309,7 @@
                 
                 <div class="dynamic-code-badge">
                     <span>رمز الأمان اللحظي (OTP):</span>
-                    <b id="dyn-sec-code" style="color: #fcd34d; font-size: 14px; letter-spacing: 2px;">---</b>
+                    <b id="dyn-sec-code" style="color: #fcd34d; font-size: 13px; letter-spacing: 2px;">---</b>
                     <span id="dyn-timer" style="opacity: 0.7;">(60s)</span>
                 </div>
             </div>
@@ -316,31 +327,31 @@
             <div class="card-bottom">
                 <div>
                     <span style="font-size: 9px; opacity: 0.7; display: block;">حامل البطاقة</span>
-                    <b id="pass-name" style="font-size: 13px;">-</b>
-                    <div id="pass-dept" style="font-size: 10px; color: #94a3b8;">-</div>
+                    <b id="pass-name" style="font-size: 12px;">-</b>
+                    <div id="pass-dept" style="font-size: 9px; color: #94a3b8;">-</div>
                 </div>
                 <div style="text-align: left;">
                     <span style="font-size: 9px; opacity: 0.7; display: block;">السقف المعتمد</span>
-                    <b id="pass-limit" style="font-size: 13px; color: #93c5fd;">-</b>
+                    <b id="pass-limit" style="font-size: 12px; color: #93c5fd;">-</b>
                     <div style="font-size: 9px; color: #fcd34d;">دورة التجديد: شهرياً</div>
                 </div>
             </div>
         </div>
 
         <div class="mini-statement">
-            <b style="font-size: 12px; display: block; margin-bottom: 8px;">آخر حركات الشراء المنفذة:</b>
+            <b style="font-size: 11px; display: block; margin-bottom: 6px;">آخر حركات الشراء المنفذة:</b>
             <div id="mini-statement-body"></div>
         </div>
 
-        <button class="btn btn-primary" onclick="downloadSmartCard()" style="margin-top: 14px;">حفظ البطاقة كصورة</button>
+        <button class="btn btn-primary" onclick="downloadSmartCard()" style="margin-top: 12px;">حفظ البطاقة كصورة</button>
         <button class="btn btn-secondary" onclick="showView('my-requests')" style="margin-top: 8px;">رجوع لطلباتي</button>
     </div>
 
     <!-- قسم دليل المتاجر المعتمدة -->
-    <div id="view-stores" class="view-panel hidden" style="max-width: 600px;">
-        <h2 style="font-size: 16px; margin-bottom: 14px; text-align: center; font-weight: 800;">دليل المتاجر ونقاط البيع المعتمدة</h2>
+    <div id="view-stores" class="view-panel hidden" style="max-width: 580px;">
+        <h2 style="font-size: 15px; margin-bottom: 12px; text-align: center; font-weight: 800;">دليل المتاجر ونقاط البيع المعتمدة</h2>
         <div id="stores-directory-list"></div>
-        <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
+        <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 10px;">رجوع للرئيسية</button>
     </div>
 
     <div class="toast-container" id="toast-box"></div>
@@ -366,13 +377,11 @@
             return supabaseClient;
         }
 
-        // إدارة الجلسات الآمنة مع التحقق من الصلاحية
         let currentCitizen = null;
         try {
             const savedSession = localStorage.getItem('union_secure_citizen_session');
             if (savedSession) {
                 const parsed = JSON.parse(savedSession);
-                // التحقق من صلاحية الجلسة (مثلاً مدة أقصاها 24 ساعة)
                 if (parsed && parsed.expiry && Date.now() < parsed.expiry) {
                     currentCitizen = parsed.data;
                 } else {
@@ -391,7 +400,6 @@
         let otpInterval = null;
         let realtimeChannel = null;
 
-        // دالة تشفير قوية لرمز الـ PIN باستخدام Web Crypto API (SHA-256)
         async function hashPin(pin) {
             const msgBuffer = new TextEncoder().encode(pin);
             const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -399,7 +407,6 @@
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // التعقيم والتحقق من المدخلات لمنع حقن السكريات (XSS & Injection Protection)
         function sanitizeInput(str) {
             if (!str) return "";
             return str.replace(/[<>]/g, "").trim();
@@ -526,7 +533,7 @@
 
             const sb = getSupabase();
             try {
-                const hashedPass = await hashPin(pass); // تشفير كلمة المرور أيضاً لمعايير الأمان العالية
+                const hashedPass = await hashPin(pass);
                 if (sb) {
                     const { data: existing } = await sb.from('citizens').select('id').eq('phone', phone).maybeSingle();
                     if (existing) {
@@ -538,7 +545,6 @@
                 }
 
                 currentCitizen = { name, phone };
-                // حفظ الجلسة لمدة 12 ساعة مشفرة في localStorage مع تاريخ انتهاء
                 const sessionPayload = { data: currentCitizen, expiry: Date.now() + (12 * 60 * 60 * 1000) };
                 localStorage.setItem('union_secure_citizen_session', JSON.stringify(sessionPayload));
                 
@@ -637,7 +643,7 @@
 
                 container.innerHTML = "";
                 if (myReqs.length === 0) {
-                    container.innerHTML = `<div style="text-align:center; padding:24px; color:var(--text-sub); font-size:13px;">لا توجد طلبات سابقة. اضغط (+ طلب جديد) للتقديم.</div>`;
+                    container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-sub); font-size:12px;">لا توجد طلبات سابقة. اضغط (+ طلب جديد) للتقديم.</div>`;
                     return;
                 }
 
@@ -649,7 +655,7 @@
                         statusBadge = `<span class="req-status status-pending">قيد التدقيق</span>`;
                     } else if (r.status === 'approved') {
                         statusBadge = `<span class="req-status status-approved">معتمد</span>`;
-                        actionBtn = `<button class="btn btn-emerald" style="padding:7px 12px; font-size:11px; margin-top:8px;" onclick="openCardView('${r.id}')">استعراض الهوية الرقمية (QR)</button>`;
+                        actionBtn = `<button class="btn btn-emerald" style="padding:6px 10px; font-size:10px; margin-top:6px;" onclick="openCardView('${r.id}')">استعراض الهوية الرقمية (QR)</button>`;
                     } else if (r.status === 'rejected') {
                         statusBadge = `<span class="req-status status-rejected">مرفوض</span>`;
                     }
@@ -657,16 +663,16 @@
                     container.innerHTML += `
                         <div class="req-card">
                             <div class="req-head">
-                                <b style="font-size:13px;">طلب رقم: #${r.id}</b>
+                                <b style="font-size:12px;">طلب رقم: #${r.id}</b>
                                 ${statusBadge}
                             </div>
-                            <div style="font-size:12px; color:var(--text-sub); display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                            <div style="font-size:11px; color:var(--text-sub); display:grid; grid-template-columns:1fr 1fr; gap:6px;">
                                 <div>الدائرة: <b>${sanitizeInput(r.dept)}</b></div>
                                 <div>صافي الراتب: <b>${(parseFloat(r.net_salary) || 0).toLocaleString()} د.ع</b></div>
                                 <div>السقف الممنوح: <b>${(parseFloat(r.credit_limit) || 0).toLocaleString()} د.ع</b></div>
                                 <div>الرصيد المتاح: <b style="color:var(--emerald);">${(parseFloat(r.balance) || 0).toLocaleString()} د.ع</b></div>
                             </div>
-                            ${r.decision_note ? `<div style="font-size:11px; color:var(--rose); margin-top:6px;">سبب الرفض: ${sanitizeInput(r.decision_note)}</div>` : ''}
+                            ${r.decision_note ? `<div style="font-size:10px; color:var(--rose); margin-top:5px;">سبب الرفض: ${sanitizeInput(r.decision_note)}</div>` : ''}
                             ${actionBtn}
                         </div>
                     `;
@@ -718,7 +724,7 @@
                 if (sb) {
                     const { data: txs } = await sb.from('transactions').select('*').eq('request_id', r.id).eq('is_refunded', false).order('created_at', { ascending: false }).limit(3);
                     if (!txs || txs.length === 0) {
-                        statementBox.innerHTML = `<div style="color:var(--text-sub); font-size:11px; text-align:center;">لم تقم بأي حركات شراء حتى الآن</div>`;
+                        statementBox.innerHTML = `<div style="color:var(--text-sub); font-size:10px; text-align:center;">لم تقم بأي حركات شراء حتى الآن</div>`;
                     } else {
                         txs.forEach(t => {
                             statementBox.innerHTML += `
@@ -753,7 +759,7 @@
                 new QRious({
                     element: canvas,
                     value: encodeURIComponent(JSON.stringify({ id: activeCardReq.id, name: activeCardReq.name, otp: code })),
-                    size: 125,
+                    size: 110,
                     level: 'L'
                 });
             }
@@ -768,18 +774,18 @@
                 const { data: stores } = await sb.from('stores').select('*').order('created_at', { ascending: false });
                 container.innerHTML = "";
                 if (!stores || stores.length === 0) {
-                    container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-sub); font-size:13px;">لا توجد متاجر معتمدة مسجلة بعد.</div>`;
+                    container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub); font-size:12px;">لا توجد متاجر معتمدة مسجلة بعد.</div>`;
                     return;
                 }
                 stores.forEach(st => {
                     container.innerHTML += `
                         <div class="req-card">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                                <b style="font-size:14px; color:var(--primary);">${sanitizeInput(st.name)}</b>
-                                <span style="font-size:11px; color:var(--emerald); font-weight:700;">متجر معتمد</span>
+                                <b style="font-size:13px; color:var(--primary);">${sanitizeInput(st.name)}</b>
+                                <span style="font-size:10px; color:var(--emerald); font-weight:700;">متجر معتمد</span>
                             </div>
-                            <div style="font-size:12px; color:var(--text-sub);">العنوان: ${sanitizeInput(st.address || 'غير محدد')}</div>
-                            <div style="font-size:11px; color:var(--text-sub); margin-top:3px;">المنتجات: ${sanitizeInput(st.products || 'مواد استهلاكية')}</div>
+                            <div style="font-size:11px; color:var(--text-sub);">العنوان: ${sanitizeInput(st.address || 'غير محدد')}</div>
+                            <div style="font-size:10px; color:var(--text-sub); margin-top:2px;">المنتجات: ${sanitizeInput(st.products || 'مواد استهلاكية')}</div>
                         </div>
                     `;
                 });
@@ -796,9 +802,8 @@
             });
         }
 
-        // التحقق من حجم ونوع الملفات المرفوعة أمنياً (أقصى حد 3MB وصور حقيقية فقط)
         function validateAndPreviewFile(file, previewId) {
-            const maxSize = 3 * 1024 * 1024; // 3 ميجابايت
+            const maxSize = 3 * 1024 * 1024;
             const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
             if (!allowedTypes.includes(file.type)) {
@@ -828,7 +833,7 @@
                     if (previewId === 'front-prev') cardFrontFile = file;
                     if (previewId === 'back-prev') cardBackFile = file;
                 } else {
-                    input.value = ""; // تفريغ الحقل عند الخطأ
+                    input.value = "";
                 }
             }
         }
@@ -903,7 +908,7 @@
             const sb = getSupabase();
             try {
                 submitBtn.disabled = true;
-                submitBtn.innerText = "جاري التشفير والرفع الآمن للسيرفر...";
+                submitBtn.innerText = "جاري التشفير والرفع الآمن...";
                 showToast("جاري معالجة ورفع المستندات البيومترية...", "info");
 
                 let kycBlob = null;
@@ -912,16 +917,13 @@
                     kycBlob = await res.blob();
                 }
 
-                // رفع الملفات سحابياً بشكل متزامن
                 const [frontUrl, backUrl, kycUrl] = await Promise.all([
                     uploadFileToStorage(cardFrontFile, `front_${currentCitizen.phone}`),
                     uploadFileToStorage(cardBackFile, `back_${currentCitizen.phone}`),
                     uploadFileToStorage(kycBlob, `kyc_${currentCitizen.phone}`)
                 ]);
 
-                // **تشفير رمز الـ PIN باستخدام دالة SHA-256 الأمنية**
                 const hashedPin = await hashPin(pin);
-
                 const netSalary = Math.max(0, gross - deduct);
                 const limit = netSalary * 0.5;
 
@@ -939,7 +941,7 @@
                         net_salary: netSalary,
                         credit_limit: limit,
                         balance: limit,
-                        pin: hashedPin, // حفظ الرمز مشفراً حصراً
+                        pin: hashedPin,
                         status: "pending",
                         is_frozen: false
                     }]).select();
