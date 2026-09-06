@@ -136,13 +136,6 @@
 </head>
 <body>
 
-    <!-- زر المساعدة والدعم العائم المحدث باحترافية عبر الواتساب -->
-<a href="https://wa.me/9647811662140?text=مرحباً، أحتاج إلى مساعدة وادارة بخصوص منظومة كفالة مشتريات الموظفين" target="_blank" style="position: fixed; bottom: 24px; right: 24px; background: #25d366; color: white; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4); z-index: 9999; text-decoration: none; transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" title="المساعدة والدعم الفوري عبر الواتساب">
-    <svg viewBox="0 0 24 24" width="30" height="30" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="fill: white; stroke: none;">
-        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-    </svg>
-</a>
-
     <nav class="navbar">
         <div class="brand">
             <span>اتحاد الغرف التجارية | بوابة المواطن الرسمية</span>
@@ -191,7 +184,7 @@
         </div>
     </div>
 
-    <!-- نافذة المصادقة وإعادة تعيين كلمة المرور عبر الواتساب -->
+    <!-- نافذة المصادقة -->
     <div id="view-auth" class="view-panel hidden">
         <div style="display: flex; gap: 8px; margin-bottom: 16px;">
             <button id="tab-login" class="btn btn-primary" style="flex:1;" onclick="switchAuthTab('login')">تسجيل الدخول</button>
@@ -257,20 +250,16 @@
         <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
     </div>
 
-    <!-- سجل الطلبات مع محرك البحث الذكي الآمن -->
+    <!-- سجل الطلبات والبطاقة الذكية (طلب واحد مسموح) -->
     <div id="view-my-requests" class="view-panel hidden" style="max-width: 600px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
-            <h2 style="font-size: 16px; font-weight: 800;">سجل طلبات السقف الائتماني</h2>
-            <button class="btn-ctrl" onclick="showView('reg')">+ تقديم طلب جديد</button>
-        </div>
-        <div class="input-group" style="margin-bottom: 12px;">
-            <input type="text" id="search-my-requests" class="input-field" placeholder="بحث برقم الطلب أو اسم الدائرة..." oninput="filterMyRequestsLocally()">
+            <h2 style="font-size: 16px; font-weight: 800;">سجل طلبك المعتمد والبطاقة الذكية</h2>
         </div>
         <div id="my-requests-list"></div>
         <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 10px;">رجوع للرئيسية</button>
     </div>
 
-    <!-- نافذة التقديم -->
+    <!-- نافذة التقديم (تظهر حصراً إن لم يكن لديه طلب مسبق) -->
     <div id="view-reg" class="view-panel hidden">
         <h2 style="font-size: 16px; margin-bottom: 14px; text-align: center; font-weight: 800;">استمارة طلب سقف مشتريات الموظفين</h2>
         
@@ -382,7 +371,7 @@
         <button class="btn btn-secondary" onclick="showView('my-requests')" style="margin-top: 8px;">رجوع لطلباتي</button>
     </div>
 
-    <!-- دليل المتاجر مع محرك البحث الذكي الآمن -->
+    <!-- دليل المتاجر -->
     <div id="view-stores" class="view-panel hidden" style="max-width: 600px;">
         <h2 style="font-size: 16px; margin-bottom: 14px; text-align: center; font-weight: 800;">دليل المتاجر ونقاط البيع المعتمدة رسمياً</h2>
         <div class="input-group" style="margin-bottom: 12px;">
@@ -441,7 +430,6 @@
         let loginAttempts = 0;
         let lockoutUntil = 0;
 
-        let cachedRequests = [];
         let cachedStores = [];
         let generatedOtpCache = "";
 
@@ -512,7 +500,7 @@
                 document.getElementById('view-reg').classList.remove('hidden');
             }
             if (v === 'my-requests') {
-                renderMyRequests();
+                renderMySingleRequest();
                 document.getElementById('view-my-requests').classList.remove('hidden');
             }
             if (v === 'card-modal') document.getElementById('view-card-modal').classList.remove('hidden');
@@ -557,10 +545,25 @@
             }
         }
 
-        function checkAuthAndProceed(targetView) {
+        // منطق التحقق وفحص الطلب الواحد قبل السماح بالتقديم
+        async function checkAuthAndProceed(targetView) {
             if (!currentCitizen) {
                 showToast("يرجى تسجيل الدخول أو إنشاء حساب للوصول للخدمة", "error");
                 showView('auth');
+                return;
+            }
+
+            const sb = getSupabase();
+            if (targetView === 'reg') {
+                if (sb) {
+                    const { data: existingReq } = await sb.from('requests').select('*').eq('phone', currentCitizen.phone).maybeSingle();
+                    if (existingReq) {
+                        showToast("لديك طلب مسجل مسبقاً في النظام. لا يمكنك تقديم أكثر من طلب.", "error");
+                        showView('my-requests');
+                        return;
+                    }
+                }
+                showView('reg');
             } else {
                 showView(targetView);
             }
@@ -664,7 +667,7 @@
             }
         }
 
-       async function handleCitizenLogin() {
+        async function handleCitizenLogin() {
             const now = Date.now();
             if (now < lockoutUntil) {
                 const remainingSec = Math.ceil((lockoutUntil - now) / 1000);
@@ -686,9 +689,7 @@
                 if (sb) {
                     const { data: user, error } = await sb.from('citizens').select('*').eq('phone', phone).eq('password', hashedPass).maybeSingle();
                     
-                    // إذا حدث خطأ تقني من الاتصال أو قاعدة البيانات
                     if (error) {
-                        console.error("Supabase Login Error:", error);
                         showToast(`خطأ في الاتصال بقاعدة البيانات: ${error.message}`, "error");
                         return;
                     }
@@ -758,47 +759,37 @@
                         } else if (payload.new.status === 'rejected') {
                             showToast(`عذراً، تم رفض الطلب: ${payload.new.decision_note || 'عدم الاكتمال'}`, "error");
                         }
-                        renderMyRequests();
+                        renderMySingleRequest();
                     })
                     .subscribe();
             } catch(e) {}
         }
 
-        async function renderMyRequests() {
+        // عرض الطلب الوحيد للمواطن
+        async function renderMySingleRequest() {
             const container = document.getElementById('my-requests-list');
             if (!container) return;
             container.innerHTML = `<div style="text-align:center; padding:18px; color:var(--text-sub);">جاري استعلام السيرفر المركزي...</div>`;
 
             const sb = getSupabase();
             try {
+                let r = null;
                 if (sb && currentCitizen) {
-                    const { data, error } = await sb.from('requests').select('*').eq('phone', currentCitizen.phone).order('created_at', { ascending: false });
-                    if (!error && data) cachedRequests = data;
+                    const { data, error } = await sb.from('requests').select('*').eq('phone', currentCitizen.phone).maybeSingle();
+                    if (!error) r = data;
                 }
-                displayFilteredRequests(cachedRequests);
-            } catch(e) {
-                container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--rose);">خطأ في جلب بيانات السيرفر</div>`;
-            }
-        }
 
-        function displayFilteredRequests(list) {
-            const container = document.getElementById('my-requests-list');
-            if (!container) return;
-            const query = (document.getElementById('search-my-requests').value || "").toLowerCase().trim();
+                container.innerHTML = "";
+                if (!r) {
+                    container.innerHTML = `
+                        <div style="text-align:center; padding:24px; color:var(--text-sub); font-size:12px;">
+                            <p style="margin-bottom:12px;">ليس لديك أي طلب سقف ائتماني مقدم حالياً.</p>
+                            <button class="btn btn-primary" onclick="checkAuthAndProceed('reg')">تقديم طلب جديد الآن</button>
+                        </div>
+                    `;
+                    return;
+                }
 
-            const filtered = list.filter(r => {
-                const idStr = String(r.id || "").toLowerCase();
-                const deptStr = String(r.dept || "").toLowerCase();
-                return idStr.includes(query) || deptStr.includes(query);
-            });
-
-            container.innerHTML = "";
-            if (filtered.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-sub); font-size:12px;">لا توجد طلبات مطابقة للبحث.</div>`;
-                return;
-            }
-
-            filtered.forEach((r) => {
                 let statusBadge = "";
                 let actionBtn = "";
 
@@ -806,32 +797,30 @@
                     statusBadge = `<span class="req-status status-pending">قيد التدقيق المركزي</span>`;
                 } else if (r.status === 'approved') {
                     statusBadge = `<span class="req-status status-approved">معتمد رسمياً</span>`;
-                    actionBtn = `<button class="btn btn-emerald" style="padding:6px 12px; font-size:10px; margin-top:8px;" onclick="openCardView('${r.id}')">استعراض الهوية والـ QR</button>`;
+                    actionBtn = `<button class="btn btn-emerald" style="padding:8px 14px; font-size:11px; margin-top:10px;" onclick="openCardView('${r.id}')">استعراض الهوية الرقمية والـ QR Code</button>`;
                 } else if (r.status === 'rejected') {
                     statusBadge = `<span class="req-status status-rejected">مرفوض</span>`;
                 }
 
-                container.innerHTML += `
-                    <div class="req-card">
+                container.innerHTML = `
+                    <div class="req-card" style="border-color: var(--primary);">
                         <div class="req-head">
-                            <b style="font-size:12px;">طلب رقم: #${r.id}</b>
+                            <b style="font-size:13px;">الطلب الوحيد المعتمد: #${r.id}</b>
                             ${statusBadge}
                         </div>
-                        <div style="font-size:11px; color:var(--text-sub); display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                        <div style="font-size:11px; color:var(--text-sub); display:grid; grid-template-columns:1fr 1fr; gap:8px;">
                             <div>الدائرة: <b>${sanitizeInput(r.dept)}</b></div>
                             <div>صافي الراتب: <b>${(parseFloat(r.net_salary) || 0).toLocaleString()} د.ع</b></div>
                             <div>السقف الممنوح: <b>${(parseFloat(r.credit_limit) || 0).toLocaleString()} د.ع</b></div>
                             <div>الرصيد المتاح: <b style="color:var(--emerald);">${(parseFloat(r.balance) || 0).toLocaleString()} د.ع</b></div>
                         </div>
-                        ${r.decision_note ? `<div style="font-size:10px; color:var(--rose); margin-top:6px;">سبب الرفض: ${sanitizeInput(r.decision_note)}</div>` : ''}
+                        ${r.decision_note ? `<div style="font-size:10px; color:var(--rose); margin-top:8px;">سبب الرفض: ${sanitizeInput(r.decision_note)}</div>` : ''}
                         ${actionBtn}
                     </div>
                 `;
-            });
-        }
-
-        function filterMyRequestsLocally() {
-            displayFilteredRequests(cachedRequests);
+            } catch(e) {
+                container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--rose);">خطأ في جلب بيانات السيرفر</div>`;
+            }
         }
 
         async function openCardView(reqId) {
@@ -1079,6 +1068,16 @@
 
             const sb = getSupabase();
             try {
+                // فحص أخير للتأكد من عدم وجود طلب مسبق قبل الإرسال
+                if (sb) {
+                    const { data: existingReq } = await sb.from('requests').select('*').eq('phone', currentCitizen.phone).maybeSingle();
+                    if (existingReq) {
+                        showToast("عذراً، لديك طلب مسجل مسبقاً بالفعل.", "error");
+                        showView('my-requests');
+                        return;
+                    }
+                }
+
                 submitBtn.disabled = true;
                 submitBtn.innerText = "جاري التشفير والرفع الآمن للسيرفر...";
                 showToast("جاري معالجة المستندات...", "info");
@@ -1117,9 +1116,8 @@
                         status: "pending",
                         is_frozen: false
                     }]).select();
-if (error) throw error;
+                    if (error) throw error;
 
-                    // التصحيح: وضع الـ insert داخل try...catch مستقلة وآمنة تماماً
                     try {
                         await sb.from('audit_logs').insert([{
                             action_type: 'SUBMIT_REQUEST',
