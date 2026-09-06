@@ -573,7 +573,7 @@
         }
 
         // دالة تسجيل الدخول مع تفعيل حماية ضد هجمات التخمين (Rate Limiting & PIN Lockout)
-        async function handleCitizenLogin() {
+      async function handleCitizenLogin() {
             const now = Date.now();
             if (now < lockoutUntil) {
                 const remainingSec = Math.ceil((lockoutUntil - now) / 1000);
@@ -603,7 +603,7 @@
                         } else {
                             showToast(`بيانات الدخول غير صحيحة. المحاولة ${loginAttempts} من 3`, "error");
                         }
-                        // تسجيل محاولة فاشلة في تدقيق الأمان (Audit Trail Log)
+                        
                         await sb.from('audit_logs').insert([{
                             action_type: 'FAILED_LOGIN',
                             description: `محاولة دخول فاشلة لرقم الهاتف: ${phone}`,
@@ -612,11 +612,12 @@
                         return;
                     }
                     
-                    // إعادة ضبط عداد المحاولات عند النجاح
+                    // [تصحيح هام]: إعادة ضبط عداد المحاولات وتصفير وقت الحظر فوراً عند النجاح
                     loginAttempts = 0;
+                    lockoutUntil = 0;
+                    
                     currentCitizen = { name: user.name, phone: user.phone };
                     
-                    // تسجيل عملية دخول ناجحة في السجل المالي والأمني (Audit Trail)
                     await sb.from('audit_logs').insert([{
                         action_type: 'SUCCESSFUL_LOGIN',
                         description: `تم تسجيل دخول المواطن: ${user.name} (${user.phone}) بنجاح`,
@@ -624,6 +625,8 @@
                     }]).catch(()=>{});
 
                 } else {
+                    loginAttempts = 0;
+                    lockoutUntil = 0;
                     currentCitizen = { name: "مواطن معتمد", phone };
                 }
 
