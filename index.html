@@ -136,10 +136,15 @@
 </head>
 <body>
 
+    <!-- زر المساعدة والدعم العائم عبر الواتساب (استبدل الرقم برقم هاتفك بصيغة دولية) -->
+    <a href="https://wa.me/9647XXXXXXXXX?text=مرحباً، أحتاج إلى مساعدة بخصوص منظومة كفالة مشتريات الموظفين" target="_blank" style="position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 9999; text-decoration: none;" title="المساعدة والدعم عبر الواتساب">
+        💬
+    </a>
+
     <nav class="navbar">
         <div class="brand">
             <span>اتحاد الغرف التجارية | بوابة المواطن الرسمية</span>
-            <div class="live-status"><div class="pulse-dot"></div> النظام مؤمن ومشفر بالكامل (Defense in Depth)</div>
+            <div class="live-status"><div class="pulse-dot"></div> النظام مؤمن ومشفر بالكامل</div>
         </div>
         <div class="nav-actions">
             <div id="nav-user-info" class="hidden">
@@ -154,7 +159,7 @@
     <div id="view-home">
         <section class="hero">
             <h1>المنظومة الرقمية الرسمية لكفالة مشتريات الموظفين</h1>
-            <p>سقف ائتماني استهلاكي حكومي بنسبة 50% من صافي الراتب، مُدار ببروتوكول QR Code الذكي وتدقيق مركزي مباشر مع حماية أمنية مشددة ضد الاختراق والتخمين.</p>
+            <p>سقف ائتماني استهلاكي حكومي بنسبة 50% من صافي الراتب، مُدار ببروتوكول QR Code الذكي وتدقيق مركزي مباشر.</p>
         </section>
 
         <div class="grid-options">
@@ -184,32 +189,37 @@
         </div>
     </div>
 
-    <!-- نافذة المصادقة مع حماية Rate Limiting للتخمين -->
+    <!-- نافذة المصادقة وإعادة تعيين كلمة المرور عبر الواتساب -->
     <div id="view-auth" class="view-panel hidden">
         <div style="display: flex; gap: 8px; margin-bottom: 16px;">
             <button id="tab-login" class="btn btn-primary" style="flex:1;" onclick="switchAuthTab('login')">تسجيل الدخول</button>
             <button id="tab-signup" class="btn btn-secondary" style="flex:1;" onclick="switchAuthTab('signup')">إنشاء حساب جديد</button>
         </div>
 
+        <!-- نموذج تسجيل الدخول -->
         <div id="auth-login-form">
             <div class="input-group">
-                <label>رقم الهاتف الرسمي:</label>
+                <label>رقم هاتف الواتساب الرسمي:</label>
                 <input type="text" id="login-phone" class="input-field" placeholder="07XXXXXXXXX" maxlength="11">
             </div>
             <div class="input-group">
                 <label>كلمة المرور:</label>
                 <input type="password" id="login-pass" class="input-field" placeholder="كلمة المرور الآمنة">
             </div>
-            <button class="btn btn-primary" id="btn-login-action" onclick="handleCitizenLogin()">دخول للحساب</button>
+            <button class="btn btn-primary" onclick="handleCitizenLogin()">دخول للحساب</button>
+            <div style="text-align: center; margin-top: 10px;">
+                <a href="javascript:void(0);" onclick="switchAuthTab('forgot')" style="font-size: 11px; color: var(--primary); text-decoration: none; font-weight: 700;">نسيت كلمة المرور؟ استعادة عبر الواتساب</a>
+            </div>
         </div>
 
+        <!-- نموذج إنشاء حساب جديد -->
         <div id="auth-signup-form" class="hidden">
             <div class="input-group">
                 <label>الاسم الرباعي واللقب (رسمي):</label>
                 <input type="text" id="signup-name" class="input-field" placeholder="الاسم الكامل كما في المستمسكات">
             </div>
             <div class="input-group">
-                <label>رقم الهاتف (عراقي معتمد):</label>
+                <label>رقم هاتف الواتساب (عراقي معتمد):</label>
                 <input type="text" id="signup-phone" class="input-field" placeholder="07XXXXXXXXX" maxlength="11">
             </div>
             <div class="input-group">
@@ -217,6 +227,29 @@
                 <input type="password" id="signup-pass" class="input-field" placeholder="كلمة مرور معقدة">
             </div>
             <button class="btn btn-emerald" onclick="handleCitizenSignup()">إنشاء الحساب المعتمد</button>
+        </div>
+
+        <!-- نموذج استعادة وإعادة تعيين كلمة المرور عبر الواتساب -->
+        <div id="auth-forgot-form" class="hidden">
+            <h3 style="font-size: 13px; font-weight: 800; margin-bottom: 10px; text-align: center; color: var(--amber);">استعادة كلمة المرور عبر الواتساب</h3>
+            <div class="input-group">
+                <label>رقم هاتف الواتساب المسجل:</label>
+                <input type="text" id="forgot-phone" class="input-field" placeholder="07XXXXXXXXX" maxlength="11">
+            </div>
+            <button class="btn btn-primary" onclick="requestWhatsAppOtp()">إرسال رمز OTP عبر الواتساب</button>
+            
+            <div id="otp-verify-section" class="hidden" style="margin-top: 14px; border-top: 1px solid var(--border); padding-top: 10px;">
+                <div class="input-group">
+                    <label>أدخل رمز التحقق (OTP) المُرسل:</label>
+                    <input type="text" id="forgot-otp-input" class="input-field" placeholder="أدخل الأرقام هنا" maxlength="4">
+                </div>
+                <div class="input-group">
+                    <label>كلمة المرور الجديدة:</label>
+                    <input type="password" id="new-pass-input" class="input-field" placeholder="كلمة المرور الجديدة">
+                </div>
+                <button class="btn btn-emerald" onclick="verifyAndResetPassword()">تأكيد وتغيير كلمة المرور</button>
+            </div>
+            <button class="btn btn-secondary" onclick="switchAuthTab('login')" style="margin-top: 8px;">العودة لتسجيل الدخول</button>
         </div>
 
         <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
@@ -403,13 +436,12 @@
         let otpInterval = null;
         let realtimeChannel = null;
 
-        // متغيرات الحماية ضد التخمين (Rate Limiting & Lockout محلياً وفي الجلسة)
         let loginAttempts = 0;
         let lockoutUntil = 0;
 
-        // متغيرات التخزين المؤقت للبحث الذكي الآمن
         let cachedRequests = [];
         let cachedStores = [];
+        let generatedOtpCache = "";
 
         async function hashPin(pin) {
             try {
@@ -505,16 +537,21 @@
         }
 
         function switchAuthTab(tab) {
+            document.getElementById('auth-login-form').classList.add('hidden');
+            document.getElementById('auth-signup-form').classList.add('hidden');
+            document.getElementById('auth-forgot-form').classList.add('hidden');
+            
+            document.getElementById('tab-login').className = "btn btn-secondary";
+            document.getElementById('tab-signup').className = "btn btn-secondary";
+
             if (tab === 'login') {
                 document.getElementById('auth-login-form').classList.remove('hidden');
-                document.getElementById('auth-signup-form').classList.add('hidden');
                 document.getElementById('tab-login').className = "btn btn-primary";
-                document.getElementById('tab-signup').className = "btn btn-secondary";
-            } else {
-                document.getElementById('auth-login-form').classList.add('hidden');
+            } else if (tab === 'signup') {
                 document.getElementById('auth-signup-form').classList.remove('hidden');
-                document.getElementById('tab-login').className = "btn btn-secondary";
                 document.getElementById('tab-signup').className = "btn btn-primary";
+            } else if (tab === 'forgot') {
+                document.getElementById('auth-forgot-form').classList.remove('hidden');
             }
         }
 
@@ -524,6 +561,59 @@
                 showView('auth');
             } else {
                 showView(targetView);
+            }
+        }
+
+        async function requestWhatsAppOtp() {
+            const phone = sanitizeInput(document.getElementById('forgot-phone').value);
+            if (!validateIraqiPhone(phone)) {
+                showToast("يرجى إدخال رقم هاتف واتساب صحيح ومعتمد", "error");
+                return;
+            }
+
+            const sb = getSupabase();
+            if (sb) {
+                const { data: user } = await sb.from('citizens').select('*').eq('phone', phone).maybeSingle();
+                if (!user) {
+                    showToast("رقم الهاتف غير مسجل في النظام", "error");
+                    return;
+                }
+            }
+
+            generatedOtpCache = String(Math.floor(1000 + Math.random() * 9000));
+            const message = encodeURIComponent(`مرحباً بك في منظومة كفالة مشتريات الموظفين (اتحاد الغرف التجارية).\nرمز التحقق (OTP) لإعادة تعيين كلمة المرور هو: *${generatedOtpCache}*`);
+            const waLink = `https://wa.me/964${phone.substring(1)}?text=${message}`;
+            
+            window.open(waLink, '_blank');
+            document.getElementById('otp-verify-section').classList.remove('hidden');
+            showToast("تم فتح نافذة الواتساب لإرسال رمز التحقق", "success");
+        }
+
+        async function verifyAndResetPassword() {
+            const phone = sanitizeInput(document.getElementById('forgot-phone').value);
+            const enteredOtp = document.getElementById('forgot-otp-input').value.trim();
+            const newPass = document.getElementById('new-pass-input').value;
+
+            if (enteredOtp !== generatedOtpCache) {
+                showToast("رمز التحقق (OTP) غير صحيح", "error");
+                return;
+            }
+            if (!newPass || newPass.length < 6) {
+                showToast("كلمة المرور الجديدة يجب ألا تقل عن 6 خانات", "error");
+                return;
+            }
+
+            const sb = getSupabase();
+            try {
+                const hashedPass = await hashPin(newPass);
+                if (sb) {
+                    const { error } = await sb.from('citizens').update({ password: hashedPass }).eq('phone', phone);
+                    if (error) throw error;
+                }
+                showToast("تم تغيير كلمة المرور بنجاح، يمكنك تسجيل الدخول الآن", "success");
+                switchAuthTab('login');
+            } catch(e) {
+                showToast(`فشل تغيير كلمة المرور: ${e.message}`, "error");
             }
         }
 
@@ -538,7 +628,7 @@
             }
 
             if (!validateIraqiPhone(phone)) {
-                showToast("رقم الهاتف غير مطابق للصيغة العراقية المعتمدة", "error");
+                showToast("رقم الواتساب غير مطابق للصيغة العراقية المعتمدة", "error");
                 return;
             }
 
@@ -572,12 +662,11 @@
             }
         }
 
-        // دالة تسجيل الدخول مع تفعيل حماية ضد هجمات التخمين (Rate Limiting & PIN Lockout)
-      async function handleCitizenLogin() {
+        async function handleCitizenLogin() {
             const now = Date.now();
             if (now < lockoutUntil) {
                 const remainingSec = Math.ceil((lockoutUntil - now) / 1000);
-                showToast(`تم حظر المحاولات مؤقتاً بسبب التخمين المتكرر. يرجى الانتظار ${remainingSec} ثانية.`, "error");
+                showToast(`تم حظر المحاولات مؤقتاً بسبب التخمين. يرجى الانتظار ${remainingSec} ثانية.`, "error");
                 return;
             }
 
@@ -585,7 +674,7 @@
             const pass = document.getElementById('login-pass').value;
 
             if (!phone || !pass) {
-                showToast("يرجى إدخال رقم الهاتف وكلمة المرور", "error");
+                showToast("يرجى إدخال رقم الواتساب وكلمة المرور", "error");
                 return;
             }
 
@@ -597,13 +686,12 @@
                     if (error || !user) {
                         loginAttempts++;
                         if (loginAttempts >= 3) {
-                            lockoutUntil = Date.now() + 30000; // حظر مؤقت لمدة 30 ثانية
+                            lockoutUntil = Date.now() + 30000;
                             loginAttempts = 0;
-                            showToast("تم إدخال بيانات خاطئة 3 مرات متتالية. تم حظر المحاولات مؤقتاً لمدة 30 ثانية.", "error");
+                            showToast("تم إدخال بيانات خاطئة 3 مرات. تم حظر المحاولات مؤقتاً لمدة 30 ثانية.", "error");
                         } else {
                             showToast(`بيانات الدخول غير صحيحة. المحاولة ${loginAttempts} من 3`, "error");
                         }
-                        
                         await sb.from('audit_logs').insert([{
                             action_type: 'FAILED_LOGIN',
                             description: `محاولة دخول فاشلة لرقم الهاتف: ${phone}`,
@@ -612,10 +700,8 @@
                         return;
                     }
                     
-                    // [تصحيح هام]: إعادة ضبط عداد المحاولات وتصفير وقت الحظر فوراً عند النجاح
                     loginAttempts = 0;
                     lockoutUntil = 0;
-                    
                     currentCitizen = { name: user.name, phone: user.phone };
                     
                     await sb.from('audit_logs').insert([{
@@ -696,7 +782,6 @@
             }
         }
 
-        // عرض الطلبات مع تطبيق فلتر البحث الذكي الآمن محلياً
         function displayFilteredRequests(list) {
             const container = document.getElementById('my-requests-list');
             if (!container) return;
@@ -845,7 +930,6 @@
             }
         }
 
-        // عرض المتاجر مع تطبيق محرك البحث الذكي الآمن
         function displayFilteredStores(stores) {
             const container = document.getElementById('stores-directory-list');
             if (!container) return;
@@ -1037,7 +1121,6 @@
 
                     if (error) throw error;
 
-                    // تسجيل حركة إضافية في جدول سجلات التدقيق (Audit Trail Log) لتوثيق تقديم الطلب رسمياً
                     await sb.from('audit_logs').insert([{
                         action_type: 'SUBMIT_REQUEST',
                         description: `قام المواطن ${currentCitizen.name} بتقديم طلب سقف ائتماني برقم #${data[0].id}`,
