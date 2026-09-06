@@ -139,7 +139,7 @@
     <nav class="navbar">
         <div class="brand">
             <span>اتحاد الغرف التجارية | بوابة المواطن الرسمية</span>
-            <div class="live-status"><div class="pulse-dot"></div> النظام مؤمن ومشفر بالكامل</div>
+            <div class="live-status"><div class="pulse-dot"></div> النظام مؤمن ومشفر بالكامل (Defense in Depth)</div>
         </div>
         <div class="nav-actions">
             <div id="nav-user-info" class="hidden">
@@ -154,7 +154,7 @@
     <div id="view-home">
         <section class="hero">
             <h1>المنظومة الرقمية الرسمية لكفالة مشتريات الموظفين</h1>
-            <p>سقف ائتماني استهلاكي حكومي بنسبة 50% من صافي الراتب، مُدار ببروتوكول QR Code الذكي وتدقيق مركزي مباشر.</p>
+            <p>سقف ائتماني استهلاكي حكومي بنسبة 50% من صافي الراتب، مُدار ببروتوكول QR Code الذكي وتدقيق مركزي مباشر مع حماية أمنية مشددة ضد الاختراق والتخمين.</p>
         </section>
 
         <div class="grid-options">
@@ -184,7 +184,7 @@
         </div>
     </div>
 
-    <!-- نافذة المصادقة -->
+    <!-- نافذة المصادقة مع حماية Rate Limiting للتخمين -->
     <div id="view-auth" class="view-panel hidden">
         <div style="display: flex; gap: 8px; margin-bottom: 16px;">
             <button id="tab-login" class="btn btn-primary" style="flex:1;" onclick="switchAuthTab('login')">تسجيل الدخول</button>
@@ -200,7 +200,7 @@
                 <label>كلمة المرور:</label>
                 <input type="password" id="login-pass" class="input-field" placeholder="كلمة المرور الآمنة">
             </div>
-            <button class="btn btn-primary" onclick="handleCitizenLogin()">دخول للحساب</button>
+            <button class="btn btn-primary" id="btn-login-action" onclick="handleCitizenLogin()">دخول للحساب</button>
         </div>
 
         <div id="auth-signup-form" class="hidden">
@@ -222,11 +222,14 @@
         <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
     </div>
 
-    <!-- سجل الطلبات -->
+    <!-- سجل الطلبات مع محرك البحث الذكي الآمن -->
     <div id="view-my-requests" class="view-panel hidden" style="max-width: 600px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
             <h2 style="font-size: 16px; font-weight: 800;">سجل طلبات السقف الائتماني</h2>
             <button class="btn-ctrl" onclick="showView('reg')">+ تقديم طلب جديد</button>
+        </div>
+        <div class="input-group" style="margin-bottom: 12px;">
+            <input type="text" id="search-my-requests" class="input-field" placeholder="بحث برقم الطلب أو اسم الدائرة..." oninput="filterMyRequestsLocally()">
         </div>
         <div id="my-requests-list"></div>
         <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 10px;">رجوع للرئيسية</button>
@@ -344,9 +347,12 @@
         <button class="btn btn-secondary" onclick="showView('my-requests')" style="margin-top: 8px;">رجوع لطلباتي</button>
     </div>
 
-    <!-- دليل المتاجر -->
+    <!-- دليل المتاجر مع محرك البحث الذكي الآمن -->
     <div id="view-stores" class="view-panel hidden" style="max-width: 600px;">
         <h2 style="font-size: 16px; margin-bottom: 14px; text-align: center; font-weight: 800;">دليل المتاجر ونقاط البيع المعتمدة رسمياً</h2>
+        <div class="input-group" style="margin-bottom: 12px;">
+            <input type="text" id="search-stores" class="input-field" placeholder="بحث باسم المتجر أو العنوان أو النشاط..." oninput="filterStoresLocally()">
+        </div>
         <div id="stores-directory-list"></div>
         <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
     </div>
@@ -397,6 +403,14 @@
         let otpInterval = null;
         let realtimeChannel = null;
 
+        // متغيرات الحماية ضد التخمين (Rate Limiting & Lockout محلياً وفي الجلسة)
+        let loginAttempts = 0;
+        let lockoutUntil = 0;
+
+        // متغيرات التخزين المؤقت للبحث الذكي الآمن
+        let cachedRequests = [];
+        let cachedStores = [];
+
         async function hashPin(pin) {
             try {
                 const msgBuffer = new TextEncoder().encode(pin);
@@ -404,7 +418,7 @@
                 const hashArray = Array.from(new Uint8Array(hashBuffer));
                 return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
             } catch(e) {
-                return pin; // Fallback
+                return pin; 
             }
         }
 
@@ -558,7 +572,15 @@
             }
         }
 
+        // دالة تسجيل الدخول مع تفعيل حماية ضد هجمات التخمين (Rate Limiting & PIN Lockout)
         async function handleCitizenLogin() {
+            const now = Date.now();
+            if (now < lockoutUntil) {
+                const remainingSec = Math.ceil((lockoutUntil - now) / 1000);
+                showToast(`تم حظر المحاولات مؤقتاً بسبب التخمين المتكرر. يرجى الانتظار ${remainingSec} ثانية.`, "error");
+                return;
+            }
+
             const phone = sanitizeInput(document.getElementById('login-phone').value);
             const pass = document.getElementById('login-pass').value;
 
@@ -573,10 +595,34 @@
                 if (sb) {
                     const { data: user, error } = await sb.from('citizens').select('*').eq('phone', phone).eq('password', hashedPass).maybeSingle();
                     if (error || !user) {
-                        showToast("بيانات الدخول غير صحيحة", "error");
+                        loginAttempts++;
+                        if (loginAttempts >= 3) {
+                            lockoutUntil = Date.now() + 30000; // حظر مؤقت لمدة 30 ثانية
+                            loginAttempts = 0;
+                            showToast("تم إدخال بيانات خاطئة 3 مرات متتالية. تم حظر المحاولات مؤقتاً لمدة 30 ثانية.", "error");
+                        } else {
+                            showToast(`بيانات الدخول غير صحيحة. المحاولة ${loginAttempts} من 3`, "error");
+                        }
+                        // تسجيل محاولة فاشلة في تدقيق الأمان (Audit Trail Log)
+                        await sb.from('audit_logs').insert([{
+                            action_type: 'FAILED_LOGIN',
+                            description: `محاولة دخول فاشلة لرقم الهاتف: ${phone}`,
+                            created_at: new Date().toISOString()
+                        }]).catch(()=>{});
                         return;
                     }
+                    
+                    // إعادة ضبط عداد المحاولات عند النجاح
+                    loginAttempts = 0;
                     currentCitizen = { name: user.name, phone: user.phone };
+                    
+                    // تسجيل عملية دخول ناجحة في السجل المالي والأمني (Audit Trail)
+                    await sb.from('audit_logs').insert([{
+                        action_type: 'SUCCESSFUL_LOGIN',
+                        description: `تم تسجيل دخول المواطن: ${user.name} (${user.phone}) بنجاح`,
+                        created_at: new Date().toISOString()
+                    }]).catch(()=>{});
+
                 } else {
                     currentCitizen = { name: "مواطن معتمد", phone };
                 }
@@ -637,51 +683,68 @@
 
             const sb = getSupabase();
             try {
-                let myReqs = [];
                 if (sb && currentCitizen) {
                     const { data, error } = await sb.from('requests').select('*').eq('phone', currentCitizen.phone).order('created_at', { ascending: false });
-                    if (!error && data) myReqs = data;
+                    if (!error && data) cachedRequests = data;
                 }
-
-                container.innerHTML = "";
-                if (myReqs.length === 0) {
-                    container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-sub); font-size:12px;">لا توجد طلبات مسجلة. اضغط (+ تقديم طلب جديد).</div>`;
-                    return;
-                }
-
-                myReqs.forEach((r) => {
-                    let statusBadge = "";
-                    let actionBtn = "";
-
-                    if (r.status === 'pending') {
-                        statusBadge = `<span class="req-status status-pending">قيد التدقيق المركزي</span>`;
-                    } else if (r.status === 'approved') {
-                        statusBadge = `<span class="req-status status-approved">معتمد رسمياً</span>`;
-                        actionBtn = `<button class="btn btn-emerald" style="padding:6px 12px; font-size:10px; margin-top:8px;" onclick="openCardView('${r.id}')">استعراض الهوية والـ QR</button>`;
-                    } else if (r.status === 'rejected') {
-                        statusBadge = `<span class="req-status status-rejected">مرفوض</span>`;
-                    }
-
-                    container.innerHTML += `
-                        <div class="req-card">
-                            <div class="req-head">
-                                <b style="font-size:12px;">طلب رقم: #${r.id}</b>
-                                ${statusBadge}
-                            </div>
-                            <div style="font-size:11px; color:var(--text-sub); display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-                                <div>الدائرة: <b>${sanitizeInput(r.dept)}</b></div>
-                                <div>صافي الراتب: <b>${(parseFloat(r.net_salary) || 0).toLocaleString()} د.ع</b></div>
-                                <div>السقف الممنوح: <b>${(parseFloat(r.credit_limit) || 0).toLocaleString()} د.ع</b></div>
-                                <div>الرصيد المتاح: <b style="color:var(--emerald);">${(parseFloat(r.balance) || 0).toLocaleString()} د.ع</b></div>
-                            </div>
-                            ${r.decision_note ? `<div style="font-size:10px; color:var(--rose); margin-top:6px;">سبب الرفض: ${sanitizeInput(r.decision_note)}</div>` : ''}
-                            ${actionBtn}
-                        </div>
-                    `;
-                });
+                displayFilteredRequests(cachedRequests);
             } catch(e) {
                 container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--rose);">خطأ في جلب بيانات السيرفر</div>`;
             }
+        }
+
+        // عرض الطلبات مع تطبيق فلتر البحث الذكي الآمن محلياً
+        function displayFilteredRequests(list) {
+            const container = document.getElementById('my-requests-list');
+            if (!container) return;
+            const query = (document.getElementById('search-my-requests').value || "").toLowerCase().trim();
+
+            const filtered = list.filter(r => {
+                const idStr = String(r.id || "").toLowerCase();
+                const deptStr = String(r.dept || "").toLowerCase();
+                return idStr.includes(query) || deptStr.includes(query);
+            });
+
+            container.innerHTML = "";
+            if (filtered.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-sub); font-size:12px;">لا توجد طلبات مطابقة للبحث.</div>`;
+                return;
+            }
+
+            filtered.forEach((r) => {
+                let statusBadge = "";
+                let actionBtn = "";
+
+                if (r.status === 'pending') {
+                    statusBadge = `<span class="req-status status-pending">قيد التدقيق المركزي</span>`;
+                } else if (r.status === 'approved') {
+                    statusBadge = `<span class="req-status status-approved">معتمد رسمياً</span>`;
+                    actionBtn = `<button class="btn btn-emerald" style="padding:6px 12px; font-size:10px; margin-top:8px;" onclick="openCardView('${r.id}')">استعراض الهوية والـ QR</button>`;
+                } else if (r.status === 'rejected') {
+                    statusBadge = `<span class="req-status status-rejected">مرفوض</span>`;
+                }
+
+                container.innerHTML += `
+                    <div class="req-card">
+                        <div class="req-head">
+                            <b style="font-size:12px;">طلب رقم: #${r.id}</b>
+                            ${statusBadge}
+                        </div>
+                        <div style="font-size:11px; color:var(--text-sub); display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                            <div>الدائرة: <b>${sanitizeInput(r.dept)}</b></div>
+                            <div>صافي الراتب: <b>${(parseFloat(r.net_salary) || 0).toLocaleString()} د.ع</b></div>
+                            <div>السقف الممنوح: <b>${(parseFloat(r.credit_limit) || 0).toLocaleString()} د.ع</b></div>
+                            <div>الرصيد المتاح: <b style="color:var(--emerald);">${(parseFloat(r.balance) || 0).toLocaleString()} د.ع</b></div>
+                        </div>
+                        ${r.decision_note ? `<div style="font-size:10px; color:var(--rose); margin-top:6px;">سبب الرفض: ${sanitizeInput(r.decision_note)}</div>` : ''}
+                        ${actionBtn}
+                    </div>
+                `;
+            });
+        }
+
+        function filterMyRequestsLocally() {
+            displayFilteredRequests(cachedRequests);
         }
 
         async function openCardView(reqId) {
@@ -774,24 +837,46 @@
             const sb = getSupabase();
             if (sb) {
                 const { data: stores } = await sb.from('stores').select('*').order('created_at', { ascending: false });
-                container.innerHTML = "";
-                if (!stores || stores.length === 0) {
-                    container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub); font-size:12px;">لا توجد متاجر مسجلة حالياً.</div>`;
-                    return;
-                }
-                stores.forEach(st => {
-                    container.innerHTML += `
-                        <div class="req-card">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                                <b style="font-size:13px; color:var(--primary);">${sanitizeInput(st.name)}</b>
-                                <span style="font-size:10px; color:var(--emerald); font-weight:700;">معتمد رسمياً</span>
-                            </div>
-                            <div style="font-size:11px; color:var(--text-sub);">العنوان: ${sanitizeInput(st.address || 'غير محدد')}</div>
-                            <div style="font-size:10px; color:var(--text-sub); margin-top:2px;">النشاط: ${sanitizeInput(st.products || 'مواد استهلاكية عامة')}</div>
-                        </div>
-                    `;
-                });
+                if (stores) cachedStores = stores;
+                displayFilteredStores(cachedStores);
             }
+        }
+
+        // عرض المتاجر مع تطبيق محرك البحث الذكي الآمن
+        function displayFilteredStores(stores) {
+            const container = document.getElementById('stores-directory-list');
+            if (!container) return;
+            const query = (document.getElementById('search-stores').value || "").toLowerCase().trim();
+
+            const filtered = stores.filter(st => {
+                const nameStr = String(st.name || "").toLowerCase();
+                const addrStr = String(st.address || "").toLowerCase();
+                const prodStr = String(st.products || "").toLowerCase();
+                return nameStr.includes(query) || addrStr.includes(query) || prodStr.includes(query);
+            });
+
+            container.innerHTML = "";
+            if (filtered.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub); font-size:12px;">لا توجد متاجر مطابقة للبحث.</div>`;
+                return;
+            }
+
+            filtered.forEach(st => {
+                container.innerHTML += `
+                    <div class="req-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <b style="font-size:13px; color:var(--primary);">${sanitizeInput(st.name)}</b>
+                            <span style="font-size:10px; color:var(--emerald); font-weight:700;">معتمد رسمياً</span>
+                        </div>
+                        <div style="font-size:11px; color:var(--text-sub);">العنوان: ${sanitizeInput(st.address || 'غير محدد')}</div>
+                        <div style="font-size:10px; color:var(--text-sub); margin-top:2px;">النشاط: ${sanitizeInput(st.products || 'مواد استهلاكية عامة')}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterStoresLocally() {
+            displayFilteredStores(cachedStores);
         }
 
         function downloadSmartCard() {
@@ -948,6 +1033,14 @@
                     }]).select();
 
                     if (error) throw error;
+
+                    // تسجيل حركة إضافية في جدول سجلات التدقيق (Audit Trail Log) لتوثيق تقديم الطلب رسمياً
+                    await sb.from('audit_logs').insert([{
+                        action_type: 'SUBMIT_REQUEST',
+                        description: `قام المواطن ${currentCitizen.name} بتقديم طلب سقف ائتماني برقم #${data[0].id}`,
+                        created_at: new Date().toISOString()
+                    }]).catch(()=>{});
+
                     showToast(`تم إرسال الطلب #${data[0].id} بنجاح للتدقيق`, "success");
                 }
 
