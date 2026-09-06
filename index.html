@@ -662,11 +662,11 @@
             }
         }
 
-        async function handleCitizenLogin() {
+       async function handleCitizenLogin() {
             const now = Date.now();
             if (now < lockoutUntil) {
                 const remainingSec = Math.ceil((lockoutUntil - now) / 1000);
-                showToast(`تم حظر المحاولات مؤقتاً بسبب التخمين. يرجى الانتظار ${remainingSec} ثانية.`, "error");
+                showToast(`تم حظر المحاولات مؤقتاً. يرجى الانتظار ${remainingSec} ثانية.`, "error");
                 return;
             }
 
@@ -683,32 +683,29 @@
                 const hashedPass = await hashPin(pass);
                 if (sb) {
                     const { data: user, error } = await sb.from('citizens').select('*').eq('phone', phone).eq('password', hashedPass).maybeSingle();
-                    if (error || !user) {
+                    
+                    // إذا حدث خطأ تقني من الاتصال أو قاعدة البيانات
+                    if (error) {
+                        console.error("Supabase Login Error:", error);
+                        showToast(`خطأ في الاتصال بقاعدة البيانات: ${error.message}`, "error");
+                        return;
+                    }
+
+                    if (!user) {
                         loginAttempts++;
                         if (loginAttempts >= 3) {
                             lockoutUntil = Date.now() + 30000;
                             loginAttempts = 0;
-                            showToast("تم إدخال بيانات خاطئة 3 مرات. تم حظر المحاولات مؤقتاً لمدة 30 ثانية.", "error");
+                            showToast("تم إدخال بيانات خاطئة 3 مرات. تم حظر المحاولات لـ 30 ثانية.", "error");
                         } else {
                             showToast(`بيانات الدخول غير صحيحة. المحاولة ${loginAttempts} من 3`, "error");
                         }
-                        await sb.from('audit_logs').insert([{
-                            action_type: 'FAILED_LOGIN',
-                            description: `محاولة دخول فاشلة لرقم الهاتف: ${phone}`,
-                            created_at: new Date().toISOString()
-                        }]).catch(()=>{});
                         return;
                     }
                     
                     loginAttempts = 0;
                     lockoutUntil = 0;
                     currentCitizen = { name: user.name, phone: user.phone };
-                    
-                    await sb.from('audit_logs').insert([{
-                        action_type: 'SUCCESSFUL_LOGIN',
-                        description: `تم تسجيل دخول المواطن: ${user.name} (${user.phone}) بنجاح`,
-                        created_at: new Date().toISOString()
-                    }]).catch(()=>{});
 
                 } else {
                     loginAttempts = 0;
@@ -723,7 +720,7 @@
                 showToast(`أهلاً بك، ${currentCitizen.name}`, "success");
                 showView('my-requests');
             } catch(e) {
-                showToast("تعذر اتمام تسجيل الدخول", "error");
+                showToast(`فشل تسجيل الدخول: ${e.message}`, "error");
             }
         }
 
