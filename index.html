@@ -1117,15 +1117,18 @@
                         status: "pending",
                         is_frozen: false
                     }]).select();
+if (error) throw error;
 
-                    if (error) throw error;
-
-                    await sb.from('audit_logs').insert([{
-                        action_type: 'SUBMIT_REQUEST',
-                        description: `قام المواطن ${currentCitizen.name} بتقديم طلب سقف ائتماني برقم #${data[0].id}`,
-                        created_at: new Date().toISOString()
-                    }]).catch(()=>{});
-
+                    // التصحيح: وضع الـ insert داخل try...catch مستقلة وآمنة تماماً
+                    try {
+                        await sb.from('audit_logs').insert([{
+                            action_type: 'SUBMIT_REQUEST',
+                            description: `قام المواطن ${currentCitizen.name} بتقديم طلب سقف ائتماني برقم #${data[0].id}`,
+                            created_at: new Date().toISOString()
+                        }]);
+                    } catch (logErr) {
+                        console.warn("Audit log notice:", logErr);
+                    }
                     showToast(`تم إرسال الطلب #${data[0].id} بنجاح للتدقيق`, "success");
                 }
 
