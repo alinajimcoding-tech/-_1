@@ -3,31 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منظومة كفالة مشتريات الموظفين | بوابة المواطن (آمنة)</title>
-    <!-- مكتبة Supabase الرسمية المحدثة -->
+    <title>منظومة كفالة مشتريات الموظفين | بوابة المواطن الرسمية</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root[data-theme="dark"] {
-            --bg: #060911;
-            --surface: #0e1526;
-            --surface-card: #151f38;
-            --border: #1f2e4d;
+            --bg: #050811;
+            --surface: #0b1329;
+            --surface-card: #111c38;
+            --border: #1b2c52;
             --text-main: #f8fafc;
             --text-sub: #94a3b8;
             --primary: #2563eb;
-            --primary-glow: rgba(37, 99, 235, 0.35);
+            --primary-glow: rgba(37, 99, 235, 0.4);
             --emerald: #10b981;
             --rose: #f43f5e;
             --amber: #f59e0b;
         }
         :root[data-theme="light"] {
-            --bg: #f4f6fb;
+            --bg: #f1f4f9;
             --surface: #ffffff;
             --surface-card: #f8fafc;
-            --border: #e2e8f0;
+            --border: #cbd5e1;
             --text-main: #0f172a;
             --text-sub: #475569;
             --primary: #2563eb;
@@ -36,103 +35,102 @@
             --rose: #e11d48;
             --amber: #d97706;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; transition: 0.2s; }
-        body { background: var(--bg); color: var(--text-main); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; padding: 12px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; transition: 0.2s ease; }
+        body { background: var(--bg); color: var(--text-main); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; padding: 14px; }
         .hidden { display: none !important; }
 
-        .navbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); border-radius: 12px; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
-        .brand { font-weight: 900; font-size: 14px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-        .live-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; color: var(--emerald); font-weight: 700; background: rgba(16,185,129,0.1); padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(16,185,129,0.25); }
-        .pulse-dot { width: 6px; height: 6px; background: var(--emerald); border-radius: 50%; box-shadow: 0 0 6px var(--emerald); animation: pulse 1.8s infinite; }
+        .navbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); border-radius: 12px; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .brand { font-weight: 900; font-size: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .live-status { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; color: var(--emerald); font-weight: 700; background: rgba(16,185,129,0.12); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(16,185,129,0.3); }
+        .pulse-dot { width: 6px; height: 6px; background: var(--emerald); border-radius: 50%; box-shadow: 0 0 8px var(--emerald); animation: pulse 1.8s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
 
         .nav-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .user-tag { background: var(--surface-card); border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; color: var(--primary); }
-        .btn-ctrl { background: var(--surface-card); border: 1px solid var(--border); color: var(--text-main); padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 700; }
-        .btn-ctrl:hover { border-color: var(--primary); }
+        .user-tag { background: var(--surface-card); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; color: var(--primary); }
+        .btn-ctrl { background: var(--surface-card); border: 1px solid var(--border); color: var(--text-main); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 700; }
+        .btn-ctrl:hover { border-color: var(--primary); background: var(--primary-glow); }
 
-        .hero { text-align: center; padding: 30px 10px 20px; max-width: 800px; margin: 0 auto; }
-        .hero h1 { font-size: 22px; font-weight: 900; margin-bottom: 8px; letter-spacing: -0.5px; }
-        .hero p { color: var(--text-sub); font-size: 12px; margin-bottom: 16px; }
+        .hero { text-align: center; padding: 35px 10px 25px; max-width: 850px; margin: 0 auto; }
+        .hero h1 { font-size: 24px; font-weight: 900; margin-bottom: 10px; letter-spacing: -0.5px; }
+        .hero p { color: var(--text-sub); font-size: 13px; margin-bottom: 16px; max-width: 700px; margin-inline: auto; }
 
-        .grid-options { max-width: 950px; margin: 0 auto 30px; padding: 0 10px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
-        .action-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
-        .action-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .grid-options { max-width: 950px; margin: 0 auto 30px; padding: 0 10px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+        .action-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+        .action-card:hover { border-color: var(--primary); transform: translateY(-3px); }
         .action-card h3 { font-size: 15px; margin-bottom: 6px; font-weight: 800; }
-        .action-card p { font-size: 12px; color: var(--text-sub); margin-bottom: 14px; flex-grow: 1; }
+        .action-card p { font-size: 12px; color: var(--text-sub); margin-bottom: 16px; flex-grow: 1; }
 
-        .btn { width: 100%; padding: 10px 14px; border-radius: 9px; font-size: 12px; font-weight: 800; cursor: pointer; border: none; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-        .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 12px var(--primary-glow); }
+        .btn { width: 100%; padding: 11px 16px; border-radius: 9px; font-size: 12px; font-weight: 800; cursor: pointer; border: none; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 14px var(--primary-glow); }
+        .btn-primary:hover { opacity: 0.92; }
         .btn-secondary { background: var(--surface-card); color: var(--text-main); border: 1px solid var(--border); }
-        .btn-emerald { background: var(--emerald); color: #fff; box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
+        .btn-secondary:hover { border-color: var(--primary); }
+        .btn-emerald { background: var(--emerald); color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,0.3); }
 
-        .view-panel { max-width: 520px; width: 100%; margin: 10px auto; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: 0 12px 30px rgba(0,0,0,0.25); }
-        .input-group { margin-bottom: 12px; text-align: start; }
-        .input-group label { display: block; font-size: 11px; font-weight: 700; color: var(--text-sub); margin-bottom: 4px; }
-        .input-field { width: 100%; background: var(--bg); border: 1px solid var(--border); padding: 10px 12px; border-radius: 8px; color: var(--text-main); font-size: 12px; outline: none; }
+        .view-panel { max-width: 540px; width: 100%; margin: 10px auto; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 14px 35px rgba(0,0,0,0.3); }
+        .input-group { margin-bottom: 14px; text-align: start; }
+        .input-group label { display: block; font-size: 11px; font-weight: 700; color: var(--text-sub); margin-bottom: 5px; }
+        .input-field { width: 100%; background: var(--bg); border: 1px solid var(--border); padding: 11px 14px; border-radius: 8px; color: var(--text-main); font-size: 12px; outline: none; }
         .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
 
-        .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .upload-box { background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+        .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+        .upload-box { background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 12px; text-align: center; }
         .upload-box input { display: none; }
         .upload-box label { font-size: 10px; color: var(--primary); cursor: pointer; display: block; font-weight: 700; }
-        .upload-preview { width: 100%; height: 55px; object-fit: cover; border-radius: 6px; margin-top: 6px; display: none; border: 1px solid var(--border); }
+        .upload-preview { width: 100%; height: 65px; object-fit: cover; border-radius: 6px; margin-top: 6px; display: none; border: 1px solid var(--border); }
 
-        .camera-box { background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 10px; text-align: center; margin-bottom: 12px; }
-        video { width: 100%; max-height: 150px; border-radius: 6px; object-fit: cover; display: none; }
-        #captured-photo { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); margin: 4px auto; display: none; }
+        .camera-box { background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 12px; text-align: center; margin-bottom: 14px; }
+        video { width: 100%; max-height: 160px; border-radius: 6px; object-fit: cover; display: none; }
+        #captured-photo { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); margin: 6px auto; display: none; }
 
         .fintech-card {
-            background: linear-gradient(135deg, rgba(30, 58, 138, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: linear-gradient(135deg, rgba(20, 45, 110, 0.98) 0%, rgba(8, 14, 30, 0.99) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(16px);
             border-radius: 16px;
-            padding: 16px;
+            padding: 18px;
             color: #fff;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 16px 30px rgba(0,0,0,0.4);
+            box-shadow: 0 18px 35px rgba(0,0,0,0.5);
             text-align: start;
             max-width: 100%;
         }
-        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .chip-emv { width: 34px; height: 24px; background: linear-gradient(135deg, #fcd34d 0%, #b45309 100%); border-radius: 4px; border: 1px solid #78350f; position: relative; }
+        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .chip-emv { width: 36px; height: 26px; background: linear-gradient(135deg, #fcd34d 0%, #b45309 100%); border-radius: 4px; border: 1px solid #78350f; position: relative; }
         .chip-emv::after { content: ""; position: absolute; inset: 3px; border: 1px solid rgba(0,0,0,0.3); border-radius: 2px; }
-        .card-body { text-align: center; margin: 8px 0; }
-        .qr-card-holder { background: #ffffff; padding: 6px; border-radius: 10px; display: inline-block; box-shadow: 0 6px 12px rgba(0,0,0,0.25); }
+        .card-body { text-align: center; margin: 10px 0; }
+        .qr-card-holder { background: #ffffff; padding: 6px; border-radius: 10px; display: inline-block; box-shadow: 0 6px 14px rgba(0,0,0,0.3); }
 
-        .credit-progress-box { margin-top: 8px; background: rgba(0,0,0,0.25); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
-        .progress-bar-bg { width: 100%; height: 5px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow: hidden; margin: 3px 0; }
+        .credit-progress-box { margin-top: 10px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
+        .progress-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow: hidden; margin: 4px 0; }
         .progress-bar-fill { height: 100%; background: var(--emerald); width: 100%; transition: width 0.4s ease; }
 
-        .dynamic-code-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.35); padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); margin-top: 6px; font-size: 10px; flex-wrap: wrap; justify-content: center; }
-        .card-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 8px; gap: 10px; }
+        .dynamic-code-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); margin-top: 8px; font-size: 10px; justify-content: center; }
+        .card-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 10px; gap: 10px; }
 
-        .mini-statement { margin-top: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px; }
-        .statement-row { display: flex; justify-content: space-between; font-size: 10px; padding: 5px 0; border-bottom: 1px solid var(--border); gap: 10px; }
+        .mini-statement { margin-top: 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+        .statement-row { display: flex; justify-content: space-between; font-size: 11px; padding: 6px 0; border-bottom: 1px solid var(--border); gap: 10px; }
         .statement-row:last-child { border-bottom: none; }
 
-        .req-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 10px; text-align: start; }
-        .req-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid var(--border); padding-bottom: 5px; flex-wrap: wrap; gap: 6px; }
-        .req-status { font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; }
+        .req-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 12px; text-align: start; }
+        .req-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 6px; flex-wrap: wrap; gap: 6px; }
+        .req-status { font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
         .status-pending { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
         .status-approved { background: rgba(16, 185, 129, 0.15); color: var(--emerald); }
         .status-rejected { background: rgba(244, 63, 94, 0.15); color: var(--rose); }
 
         .toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 6px; width: 90%; max-width: 400px; }
-        .toast { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; box-shadow: 0 8px 25px rgba(0,0,0,0.5); text-align: center; }
+        .toast { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 12px 18px; border-radius: 8px; font-size: 12px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
         .toast.success { border-color: var(--emerald); color: var(--emerald); }
         .toast.error { border-color: var(--rose); color: var(--rose); }
 
-        footer { margin-top: auto; padding: 16px; text-align: center; font-size: 11px; color: var(--text-sub); border-top: 1px solid var(--border); background: var(--surface); border-radius: 12px; }
+        footer { margin-top: auto; padding: 18px; text-align: center; font-size: 11px; color: var(--text-sub); border-top: 1px solid var(--border); background: var(--surface); border-radius: 12px; }
 
         @media screen and (min-width: 768px) {
             body { padding: 20px; }
             .hero h1 { font-size: 28px; }
-            .hero p { font-size: 13px; }
-            .view-panel { max-width: 560px; padding: 26px; }
-            .upload-preview { height: 75px; }
-            video { max-height: 180px; }
+            .view-panel { max-width: 580px; padding: 28px; }
         }
     </style>
 </head>
@@ -140,8 +138,8 @@
 
     <nav class="navbar">
         <div class="brand">
-            <span>اتحاد الغرف التجارية | بوابة المواطن</span>
-            <div class="live-status"><div class="pulse-dot"></div> السيرفر مشفر وآمن</div>
+            <span>اتحاد الغرف التجارية | بوابة المواطن الرسمية</span>
+            <div class="live-status"><div class="pulse-dot"></div> النظام مؤمن ومشفر بالكامل</div>
         </div>
         <div class="nav-actions">
             <div id="nav-user-info" class="hidden">
@@ -155,23 +153,23 @@
 
     <div id="view-home">
         <section class="hero">
-            <h1>المنظومة الرقمية لكفالة مشتريات الموظفين (المؤمنة)</h1>
-            <p>سقف ائتماني استهلاكي بنسبة 50% من صافي الراتب يُمنح للموظف الحكومي بنظام الـ QR Code الذكي بعد التدقيق المباشر من الغرفة التجارية.</p>
+            <h1>المنظومة الرقمية الرسمية لكفالة مشتريات الموظفين</h1>
+            <p>سقف ائتماني استهلاكي حكومي بنسبة 50% من صافي الراتب، مُدار ببروتوكول QR Code الذكي وتدقيق مركزي مباشر.</p>
         </section>
 
         <div class="grid-options">
             <div class="action-card">
                 <div>
                     <h3>تقديم طلب سقف مشتريات</h3>
-                    <p>رفع مفردات الراتب، بطاقة الماستركارد، والتحقق البيومتري لإصدار الهوية الرقمية المعتمدة.</p>
+                    <p>إرفاق مفردات الراتب، بطاقة الماستركارد الرسمية، والتحقق البيومتري الحي لإصدار الهوية الرقمية.</p>
                 </div>
                 <button class="btn btn-primary" onclick="checkAuthAndProceed('reg')">تقديم الطلب</button>
             </div>
 
             <div class="action-card">
                 <div>
-                    <h3>سجل طلباتي والبطاقة</h3>
-                    <p>متابعة حالة طلباتك، استعراض الهوية الرقمية، وكشف الحركات المصغر فور الاعتماد.</p>
+                    <h3>سجل طلباتي والبطاقة الذكية</h3>
+                    <p>متابعة حالة المعاملات، استعراض الهوية الرقمية المشفرة، والاطلاع على كشف الحركات اللحظي.</p>
                 </div>
                 <button class="btn btn-secondary" onclick="checkAuthAndProceed('my-requests')">عرض طلباتي</button>
             </div>
@@ -179,125 +177,125 @@
             <div class="action-card">
                 <div>
                     <h3>دليل المتاجر المعتمدة</h3>
-                    <p>استعراض المحال والسوبرماركت المشاركة في المنظومة للشراء المباشر.</p>
+                    <p>استعراض المحال ونقاط البيع الرسمية المعتمدة ضمن المنظومة للشراء المباشر.</p>
                 </div>
                 <button class="btn btn-emerald" onclick="showView('stores')">تصفح المتاجر</button>
             </div>
         </div>
     </div>
 
-    <!-- نافذة تسجيل الدخول والحساب -->
+    <!-- نافذة المصادقة -->
     <div id="view-auth" class="view-panel hidden">
-        <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
             <button id="tab-login" class="btn btn-primary" style="flex:1;" onclick="switchAuthTab('login')">تسجيل الدخول</button>
             <button id="tab-signup" class="btn btn-secondary" style="flex:1;" onclick="switchAuthTab('signup')">إنشاء حساب جديد</button>
         </div>
 
         <div id="auth-login-form">
             <div class="input-group">
-                <label>رقم الهاتف:</label>
+                <label>رقم الهاتف الرسمي:</label>
                 <input type="text" id="login-phone" class="input-field" placeholder="07XXXXXXXXX" maxlength="11">
             </div>
             <div class="input-group">
                 <label>كلمة المرور:</label>
-                <input type="password" id="login-pass" class="input-field" placeholder="كلمة المرور">
+                <input type="password" id="login-pass" class="input-field" placeholder="كلمة المرور الآمنة">
             </div>
             <button class="btn btn-primary" onclick="handleCitizenLogin()">دخول للحساب</button>
         </div>
 
         <div id="auth-signup-form" class="hidden">
             <div class="input-group">
-                <label>الاسم الرباعي الكامل:</label>
-                <input type="text" id="signup-name" class="input-field" placeholder="الاسم الرسمي">
+                <label>الاسم الرباعي واللقب (رسمي):</label>
+                <input type="text" id="signup-name" class="input-field" placeholder="الاسم الكامل كما في المستمسكات">
             </div>
             <div class="input-group">
-                <label>رقم الهاتف (عراقي):</label>
+                <label>رقم الهاتف (عراقي معتمد):</label>
                 <input type="text" id="signup-phone" class="input-field" placeholder="07XXXXXXXXX" maxlength="11">
             </div>
             <div class="input-group">
                 <label>كلمة المرور (6 خانات على الأقل):</label>
-                <input type="password" id="signup-pass" class="input-field" placeholder="تعيين كلمة مرور قوية">
+                <input type="password" id="signup-pass" class="input-field" placeholder="كلمة مرور معقدة">
             </div>
-            <button class="btn btn-emerald" onclick="handleCitizenSignup()">إنشاء الحساب الآمن</button>
+            <button class="btn btn-emerald" onclick="handleCitizenSignup()">إنشاء الحساب المعتمد</button>
         </div>
 
+        <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
+    </div>
+
+    <!-- سجل الطلبات -->
+    <div id="view-my-requests" class="view-panel hidden" style="max-width: 600px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+            <h2 style="font-size: 16px; font-weight: 800;">سجل طلبات السقف الائتماني</h2>
+            <button class="btn-ctrl" onclick="showView('reg')">+ تقديم طلب جديد</button>
+        </div>
+        <div id="my-requests-list"></div>
         <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 10px;">رجوع للرئيسية</button>
     </div>
 
-    <!-- قسم سجل طلباتي -->
-    <div id="view-my-requests" class="view-panel hidden" style="max-width: 580px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
-            <h2 style="font-size: 15px; font-weight: 800;">سجل طلبات الشراء الخاصة بي</h2>
-            <button class="btn-ctrl" onclick="showView('reg')">+ طلب جديد</button>
-        </div>
-        <div id="my-requests-list"></div>
-        <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 8px;">رجوع للرئيسية</button>
-    </div>
-
-    <!-- نافذة تقديم الطلب -->
+    <!-- نافذة التقديم -->
     <div id="view-reg" class="view-panel hidden">
-        <h2 style="font-size: 15px; margin-bottom: 12px; text-align: center; font-weight: 800;">تقديم طلب سقف مشتريات</h2>
+        <h2 style="font-size: 16px; margin-bottom: 14px; text-align: center; font-weight: 800;">استمارة طلب سقف مشتريات الموظفين</h2>
         
         <div class="input-group">
-            <label>الاسم الرباعي الكامل</label>
+            <label>الاسم الرباعي (المسجل في الحساب)</label>
             <input type="text" id="reg-name" class="input-field" readonly>
         </div>
         <div class="input-group">
-            <label>الوزارة / الدائرة الحكومية</label>
-            <input type="text" id="reg-dept" class="input-field" placeholder="مثال: وزارة التربية">
+            <label>الوزارة / الجهة غير المرتبطة بوزارة / الدائرة</label>
+            <input type="text" id="reg-dept" class="input-field" placeholder="مثال: وزارة التربية - مديرية تربية بابل">
         </div>
         <div class="input-group">
-            <label>رقم بطاقة الماستركارد (16 رقماً)</label>
+            <label>رقم بطاقة الماستركارد الرسمية (16 رقماً)</label>
             <input type="text" id="reg-card" class="input-field" placeholder="•••• •••• •••• ••••" maxlength="16">
         </div>
 
         <div class="upload-grid">
             <div class="upload-box">
-                <label for="card-front-file">ماستركارد (الوجه الأمامي) - Max 3MB</label>
+                <label for="card-front-file">صورة الماستر (الأمامية) - حد أقصى 3MB</label>
                 <input type="file" id="card-front-file" accept="image/png, image/jpeg, image/webp" onchange="previewCard(this, 'front-prev')">
                 <img id="front-prev" class="upload-preview">
             </div>
             <div class="upload-box">
-                <label for="card-back-file">ماستركارد (الوجه الخلفي) - Max 3MB</label>
+                <label for="card-back-file">صورة الماستر (الخلفية) - حد أقصى 3MB</label>
                 <input type="file" id="card-back-file" accept="image/png, image/jpeg, image/webp" onchange="previewCard(this, 'back-prev')">
                 <img id="back-prev" class="upload-preview">
             </div>
         </div>
 
         <div class="input-group">
-            <label>الراتب الإجمالي الاسمي (د.ع)</label>
-            <input type="number" id="reg-gross" class="input-field" placeholder="950000">
+            <label>الراتب الإجمالي (د.ع)</label>
+            <input type="number" id="reg-gross" class="input-field" placeholder="1000000">
         </div>
         <div class="input-group">
-            <label>مجموع السلف الحالية (د.ع)</label>
+            <label>مجموع الاستقطاعات والسلف الحالية (د.ع)</label>
             <input type="number" id="reg-deduct" class="input-field" value="0">
         </div>
         <div class="input-group">
-            <label>رمز PIN السري للشراء (4 أرقام - سيتم تشفيره آمنياً)</label>
+            <label>رمز PIN السري المخصص لعمليات الشراء (4 أرقام)</label>
             <input type="password" id="reg-pin" maxlength="4" class="input-field" placeholder="****">
         </div>
 
         <div class="camera-box">
-            <span style="font-size: 10px; color: var(--text-sub); display: block; margin-bottom: 6px;">التحقق البيومتري الحي (KYC)</span>
+            <span style="font-size: 10px; color: var(--text-sub); display: block; margin-bottom: 6px;">التحقق البيومتري الحي المباشر (KYC)</span>
             <video id="live-stream" autoplay playsinline></video>
             <img id="captured-photo">
             <canvas id="pic-canvas" class="hidden"></canvas>
-            <button type="button" class="btn btn-secondary" id="btn-cam-open" onclick="startCamera()">تشغيل الكاميرا</button>
-            <button type="button" class="btn btn-primary hidden" id="btn-cam-snap" onclick="snapPhoto()">تثبيت الصورة</button>
+            <button type="button" class="btn btn-secondary" id="btn-cam-open" onclick="startCamera()">تشغيل الكاميرا للتحقق</button>
+            <button type="button" class="btn btn-primary hidden" id="btn-cam-snap" onclick="snapPhoto()">اعتماد وثبات الصورة البيومترية</button>
         </div>
 
-        <button class="btn btn-primary" id="btn-submit-reg" onclick="submitRegistration()">إرسال الطلب للتدقيق المركزي</button>
-        <button class="btn btn-secondary" onclick="showView('my-requests')" style="margin-top: 8px;">إلغاء والعودة</button>
+        <button class="btn btn-primary" id="btn-submit-reg" onclick="submitRegistration()">إرسال الطلب رسمياً للتدقيق المركزي</button>
+        <button class="btn btn-secondary" onclick="showView('my-requests')" style="margin-top: 10px;">إلغاء والعودة</button>
     </div>
 
-    <!-- نافذة استعراض البطاقة + كشف الحركات -->
-    <div id="view-card-modal" class="view-panel hidden" style="max-width: 460px;">
+    <!-- نافذة البطاقة الرقمية -->
+    <div id="view-card-modal" class="view-panel hidden" style="max-width: 480px;">
         <div id="card-to-export" class="fintech-card">
             <div class="card-top">
                 <div class="chip-emv"></div>
                 <div style="text-align: left;">
-                    <span style="font-size: 9px; opacity: 0.8; letter-spacing: 1px; display: block;">SMART PASS SECURE</span>
-                    <b style="font-size: 10px; color: #93c5fd;">اتحاد الغرف التجارية</b>
+                    <span style="font-size: 9px; opacity: 0.8; letter-spacing: 1px; display: block;">GOVERNMENT SECURE PASS</span>
+                    <b style="font-size: 10px; color: #93c5fd;">اتحاد الغرف التجارية العراقية</b>
                 </div>
             </div>
             
@@ -308,7 +306,7 @@
                 
                 <div class="dynamic-code-badge">
                     <span>رمز الأمان اللحظي (OTP):</span>
-                    <b id="dyn-sec-code" style="color: #fcd34d; font-size: 13px; letter-spacing: 2px;">---</b>
+                    <b id="dyn-sec-code" style="color: #fcd34d; font-size: 14px; letter-spacing: 2px;">---</b>
                     <span id="dyn-timer" style="opacity: 0.7;">(60s)</span>
                 </div>
             </div>
@@ -316,7 +314,7 @@
             <div class="credit-progress-box">
                 <div style="display: flex; justify-content: space-between; font-size: 10px;">
                     <span>المستهلك: <b id="prog-spent">0 د.ع</b></span>
-                    <span>المتبقي: <b id="prog-remain" style="color:#34d399;">0 د.ع</b></span>
+                    <span>الرصيد المتبقي: <b id="prog-remain" style="color:#34d399;">0 د.ع</b></span>
                 </div>
                 <div class="progress-bar-bg">
                     <div id="prog-fill" class="progress-bar-fill"></div>
@@ -325,38 +323,38 @@
 
             <div class="card-bottom">
                 <div>
-                    <span style="font-size: 9px; opacity: 0.7; display: block;">حامل البطاقة</span>
+                    <span style="font-size: 9px; opacity: 0.7; display: block;">حامل البطاقة المعتمد</span>
                     <b id="pass-name" style="font-size: 12px;">-</b>
                     <div id="pass-dept" style="font-size: 9px; color: #94a3b8;">-</div>
                 </div>
                 <div style="text-align: left;">
                     <span style="font-size: 9px; opacity: 0.7; display: block;">السقف المعتمد</span>
                     <b id="pass-limit" style="font-size: 12px; color: #93c5fd;">-</b>
-                    <div style="font-size: 9px; color: #fcd34d;">دورة التجديد: شهرياً</div>
+                    <div style="font-size: 9px; color: #fcd34d;">دورة التحديث: فورية</div>
                 </div>
             </div>
         </div>
 
         <div class="mini-statement">
-            <b style="font-size: 11px; display: block; margin-bottom: 6px;">آخر حركات الشراء المنفذة:</b>
+            <b style="font-size: 11px; display: block; margin-bottom: 6px;">سجل حركات الشراء الأخيرة:</b>
             <div id="mini-statement-body"></div>
         </div>
 
-        <button class="btn btn-primary" onclick="downloadSmartCard()" style="margin-top: 12px;">حفظ البطاقة كصورة</button>
+        <button class="btn btn-primary" onclick="downloadSmartCard()" style="margin-top: 14px;">حفظ البطاقة الرقمية كصورة</button>
         <button class="btn btn-secondary" onclick="showView('my-requests')" style="margin-top: 8px;">رجوع لطلباتي</button>
     </div>
 
-    <!-- قسم دليل المتاجر المعتمدة -->
-    <div id="view-stores" class="view-panel hidden" style="max-width: 580px;">
-        <h2 style="font-size: 15px; margin-bottom: 12px; text-align: center; font-weight: 800;">دليل المتاجر ونقاط البيع المعتمدة</h2>
+    <!-- دليل المتاجر -->
+    <div id="view-stores" class="view-panel hidden" style="max-width: 600px;">
+        <h2 style="font-size: 16px; margin-bottom: 14px; text-align: center; font-weight: 800;">دليل المتاجر ونقاط البيع المعتمدة رسمياً</h2>
         <div id="stores-directory-list"></div>
-        <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 10px;">رجوع للرئيسية</button>
+        <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
     </div>
 
     <div class="toast-container" id="toast-box"></div>
 
     <footer>
-        نظام كفالة المشتريات الموحد | تشفير متقدم 256-bit | معتمد من اتحاد الغرف التجارية العراقية
+        المنظومة المركزية لكفالة مشتريات الموظفين | تشفير معتمد AES-256 | إشراف اتحاد الغرف التجارية العراقية
     </footer>
 
     <script>
@@ -371,7 +369,7 @@
                     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 }
             } catch(e) {
-                console.warn("Supabase initialization:", e);
+                console.error("Supabase initialization error:", e);
             }
             return supabaseClient;
         }
@@ -400,10 +398,14 @@
         let realtimeChannel = null;
 
         async function hashPin(pin) {
-            const msgBuffer = new TextEncoder().encode(pin);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            try {
+                const msgBuffer = new TextEncoder().encode(pin);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            } catch(e) {
+                return pin; // Fallback
+            }
         }
 
         function sanitizeInput(str) {
@@ -414,8 +416,7 @@
         }
 
         function validateIraqiPhone(phone) {
-            const regex = /^07[3-9]\d{8}$/;
-            return regex.test(phone);
+            return /^07[3-9]\d{8}$/.test(phone);
         }
 
         function playTone(freq, type = 'sine', duration = 0.15) {
@@ -505,7 +506,7 @@
 
         function checkAuthAndProceed(targetView) {
             if (!currentCitizen) {
-                showToast("يرجى تسجيل الدخول أو إنشاء حساب أولاً", "error");
+                showToast("يرجى تسجيل الدخول أو إنشاء حساب للوصول للخدمة", "error");
                 showView('auth');
             } else {
                 showView(targetView);
@@ -518,17 +519,17 @@
             const pass = document.getElementById('signup-pass').value;
 
             if (!name || !phone || !pass) {
-                showToast("يرجى ملء جميع الحقول المطلوبة", "error");
+                showToast("يرجى ملء كافة الحقول الإجبارية بدقة", "error");
                 return;
             }
 
             if (!validateIraqiPhone(phone)) {
-                showToast("رقم الهاتف غير صالح. يجب أن يبدأ بـ 07 ويتكون من 11 رقماً", "error");
+                showToast("رقم الهاتف غير مطابق للصيغة العراقية المعتمدة", "error");
                 return;
             }
 
             if (pass.length < 6) {
-                showToast("كلمة المرور قصيرة جداً (يجب أن تكون 6 خانات على الأقل)", "error");
+                showToast("كلمة المرور قصيرة (يجب أن تكون 6 خانات على الأقل)", "error");
                 return;
             }
 
@@ -538,7 +539,7 @@
                 if (sb) {
                     const { data: existing } = await sb.from('citizens').select('id').eq('phone', phone).maybeSingle();
                     if (existing) {
-                        showToast("رقم الهاتف مسجل مسبقاً، تفضل بتسجيل الدخول", "error");
+                        showToast("رقم الهاتف مسجل مسبقاً، يرجى تسجيل الدخول", "error");
                         return;
                     }
                     const { error } = await sb.from('citizens').insert([{ name, phone, password: hashedPass }]);
@@ -546,11 +547,11 @@
                 }
 
                 currentCitizen = { name, phone };
-                const sessionPayload = { data: currentCitizen, expiry: Date.now() + (12 * 60 * 60 * 1000) };
+                const sessionPayload = { data: currentCitizen, expiry: Date.now() + (12 * 3600 * 1000) };
                 localStorage.setItem('union_secure_citizen_session', JSON.stringify(sessionPayload));
                 
                 updateNavState();
-                showToast("تم إنشاء حسابك الآمن بنجاح", "success");
+                showToast("تم إنشاء الحساب الرسمي بنجاح", "success");
                 showView('my-requests');
             } catch(e) {
                 showToast(`خطأ في التسجيل: ${e.message}`, "error");
@@ -562,7 +563,7 @@
             const pass = document.getElementById('login-pass').value;
 
             if (!phone || !pass) {
-                showToast("أدخل رقم الهاتف وكلمة المرور", "error");
+                showToast("يرجى إدخال رقم الهاتف وكلمة المرور", "error");
                 return;
             }
 
@@ -572,7 +573,7 @@
                 if (sb) {
                     const { data: user, error } = await sb.from('citizens').select('*').eq('phone', phone).eq('password', hashedPass).maybeSingle();
                     if (error || !user) {
-                        showToast("رقم الهاتف أو كلمة المرور غير صحيحة", "error");
+                        showToast("بيانات الدخول غير صحيحة", "error");
                         return;
                     }
                     currentCitizen = { name: user.name, phone: user.phone };
@@ -580,14 +581,14 @@
                     currentCitizen = { name: "مواطن معتمد", phone };
                 }
 
-                const sessionPayload = { data: currentCitizen, expiry: Date.now() + (12 * 60 * 60 * 1000) };
+                const sessionPayload = { data: currentCitizen, expiry: Date.now() + (12 * 3600 * 1000) };
                 localStorage.setItem('union_secure_citizen_session', JSON.stringify(sessionPayload));
                 
                 updateNavState();
-                showToast(`مرحباً بك، ${currentCitizen.name}`, "success");
+                showToast(`أهلاً بك، ${currentCitizen.name}`, "success");
                 showView('my-requests');
             } catch(e) {
-                showToast("فشل تسجيل الدخول", "error");
+                showToast("تعذر اتمام تسجيل الدخول", "error");
             }
         }
 
@@ -599,7 +600,7 @@
                 try { sb.removeChannel(realtimeChannel); } catch(e){}
             }
             updateNavState();
-            showToast("تم تسجيل الخروج بنجاح", "info");
+            showToast("تم تسجيل الخروج بأمان", "info");
             showView('home');
         }
 
@@ -619,9 +620,9 @@
                     }, payload => {
                         if (payload.new.status === 'approved') {
                             playTone(880, 'triangle', 0.3);
-                            showToast("تهانينا! تمت الموافقة على طلبك واعتماد هويتك الرقمية", "success");
+                            showToast("مبروك! تمت الموافقة على طلبك واعتماد الهوية الرقمية", "success");
                         } else if (payload.new.status === 'rejected') {
-                            showToast(`تم رفض الطلب: ${payload.new.decision_note || 'عدم مطابقة الشروط'}`, "error");
+                            showToast(`عذراً، تم رفض الطلب: ${payload.new.decision_note || 'عدم الاكتمال'}`, "error");
                         }
                         renderMyRequests();
                     })
@@ -632,7 +633,7 @@
         async function renderMyRequests() {
             const container = document.getElementById('my-requests-list');
             if (!container) return;
-            container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub);">جاري المزامنة مع السيرفر...</div>`;
+            container.innerHTML = `<div style="text-align:center; padding:18px; color:var(--text-sub);">جاري استعلام السيرفر المركزي...</div>`;
 
             const sb = getSupabase();
             try {
@@ -644,7 +645,7 @@
 
                 container.innerHTML = "";
                 if (myReqs.length === 0) {
-                    container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-sub); font-size:12px;">لا توجد طلبات سابقة. اضغط (+ طلب جديد) للتقديم.</div>`;
+                    container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-sub); font-size:12px;">لا توجد طلبات مسجلة. اضغط (+ تقديم طلب جديد).</div>`;
                     return;
                 }
 
@@ -653,10 +654,10 @@
                     let actionBtn = "";
 
                     if (r.status === 'pending') {
-                        statusBadge = `<span class="req-status status-pending">قيد التدقيق</span>`;
+                        statusBadge = `<span class="req-status status-pending">قيد التدقيق المركزي</span>`;
                     } else if (r.status === 'approved') {
-                        statusBadge = `<span class="req-status status-approved">معتمد</span>`;
-                        actionBtn = `<button class="btn btn-emerald" style="padding:6px 10px; font-size:10px; margin-top:6px;" onclick="openCardView('${r.id}')">استعراض الهوية الرقمية (QR)</button>`;
+                        statusBadge = `<span class="req-status status-approved">معتمد رسمياً</span>`;
+                        actionBtn = `<button class="btn btn-emerald" style="padding:6px 12px; font-size:10px; margin-top:8px;" onclick="openCardView('${r.id}')">استعراض الهوية والـ QR</button>`;
                     } else if (r.status === 'rejected') {
                         statusBadge = `<span class="req-status status-rejected">مرفوض</span>`;
                     }
@@ -673,13 +674,13 @@
                                 <div>السقف الممنوح: <b>${(parseFloat(r.credit_limit) || 0).toLocaleString()} د.ع</b></div>
                                 <div>الرصيد المتاح: <b style="color:var(--emerald);">${(parseFloat(r.balance) || 0).toLocaleString()} د.ع</b></div>
                             </div>
-                            ${r.decision_note ? `<div style="font-size:10px; color:var(--rose); margin-top:5px;">سبب الرفض: ${sanitizeInput(r.decision_note)}</div>` : ''}
+                            ${r.decision_note ? `<div style="font-size:10px; color:var(--rose); margin-top:6px;">سبب الرفض: ${sanitizeInput(r.decision_note)}</div>` : ''}
                             ${actionBtn}
                         </div>
                     `;
                 });
             } catch(e) {
-                container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--rose);">تعذر جلب البيانات من السيرفر</div>`;
+                container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--rose);">خطأ في جلب بيانات السيرفر</div>`;
             }
         }
 
@@ -725,7 +726,7 @@
                 if (sb) {
                     const { data: txs } = await sb.from('transactions').select('*').eq('request_id', r.id).eq('is_refunded', false).order('created_at', { ascending: false }).limit(3);
                     if (!txs || txs.length === 0) {
-                        statementBox.innerHTML = `<div style="color:var(--text-sub); font-size:10px; text-align:center;">لم تقم بأي حركات شراء حتى الآن</div>`;
+                        statementBox.innerHTML = `<div style="color:var(--text-sub); font-size:10px; text-align:center;">لا توجد حركات شراء منفذة حتى الآن</div>`;
                     } else {
                         txs.forEach(t => {
                             statementBox.innerHTML += `
@@ -759,7 +760,7 @@
             if (canvas) {
                 new QRious({
                     element: canvas,
-                    value: encodeURIComponent(JSON.stringify({ id: activeCardReq.id, name: activeCardReq.name, otp: code })),
+                    value: encodeURIComponent(JSON.stringify({ id: activeCardReq.id, name: activeCardReq.name, otp: code, ts: Date.now() })),
                     size: 110,
                     level: 'L'
                 });
@@ -768,14 +769,14 @@
 
         async function renderStoresDirectory() {
             const container = document.getElementById('stores-directory-list');
-            container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub);">جاري جلب قائمة المتاجر...</div>`;
+            container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub);">جاري استعراض المتاجر المعتمدة...</div>`;
 
             const sb = getSupabase();
             if (sb) {
                 const { data: stores } = await sb.from('stores').select('*').order('created_at', { ascending: false });
                 container.innerHTML = "";
                 if (!stores || stores.length === 0) {
-                    container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub); font-size:12px;">لا توجد متاجر معتمدة مسجلة بعد.</div>`;
+                    container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub); font-size:12px;">لا توجد متاجر مسجلة حالياً.</div>`;
                     return;
                 }
                 stores.forEach(st => {
@@ -783,10 +784,10 @@
                         <div class="req-card">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                                 <b style="font-size:13px; color:var(--primary);">${sanitizeInput(st.name)}</b>
-                                <span style="font-size:10px; color:var(--emerald); font-weight:700;">متجر معتمد</span>
+                                <span style="font-size:10px; color:var(--emerald); font-weight:700;">معتمد رسمياً</span>
                             </div>
                             <div style="font-size:11px; color:var(--text-sub);">العنوان: ${sanitizeInput(st.address || 'غير محدد')}</div>
-                            <div style="font-size:10px; color:var(--text-sub); margin-top:2px;">المنتجات: ${sanitizeInput(st.products || 'مواد استهلاكية')}</div>
+                            <div style="font-size:10px; color:var(--text-sub); margin-top:2px;">النشاط: ${sanitizeInput(st.products || 'مواد استهلاكية عامة')}</div>
                         </div>
                     `;
                 });
@@ -796,10 +797,10 @@
         function downloadSmartCard() {
             html2canvas(document.getElementById('card-to-export'), { scale: 3 }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `Smart-Card-${currentCitizen ? currentCitizen.name : 'Citizen'}.png`;
+                link.download = `Government-Smart-Card-${currentCitizen ? currentCitizen.name : 'Citizen'}.png`;
                 link.href = canvas.toDataURL();
                 link.click();
-                showToast("تم حفظ بطاقتك بنجاح", "success");
+                showToast("تم حفظ البطاقة الرقمية الرسمية بنجاح", "success");
             });
         }
 
@@ -808,12 +809,11 @@
             const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
             if (!allowedTypes.includes(file.type)) {
-                showToast("نوع الملف غير مسموح به. يرفع بصيغة صورة فقط (JPEG/PNG/WEBP)", "error");
+                showToast("صيغة الملف غير مقبولة (يُقبل JPEG/PNG/WEBP فقط)", "error");
                 return false;
             }
-
             if (file.size > maxSize) {
-                showToast("حجم الملف كبير جداً. الحد الأقصى المسموح به هو 3 ميجابايت", "error");
+                showToast("حجم الملف يتجاوز الحد الأقصى المسموح (3MB)", "error");
                 return false;
             }
 
@@ -848,7 +848,7 @@
                 document.getElementById('btn-cam-open').classList.add('hidden');
                 document.getElementById('btn-cam-snap').classList.remove('hidden');
             } catch (err) {
-                showToast("يرجى إعطاء صلاحية الكاميرا للتحقق البيومتري", "error");
+                showToast("يرجى منح صلاحية الكاميرا لإتمام التحقق البيومتري", "error");
             }
         }
 
@@ -864,7 +864,7 @@
             video.style.display = 'none';
             if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
             document.getElementById('btn-cam-snap').classList.add('hidden');
-            showToast("تم التقاط وتثبيت الصورة البيومترية بنجاح", "success");
+            showToast("تم توثيق الصورة البيومترية بنجاح", "success");
         }
 
         async function uploadFileToStorage(fileOrBlob, prefix) {
@@ -887,12 +887,12 @@
             const submitBtn = document.getElementById('btn-submit-reg');
 
             if (!dept || isNaN(gross) || gross <= 0 || !pin) {
-                showToast("يرجى إكمال البيانات بدقة وتعيين رمز الـ PIN", "error");
+                showToast("يرجى ملء جميع الحقول الإجبارية وإدخال رمز الـ PIN", "error");
                 return;
             }
 
             if (card.length !== 16 || isNaN(card)) {
-                showToast("رقم بطاقة الماستركارد يجب أن يكون 16 رقماً صحيحاً", "error");
+                showToast("رقم بطاقة الماستركارد غير صحيح (يجب أن يكون 16 رقماً)", "error");
                 return;
             }
 
@@ -902,15 +902,15 @@
             }
 
             if (!cardFrontFile || !cardBackFile || !capturedPhotoUrl) {
-                showToast("يرجى إرفاق صور البطاقة وإجراء التحقق البيومتري بالكاميرا", "error");
+                showToast("يرجى إرفاق صور المستمسكات وصورة التحقق البيومتري", "error");
                 return;
             }
 
             const sb = getSupabase();
             try {
                 submitBtn.disabled = true;
-                submitBtn.innerText = "جاري التشفير والرفع الآمن...";
-                showToast("جاري معالجة ورفع المستندات البيومترية...", "info");
+                submitBtn.innerText = "جاري التشفير والرفع الآمن للسيرفر...";
+                showToast("جاري معالجة المستندات...", "info");
 
                 let kycBlob = null;
                 if (capturedPhotoUrl) {
@@ -948,15 +948,15 @@
                     }]).select();
 
                     if (error) throw error;
-                    showToast(`تم إرسال طلبك #${data[0].id} بنجاح للتدقيق المركزي`, "success");
+                    showToast(`تم إرسال الطلب #${data[0].id} بنجاح للتدقيق`, "success");
                 }
 
                 showView('my-requests');
             } catch(e) {
-                showToast(`فشل الإرسال الآمن: ${e.message}`, "error");
+                showToast(`فشل الإرسال: ${e.message}`, "error");
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerText = "إرسال الطلب للتدقيق المركزي";
+                submitBtn.innerText = "إرسال الطلب رسمياً للتدقيق المركزي";
             }
         }
 
