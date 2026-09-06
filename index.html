@@ -3,394 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منظومة كفالة مشتريات الموظفين | بوابة المواطن الرسمية</title>
+    <title>الإدارة المركزية | اتحاد الغرف التجارية (الآمنة)</title>
+    <!-- مكتبة Supabase الرسمية -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
-        :root[data-theme="dark"] {
-            --bg: #050811;
-            --surface: #0b1329;
-            --surface-card: #111c38;
-            --border: #1b2c52;
+        :root {
+            --bg: #060911;
+            --surface: #0e1526;
+            --surface-card: #151f38;
+            --border: #1f2e4d;
             --text-main: #f8fafc;
             --text-sub: #94a3b8;
             --primary: #2563eb;
-            --primary-glow: rgba(37, 99, 235, 0.4);
             --emerald: #10b981;
             --rose: #f43f5e;
             --amber: #f59e0b;
         }
-        :root[data-theme="light"] {
-            --bg: #f1f4f9;
-            --surface: #ffffff;
-            --surface-card: #f8fafc;
-            --border: #cbd5e1;
-            --text-main: #0f172a;
-            --text-sub: #475569;
-            --primary: #2563eb;
-            --primary-glow: rgba(37, 99, 235, 0.2);
-            --emerald: #059669;
-            --rose: #e11d48;
-            --amber: #d97706;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; transition: 0.2s ease; }
-        body { background: var(--bg); color: var(--text-main); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; padding: 14px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; transition: 0.2s; }
+        body { background: var(--bg); color: var(--text-main); line-height: 1.5; padding: 12px; min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column; }
         .hidden { display: none !important; }
 
-        .navbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); border-radius: 12px; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-        .brand { font-weight: 900; font-size: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .live-status { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; color: var(--emerald); font-weight: 700; background: rgba(16,185,129,0.12); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(16,185,129,0.3); }
-        .pulse-dot { width: 6px; height: 6px; background: var(--emerald); border-radius: 50%; box-shadow: 0 0 8px var(--emerald); animation: pulse 1.8s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
+        .login-box { max-width: 400px; width: 100%; margin: 60px auto; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-align: center; box-shadow: 0 16px 36px rgba(0,0,0,0.4); }
+        .input-ctrl { width: 100%; padding: 10px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); font-size: 12px; margin-bottom: 12px; outline: none; }
+        .input-ctrl:focus { border-color: var(--primary); }
+        .btn-main { width: 100%; padding: 11px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 800; cursor: pointer; }
 
-        .nav-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .user-tag { background: var(--surface-card); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; color: var(--primary); }
-        .btn-ctrl { background: var(--surface-card); border: 1px solid var(--border); color: var(--text-main); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 700; }
-        .btn-ctrl:hover { border-color: var(--primary); background: var(--primary-glow); }
+        .admin-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--surface); border-radius: 12px; flex-wrap: wrap; gap: 10px; }
+        .user-tag { background: var(--surface-card); border: 1px solid var(--border); padding: 5px 10px; border-radius: 16px; font-size: 11px; font-weight: 800; color: var(--primary); }
 
-        .hero { text-align: center; padding: 35px 10px 25px; max-width: 850px; margin: 0 auto; }
-        .hero h1 { font-size: 24px; font-weight: 900; margin-bottom: 10px; letter-spacing: -0.5px; }
-        .hero p { color: var(--text-sub); font-size: 13px; margin-bottom: 16px; max-width: 700px; margin-inline: auto; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
+        .kpi-card { background: var(--surface); border: 1px solid var(--border); padding: 14px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+        .kpi-card span { font-size: 11px; color: var(--text-sub); display: block; margin-bottom: 4px; font-weight: 700; }
+        .kpi-card b { font-size: 18px; font-weight: 900; }
 
-        .grid-options { max-width: 950px; margin: 0 auto 30px; padding: 0 10px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-        .action-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
-        .action-card:hover { border-color: var(--primary); transform: translateY(-3px); }
-        .action-card h3 { font-size: 15px; margin-bottom: 6px; font-weight: 800; }
-        .action-card p { font-size: 12px; color: var(--text-sub); margin-bottom: 16px; flex-grow: 1; }
+        .table-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 16px; }
+        .panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+        .panel-head h3 { font-size: 14px; font-weight: 800; }
+        
+        .table-responsive { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
+        th, td { padding: 8px 10px; text-align: start; border-bottom: 1px solid var(--border); }
+        th { color: var(--text-sub); background: var(--surface-card); font-weight: 700; }
 
-        .btn { width: 100%; padding: 11px 16px; border-radius: 9px; font-size: 12px; font-weight: 800; cursor: pointer; border: none; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-        .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 14px var(--primary-glow); }
-        .btn-primary:hover { opacity: 0.92; }
-        .btn-secondary { background: var(--surface-card); color: var(--text-main); border: 1px solid var(--border); }
-        .btn-secondary:hover { border-color: var(--primary); }
-        .btn-emerald { background: var(--emerald); color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,0.3); }
+        .btn-action { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; border: none; }
+        .btn-audit { background: var(--primary); color: #fff; }
+        .btn-freeze { background: rgba(245, 158, 11, 0.2); color: var(--amber); border: 1px solid var(--amber); }
+        .btn-danger { background: rgba(244, 63, 94, 0.2); color: var(--rose); border: 1px solid var(--rose); }
+        .btn-info { background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid var(--emerald); }
+        .btn-edit { background: rgba(37, 99, 235, 0.2); color: var(--primary); border: 1px solid var(--primary); }
+        .btn-export { background: var(--surface-card); color: var(--text-main); border: 1px solid var(--border); padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
 
-        .view-panel { max-width: 540px; width: 100%; margin: 10px auto; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 14px 35px rgba(0,0,0,0.3); }
-        .input-group { margin-bottom: 14px; text-align: start; }
-        .input-group label { display: block; font-size: 11px; font-weight: 700; color: var(--text-sub); margin-bottom: 5px; }
-        .input-field { width: 100%; background: var(--bg); border: 1px solid var(--border); padding: 11px 14px; border-radius: 8px; color: var(--text-main); font-size: 12px; outline: none; }
-        .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
-
-        .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-        .upload-box { background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 12px; text-align: center; }
-        .upload-box input { display: none; }
-        .upload-box label { font-size: 10px; color: var(--primary); cursor: pointer; display: block; font-weight: 700; }
-        .upload-preview { width: 100%; height: 65px; object-fit: cover; border-radius: 6px; margin-top: 6px; display: none; border: 1px solid var(--border); }
-
-        .camera-box { background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 12px; text-align: center; margin-bottom: 14px; }
-        video { width: 100%; max-height: 160px; border-radius: 6px; object-fit: cover; display: none; }
-        #captured-photo { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); margin: 6px auto; display: none; }
-
-        .fintech-card {
-            background: linear-gradient(135deg, rgba(20, 45, 110, 0.98) 0%, rgba(8, 14, 30, 0.99) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(16px);
-            border-radius: 16px;
-            padding: 18px;
-            color: #fff;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 18px 35px rgba(0,0,0,0.5);
-            text-align: start;
-            max-width: 100%;
-        }
-        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .chip-emv { width: 36px; height: 26px; background: linear-gradient(135deg, #fcd34d 0%, #b45309 100%); border-radius: 4px; border: 1px solid #78350f; position: relative; }
-        .chip-emv::after { content: ""; position: absolute; inset: 3px; border: 1px solid rgba(0,0,0,0.3); border-radius: 2px; }
-        .card-body { text-align: center; margin: 10px 0; }
-        .qr-card-holder { background: #ffffff; padding: 6px; border-radius: 10px; display: inline-block; box-shadow: 0 6px 14px rgba(0,0,0,0.3); }
-
-        .credit-progress-box { margin-top: 10px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
-        .progress-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow: hidden; margin: 4px 0; }
-        .progress-bar-fill { height: 100%; background: var(--emerald); width: 100%; transition: width 0.4s ease; }
-
-        .dynamic-code-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); margin-top: 8px; font-size: 10px; justify-content: center; }
-        .card-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 10px; gap: 10px; }
-
-        .mini-statement { margin-top: 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
-        .statement-row { display: flex; justify-content: space-between; font-size: 11px; padding: 6px 0; border-bottom: 1px solid var(--border); gap: 10px; }
-        .statement-row:last-child { border-bottom: none; }
-
-        .req-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 12px; text-align: start; }
-        .req-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 6px; flex-wrap: wrap; gap: 6px; }
-        .req-status { font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
-        .status-pending { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
-        .status-approved { background: rgba(16, 185, 129, 0.15); color: var(--emerald); }
-        .status-rejected { background: rgba(244, 63, 94, 0.15); color: var(--rose); }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 10px; }
+        .modal-content { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; max-width: 600px; width: 100%; padding: 18px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .audit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+        .audit-item { background: var(--bg); padding: 8px; border-radius: 6px; border: 1px solid var(--border); text-align: start; }
+        .audit-item span { font-size: 10px; color: var(--text-sub); display: block; font-weight: 700; }
+        .audit-item b { font-size: 12px; color: var(--text-main); }
+        
+        .img-preview-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; text-align: center; }
+        .img-preview-group img { width: 100%; height: 85px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
+        .img-preview-group span { font-size: 10px; color: var(--text-sub); display: block; margin-top: 3px; font-weight: 700; }
 
         .toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 6px; width: 90%; max-width: 400px; }
-        .toast { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 12px 18px; border-radius: 8px; font-size: 12px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
+        .toast { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; box-shadow: 0 8px 25px rgba(0,0,0,0.5); text-align: center; }
         .toast.success { border-color: var(--emerald); color: var(--emerald); }
         .toast.error { border-color: var(--rose); color: var(--rose); }
 
-        footer { margin-top: auto; padding: 18px; text-align: center; font-size: 11px; color: var(--text-sub); border-top: 1px solid var(--border); background: var(--surface); border-radius: 12px; }
-
         @media screen and (min-width: 768px) {
             body { padding: 20px; }
-            .hero h1 { font-size: 28px; }
-            .view-panel { max-width: 580px; padding: 28px; }
+            .login-box { max-width: 400px; padding: 30px; }
+            .admin-nav { padding: 16px 24px; }
+            .table-panel { padding: 20px; }
+            .modal-content { padding: 24px; }
+            .img-preview-group img { height: 95px; }
         }
     </style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="brand">
-            <span>اتحاد الغرف التجارية | بوابة المواطن الرسمية</span>
-            <div class="live-status"><div class="pulse-dot"></div> النظام مؤمن ومشفر بالكامل</div>
+    <div id="admin-login-screen" class="login-box">
+        <h2 style="font-size: 17px; margin-bottom: 4px; font-weight: 900;">الإدارة المركزية للاتحاد (الآمنة)</h2>
+        <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 16px;">تسجيل الدخول للمسؤولين وموظفي التدقيق</p>
+
+        <input type="email" id="adm-email" class="input-ctrl" placeholder="البريد المهني (gm@union.iq)" value="gm@union.iq">
+        <input type="password" id="adm-pass" class="input-ctrl" placeholder="كلمة المرور" value="admin1234">
+
+        <button class="btn-main" onclick="handleLogin()">تسجيل الدخول الآمن</button>
+    </div>
+
+    <div id="admin-main-dash" class="hidden">
+        <div class="admin-nav">
+            <div>
+                <h1 style="font-size: 15px; font-weight: 900;">لوحة التحكم والتدقيق والمقاصة المركزية</h1>
+                <span style="font-size: 11px; color: var(--text-sub);">اتحاد الغرف التجارية والتجار</span>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <div class="user-tag">
+                    <span id="adm-welcome-text">المدير العام</span>
+                </div>
+                <button class="btn-export" onclick="logoutAdmin()">تسجيل الخروج</button>
+            </div>
         </div>
-        <div class="nav-actions">
-            <div id="nav-user-info" class="hidden">
-                <span id="nav-user-name" class="user-tag">المواطن</span>
-                <button class="btn-ctrl" onclick="handleCitizenLogout()">خروج</button>
+
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <span>طلبات قيد التدقيق</span>
+                <b id="kpi-pending-count" style="color: var(--amber);">0</b>
             </div>
-            <button id="nav-login-btn" class="btn-ctrl" onclick="showView('auth')">دخول / تسجيل</button>
-            <button class="btn-ctrl" onclick="toggleTheme()">المظهر</button>
+            <div class="kpi-card">
+                <span>إجمالي حجم الصرف</span>
+                <b id="kpi-total-spend">0 د.ع</b>
+            </div>
+            <div class="kpi-card">
+                <span>عمولة الاتحاد (3%)</span>
+                <b id="kpi-union-fee" style="color: var(--emerald);">0 د.ع</b>
+            </div>
+            <div class="kpi-card">
+                <span>صافي مستحقات المتاجر</span>
+                <b id="kpi-merchants-net" style="color: var(--primary);">0 د.ع</b>
+            </div>
         </div>
-    </nav>
 
-    <div id="view-home">
-        <section class="hero">
-            <h1>المنظومة الرقمية الرسمية لكفالة مشتريات الموظفين</h1>
-            <p>سقف ائتماني استهلاكي حكومي بنسبة 50% من صافي الراتب، مُدار ببروتوكول QR Code الذكي وتدقيق مركزي مباشر.</p>
-        </section>
-
-        <div class="grid-options">
-            <div class="action-card">
-                <div>
-                    <h3>تقديم طلب سقف مشتريات</h3>
-                    <p>إرفاق مفردات الراتب، بطاقة الماستركارد الرسمية، والتحقق البيومتري الحي لإصدار الهوية الرقمية.</p>
-                </div>
-                <button class="btn btn-primary" onclick="checkAuthAndProceed('reg')">تقديم الطلب</button>
+        <!-- إدارة الكادر (الموظفين والأدمن في قاعدة البيانات) -->
+        <div id="gm-management-panel" class="table-panel hidden">
+            <div class="panel-head">
+                <h3>إدارة حسابات موظفي الاتحاد والأدمن والصلاحيات (من السيرفر)</h3>
+                <button class="btn-export" onclick="showNewStaffModal()">+ إضافة حساب أدمن / موظف جديد</button>
             </div>
-
-            <div class="action-card">
-                <div>
-                    <h3>سجل طلباتي والبطاقة الذكية</h3>
-                    <p>متابعة حالة المعاملات، استعراض الهوية الرقمية المشفرة، والاطلاع على كشف الحركات اللحظي.</p>
-                </div>
-                <button class="btn btn-secondary" onclick="checkAuthAndProceed('my-requests')">عرض طلباتي</button>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الاسم الكامل</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>الدور الوظيفي</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staff-table-body"></tbody>
+                </table>
             </div>
+        </div>
 
-            <div class="action-card">
-                <div>
-                    <h3>دليل المتاجر المعتمدة</h3>
-                    <p>استعراض المحال ونقاط البيع الرسمية المعتمدة ضمن المنظومة للشراء المباشر.</p>
+        <!-- جدول تدقيق الطلبات وسجل المراجعين -->
+        <div class="table-panel">
+            <div class="panel-head">
+                <h3>صندوق تدقيق طلبات المواطنين وإدارة الحسابات</h3>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <input type="text" id="search-admin-reqs" class="input-ctrl" placeholder="بحث باسم الموظف أو رقم الطلب..." style="margin-bottom:0; width:220px;" oninput="filterAdminRequestsLocally()">
+                    <button class="btn-export" onclick="loadAdminData()">تحديث البيانات</button>
                 </div>
-                <button class="btn btn-emerald" onclick="showView('stores')">تصفح المتاجر</button>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>رقم الطلب</th>
+                            <th>اسم الموظف</th>
+                            <th>رقم الهاتف</th>
+                            <th>الدائرة الحكومية</th>
+                            <th>صافي الراتب</th>
+                            <th>السقف الممنوح</th>
+                            <th>الحالة</th>
+                            <th>المدقق المسؤول</th>
+                            <th>قرار التدقيق والإدارة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requests-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- جدول إدارة المتاجر (التجار) مع إمكانية الإضافة والحذف -->
+        <div class="table-panel">
+            <div class="panel-head">
+                <h3>إدارة المتاجر ونقاط البيع المعتمدة</h3>
+                <button class="btn-export" onclick="showNewMerchantModal()">+ إضافة تاجر جديد يدوياً</button>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اسم المنشأة</th>
+                            <th>رقم الهاتف</th>
+                            <th>العنوان</th>
+                            <th>النشاط</th>
+                            <th>إجمالي المبيعات</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-stores-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- جدول تسويات المتاجر مع تصدير Excel -->
+        <div class="table-panel">
+            <div class="panel-head">
+                <h3>كشف التسويات الدورية للمتاجر ونقاط البيع</h3>
+                <button class="btn-export" onclick="exportSettlementsExcel()">تصدير كشف المقاصة (Excel / CSV)</button>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اسم المنشأة / السوبرماركت</th>
+                            <th>إجمالي المبيعات</th>
+                            <th>عمولة الاتحاد (3%)</th>
+                            <th>صافي المستحق للتاجر</th>
+                            <th>حالة المقاصة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="merchants-table-body"></tbody>
+                </table>
             </div>
         </div>
     </div>
 
-    <!-- نافذة المصادقة -->
-    <div id="view-auth" class="view-panel hidden">
-        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-            <button id="tab-login" class="btn btn-primary" style="flex:1;" onclick="switchAuthTab('login')">تسجيل الدخول</button>
-            <button id="tab-signup" class="btn btn-secondary" style="flex:1;" onclick="switchAuthTab('signup')">إنشاء حساب جديد</button>
-        </div>
-
-        <!-- نموذج تسجيل الدخول -->
-        <div id="auth-login-form">
-            <div class="input-group">
-                <label>رقم هاتف الواتساب الرسمي:</label>
-                <input type="text" id="login-phone" class="input-field" placeholder="07XXXXXXXXX" maxlength="11">
-            </div>
-            <div class="input-group">
-                <label>كلمة المرور:</label>
-                <input type="password" id="login-pass" class="input-field" placeholder="كلمة المرور الآمنة">
-            </div>
-            <button class="btn btn-primary" onclick="handleCitizenLogin()">دخول للحساب</button>
-            <div style="text-align: center; margin-top: 10px;">
-                <a href="javascript:void(0);" onclick="switchAuthTab('forgot')" style="font-size: 11px; color: var(--primary); text-decoration: none; font-weight: 700;">نسيت كلمة المرور؟ استعادة عبر الواتساب</a>
-            </div>
-        </div>
-
-        <!-- نموذج إنشاء حساب جديد -->
-        <div id="auth-signup-form" class="hidden">
-            <div class="input-group">
-                <label>الاسم الرباعي واللقب (رسمي):</label>
-                <input type="text" id="signup-name" class="input-field" placeholder="الاسم الكامل كما في المستمسكات">
-            </div>
-            <div class="input-group">
-                <label>رقم هاتف الواتساب (عراقي معتمد):</label>
-                <input type="text" id="signup-phone" class="input-field" placeholder="07XXXXXXXXX" maxlength="11">
-            </div>
-            <div class="input-group">
-                <label>كلمة المرور (6 خانات على الأقل):</label>
-                <input type="password" id="signup-pass" class="input-field" placeholder="كلمة مرور معقدة">
-            </div>
-            <button class="btn btn-emerald" onclick="handleCitizenSignup()">إنشاء الحساب المعتمد</button>
-        </div>
-
-        <!-- نموذج استعادة وإعادة تعيين كلمة المرور عبر الواتساب -->
-        <div id="auth-forgot-form" class="hidden">
-            <h3 style="font-size: 13px; font-weight: 800; margin-bottom: 10px; text-align: center; color: var(--amber);">استعادة كلمة المرور عبر الواتساب</h3>
-            <div class="input-group">
-                <label>رقم هاتف الواتساب المسجل:</label>
-                <input type="text" id="forgot-phone" class="input-field" placeholder="07XXXXXXXXX" maxlength="11">
-            </div>
-            <button class="btn btn-primary" onclick="requestWhatsAppOtp()">إرسال رمز OTP عبر الواتساب</button>
+    <!-- نافذة التدقيق التفصيلي لطلبات المواطنين -->
+    <div id="audit-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 style="font-size: 15px; margin-bottom: 12px; text-align: center; font-weight: 800;">تفاصيل وتدقيق طلب المواطن</h3>
             
-            <div id="otp-verify-section" class="hidden" style="margin-top: 14px; border-top: 1px solid var(--border); padding-top: 10px;">
-                <div class="input-group">
-                    <label>أدخل رمز التحقق (OTP) المُرسل:</label>
-                    <input type="text" id="forgot-otp-input" class="input-field" placeholder="أدخل الأرقام هنا" maxlength="4">
+            <div class="img-preview-group">
+                <div>
+                    <img id="modal-kyc-img" src="" alt="KYC">
+                    <span>صورة الوجه الحي</span>
                 </div>
-                <div class="input-group">
-                    <label>كلمة المرور الجديدة:</label>
-                    <input type="password" id="new-pass-input" class="input-field" placeholder="كلمة المرور الجديدة">
+                <div>
+                    <img id="modal-card-front" src="" alt="Front">
+                    <span>ماستركارد (الوجه)</span>
                 </div>
-                <button class="btn btn-emerald" onclick="verifyAndResetPassword()">تأكيد وتغيير كلمة المرور</button>
+                <div>
+                    <img id="modal-card-back" src="" alt="Back">
+                    <span>ماستركارد (الظهر)</span>
+                </div>
             </div>
-            <button class="btn btn-secondary" onclick="switchAuthTab('login')" style="margin-top: 8px;">العودة لتسجيل الدخول</button>
-        </div>
 
-        <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
-    </div>
-
-    <!-- سجل الطلبات والبطاقة الذكية (طلب واحد مسموح) -->
-    <div id="view-my-requests" class="view-panel hidden" style="max-width: 600px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
-            <h2 style="font-size: 16px; font-weight: 800;">سجل طلبك المعتمد والبطاقة الذكية</h2>
-        </div>
-        <div id="my-requests-list"></div>
-        <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 10px;">رجوع للرئيسية</button>
-    </div>
-
-    <!-- نافذة التقديم (تظهر حصراً إن لم يكن لديه طلب مسبق) -->
-    <div id="view-reg" class="view-panel hidden">
-        <h2 style="font-size: 16px; margin-bottom: 14px; text-align: center; font-weight: 800;">استمارة طلب سقف مشتريات الموظفين</h2>
-        
-        <div class="input-group">
-            <label>الاسم الرباعي (المسجل في الحساب)</label>
-            <input type="text" id="reg-name" class="input-field" readonly>
-        </div>
-        <div class="input-group">
-            <label>الوزارة / الجهة غير المرتبطة بوزارة / الدائرة</label>
-            <input type="text" id="reg-dept" class="input-field" placeholder="مثال: وزارة التربية - مديرية تربية بابل">
-        </div>
-        <div class="input-group">
-            <label>رقم بطاقة الماستركارد الرسمية (16 رقماً)</label>
-            <input type="text" id="reg-card" class="input-field" placeholder="•••• •••• •••• ••••" maxlength="16">
-        </div>
-
-        <div class="upload-grid">
-            <div class="upload-box">
-                <label for="card-front-file">صورة الماستر (الأمامية) - حد أقصى 3MB</label>
-                <input type="file" id="card-front-file" accept="image/png, image/jpeg, image/webp" onchange="previewCard(this, 'front-prev')">
-                <img id="front-prev" class="upload-preview">
+            <div class="audit-grid">
+                <div class="audit-item"><span>رقم الطلب:</span><b id="modal-emp-id">-</b></div>
+                <div class="audit-item"><span>الاسم الكامل:</span><b id="modal-emp-name">-</b></div>
+                <div class="audit-item"><span>رقم الهاتف:</span><b id="modal-emp-phone">-</b></div>
+                <div class="audit-item"><span>جهة الانتساب:</span><b id="modal-emp-dept">-</b></div>
+                <div class="audit-item"><span>رقم البطاقة:</span><b id="modal-emp-card">-</b></div>
+                <div class="audit-item"><span>الراتب الاسمي:</span><b id="modal-emp-gross">-</b></div>
+                <div class="audit-item"><span>إجمالي السلف:</span><b id="modal-emp-deduct">-</b></div>
+                <div class="audit-item"><span>صافي الراتب:</span><b id="modal-emp-net">-</b></div>
+                <div class="audit-item"><span>السقف المحسوب (50%):</span><b id="modal-emp-limit" style="color:var(--emerald);">-</b></div>
+                <div class="audit-item"><span>تاريخ التقديم:</span><b id="modal-emp-date">-</b></div>
             </div>
-            <div class="upload-box">
-                <label for="card-back-file">صورة الماستر (الخلفية) - حد أقصى 3MB</label>
-                <input type="file" id="card-back-file" accept="image/png, image/jpeg, image/webp" onchange="previewCard(this, 'back-prev')">
-                <img id="back-prev" class="upload-preview">
+
+            <div style="display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap;">
+                <button class="btn-main" style="background:var(--emerald); flex: 1; padding: 10px;" onclick="modalDecision('accept')">قبول واعتماد</button>
+                <button class="btn-main" style="background:var(--rose); flex: 1; padding: 10px;" onclick="modalDecision('reject')">رفض الطلب</button>
+                <button class="btn-main" style="background:var(--primary); flex: 1; padding: 10px;" onclick="modalDecision('edit')">تعديل البيانات</button>
+                <button class="btn-main" style="background:var(--surface-card); color:var(--text-main); border:1px solid var(--border); flex: 1; padding: 10px;" onclick="closeAuditModal()">إغلاق</button>
             </div>
         </div>
-
-        <div class="input-group">
-            <label>الراتب الإجمالي (د.ع)</label>
-            <input type="number" id="reg-gross" class="input-field" placeholder="1000000">
-        </div>
-        <div class="input-group">
-            <label>مجموع الاستقطاعات والسلف الحالية (د.ع)</label>
-            <input type="number" id="reg-deduct" class="input-field" value="0">
-        </div>
-        <div class="input-group">
-            <label>رمز PIN السري المخصص لعمليات الشراء (4 أرقام)</label>
-            <input type="password" id="reg-pin" maxlength="4" class="input-field" placeholder="****">
-        </div>
-
-        <div class="camera-box">
-            <span style="font-size: 10px; color: var(--text-sub); display: block; margin-bottom: 6px;">التحقق البيومتري الحي المباشر (KYC)</span>
-            <video id="live-stream" autoplay playsinline></video>
-            <img id="captured-photo">
-            <canvas id="pic-canvas" class="hidden"></canvas>
-            <button type="button" class="btn btn-secondary" id="btn-cam-open" onclick="startCamera()">تشغيل الكاميرا للتحقق</button>
-            <button type="button" class="btn btn-primary hidden" id="btn-cam-snap" onclick="snapPhoto()">اعتماد وثبات الصورة البيومترية</button>
-        </div>
-
-        <button class="btn btn-primary" id="btn-submit-reg" onclick="submitRegistration()">إرسال الطلب رسمياً للتدقيق المركزي</button>
-        <button class="btn btn-secondary" onclick="showView('my-requests')" style="margin-top: 10px;">إلغاء والعودة</button>
     </div>
 
-    <!-- نافذة البطاقة الرقمية -->
-    <div id="view-card-modal" class="view-panel hidden" style="max-width: 480px;">
-        <div id="card-to-export" class="fintech-card">
-            <div class="card-top">
-                <div class="chip-emv"></div>
-                <div style="text-align: left;">
-                    <span style="font-size: 9px; opacity: 0.8; letter-spacing: 1px; display: block;">GOVERNMENT SECURE PASS</span>
-                    <b style="font-size: 10px; color: #93c5fd;">اتحاد الغرف التجارية العراقية</b>
-                </div>
+    <!-- نافذة الاطلاع على معلومات حساب الموظف / الأدمن مع عرض كلمة المرور صريحة وزر التعديل -->
+    <div id="staff-info-modal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 450px; text-align: start;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <h3 style="font-size: 15px; font-weight: 800; color: var(--primary);">معلومات حساب الموظف / الأدمن</h3>
+                <button class="btn-action btn-edit" style="padding: 6px 12px;" onclick="enableStaffEditMode()">✏️ تعديل المعلومات</button>
             </div>
             
-            <div class="card-body">
-                <div class="qr-card-holder">
-                    <canvas id="emp-qr-code"></canvas>
-                </div>
-                
-                <div class="dynamic-code-badge">
-                    <span>رمز الأمان اللحظي (OTP):</span>
-                    <b id="dyn-sec-code" style="color: #fcd34d; font-size: 14px; letter-spacing: 2px;">---</b>
-                    <span id="dyn-timer" style="opacity: 0.7;">(60s)</span>
-                </div>
+            <div class="audit-grid" style="grid-template-columns: 1fr; gap: 6px;">
+                <div class="audit-item"><span>الاسم الكامل:</span><b id="info-staff-name">-</b></div>
+                <div class="audit-item"><span>البريد الإلكتروني المهني:</span><b id="info-staff-email">-</b></div>
+                <div class="audit-item"><span>رقم الهاتف:</span><b id="info-staff-phone">-</b></div>
+                <div class="audit-item"><span>الدور الوظيفي:</span><b id="info-staff-role">-</b></div>
+                <div class="audit-item"><span>حالة الحساب:</span><b id="info-staff-status">-</b></div>
+                <div class="audit-item"><span>كلمة المرور الحالية:</span><b id="info-staff-pass" style="color:var(--amber);">-</b></div>
+                <div class="audit-item"><span>تاريخ إنشاء الحساب:</span><b id="info-staff-date">-</b></div>
             </div>
 
-            <div class="credit-progress-box">
-                <div style="display: flex; justify-content: space-between; font-size: 10px;">
-                    <span>المستهلك: <b id="prog-spent">0 د.ع</b></span>
-                    <span>الرصيد المتبقي: <b id="prog-remain" style="color:#34d399;">0 د.ع</b></span>
-                </div>
-                <div class="progress-bar-bg">
-                    <div id="prog-fill" class="progress-bar-fill"></div>
-                </div>
-            </div>
-
-            <div class="card-bottom">
-                <div>
-                    <span style="font-size: 9px; opacity: 0.7; display: block;">حامل البطاقة المعتمد</span>
-                    <b id="pass-name" style="font-size: 12px;">-</b>
-                    <div id="pass-dept" style="font-size: 9px; color: #94a3b8;">-</div>
-                </div>
-                <div style="text-align: left;">
-                    <span style="font-size: 9px; opacity: 0.7; display: block;">السقف المعتمد</span>
-                    <b id="pass-limit" style="font-size: 12px; color: #93c5fd;">-</b>
-                    <div style="font-size: 9px; color: #fcd34d;">دورة التحديث: فورية</div>
-                </div>
-            </div>
+            <button class="btn-main" style="background: var(--surface-card); color: var(--text-main); border: 1px solid var(--border); margin-top: 10px;" onclick="closeStaffInfoModal()">إغلاق</button>
         </div>
-
-        <div class="mini-statement">
-            <b style="font-size: 11px; display: block; margin-bottom: 6px;">سجل حركات الشراء الأخيرة:</b>
-            <div id="mini-statement-body"></div>
-        </div>
-
-        <button class="btn btn-primary" onclick="downloadSmartCard()" style="margin-top: 14px;">حفظ البطاقة الرقمية كصورة</button>
-        <button class="btn btn-secondary" onclick="showView('my-requests')" style="margin-top: 8px;">رجوع لطلباتي</button>
-    </div>
-
-    <!-- دليل المتاجر -->
-    <div id="view-stores" class="view-panel hidden" style="max-width: 600px;">
-        <h2 style="font-size: 16px; margin-bottom: 14px; text-align: center; font-weight: 800;">دليل المتاجر ونقاط البيع المعتمدة رسمياً</h2>
-        <div class="input-group" style="margin-bottom: 12px;">
-            <input type="text" id="search-stores" class="input-field" placeholder="بحث باسم المتجر أو العنوان أو النشاط..." oninput="filterStoresLocally()">
-        </div>
-        <div id="stores-directory-list"></div>
-        <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
     </div>
 
     <div class="toast-container" id="toast-box"></div>
 
-    <footer>
-        المنظومة المركزية لكفالة مشتريات الموظفين | تشفير معتمد AES-256 | إشراف اتحاد الغرف التجارية العراقية
-    </footer>
-
     <script>
         const SUPABASE_URL = "https://fttknbkhepebbavczwgb.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_ICutFiPEaHnXqyGXwjdkZg_QzjIbA0Z";
-        
+
         let supabaseClient = null;
         function getSupabase() {
             if (supabaseClient) return supabaseClient;
@@ -399,49 +300,9 @@
                     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 }
             } catch(e) {
-                console.error("Supabase initialization error:", e);
+                console.warn("Supabase initialization error:", e);
             }
             return supabaseClient;
-        }
-
-        let currentCitizen = null;
-        try {
-            const savedSession = localStorage.getItem('union_secure_citizen_session');
-            if (savedSession) {
-                const parsed = JSON.parse(savedSession);
-                if (parsed && parsed.expiry && Date.now() < parsed.expiry) {
-                    currentCitizen = parsed.data;
-                } else {
-                    localStorage.removeItem('union_secure_citizen_session');
-                }
-            }
-        } catch(e) {
-            localStorage.removeItem('union_secure_citizen_session');
-        }
-
-        let cameraStream = null;
-        let capturedPhotoUrl = "";
-        let cardFrontFile = null;
-        let cardBackFile = null;
-        let activeCardReq = null;
-        let otpInterval = null;
-        let realtimeChannel = null;
-
-        let loginAttempts = 0;
-        let lockoutUntil = 0;
-
-        let cachedStores = [];
-        let generatedOtpCache = "";
-
-        async function hashPin(pin) {
-            try {
-                const msgBuffer = new TextEncoder().encode(pin);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            } catch(e) {
-                return pin; 
-            }
         }
 
         function sanitizeInput(str) {
@@ -451,9 +312,30 @@
             return div.innerHTML;
         }
 
-        function validateIraqiPhone(phone) {
-            return /^07[3-9]\d{8}$/.test(phone);
+        async function initAdminDatabase() {
+            const sb = getSupabase();
+            if (!sb) return;
+            try {
+                const { data } = await sb.from('admin_users').select('*').eq('email', 'gm@union.iq').maybeSingle();
+                if (!data) {
+                    await sb.from('admin_users').insert([{
+                        name: "المدير العام",
+                        email: "gm@union.iq",
+                        password: "admin1234",
+                        role: "gm",
+                        phone: "07800000000",
+                        is_frozen: false
+                    }]);
+                }
+            } catch(e){}
         }
+
+        let currentActiveUser = null;
+        let currentAuditedId = null;
+        let currentViewingStaffId = null;
+        let cachedAdminRequests = [];
+        let cachedAdminStores = [];
+        let cachedStaffList = [];
 
         function playTone(freq, type = 'sine', duration = 0.15) {
             try {
@@ -480,668 +362,614 @@
             setTimeout(() => { el.remove(); }, 3500);
         }
 
-        function toggleTheme() {
-            const cur = document.documentElement.getAttribute('data-theme');
-            document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
-        }
-
-        function showView(v) {
-            const views = ['view-home', 'view-auth', 'view-my-requests', 'view-reg', 'view-card-modal', 'view-stores'];
-            views.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.classList.add('hidden');
-            });
-            if (otpInterval) clearInterval(otpInterval);
-
-            if (v === 'home') document.getElementById('view-home').classList.remove('hidden');
-            if (v === 'auth') document.getElementById('view-auth').classList.remove('hidden');
-            if (v === 'reg') {
-                if (currentCitizen) document.getElementById('reg-name').value = currentCitizen.name;
-                document.getElementById('view-reg').classList.remove('hidden');
-            }
-            if (v === 'my-requests') {
-                renderMySingleRequest();
-                document.getElementById('view-my-requests').classList.remove('hidden');
-            }
-            if (v === 'card-modal') document.getElementById('view-card-modal').classList.remove('hidden');
-            if (v === 'stores') {
-                renderStoresDirectory();
-                document.getElementById('view-stores').classList.remove('hidden');
-            }
-        }
-
-        function updateNavState() {
-            const userInfo = document.getElementById('nav-user-info');
-            const loginBtn = document.getElementById('nav-login-btn');
-            const userName = document.getElementById('nav-user-name');
-
-            if (currentCitizen) {
-                if (userInfo) userInfo.classList.remove('hidden');
-                if (loginBtn) loginBtn.classList.add('hidden');
-                if (userName) userName.innerText = currentCitizen.name;
-                initRealtimeForCitizen();
-            } else {
-                if (userInfo) userInfo.classList.add('hidden');
-                if (loginBtn) loginBtn.classList.remove('hidden');
-            }
-        }
-
-        function switchAuthTab(tab) {
-            document.getElementById('auth-login-form').classList.add('hidden');
-            document.getElementById('auth-signup-form').classList.add('hidden');
-            document.getElementById('auth-forgot-form').classList.add('hidden');
-            
-            document.getElementById('tab-login').className = "btn btn-secondary";
-            document.getElementById('tab-signup').className = "btn btn-secondary";
-
-            if (tab === 'login') {
-                document.getElementById('auth-login-form').classList.remove('hidden');
-                document.getElementById('tab-login').className = "btn btn-primary";
-            } else if (tab === 'signup') {
-                document.getElementById('auth-signup-form').classList.remove('hidden');
-                document.getElementById('tab-signup').className = "btn btn-primary";
-            } else if (tab === 'forgot') {
-                document.getElementById('auth-forgot-form').classList.remove('hidden');
-            }
-        }
-
-        // منطق التحقق وفحص الطلب الواحد قبل السماح بالتقديم
-        async function checkAuthAndProceed(targetView) {
-            if (!currentCitizen) {
-                showToast("يرجى تسجيل الدخول أو إنشاء حساب للوصول للخدمة", "error");
-                showView('auth');
-                return;
-            }
-
+        function initRealtimeAdmin() {
             const sb = getSupabase();
-            if (targetView === 'reg') {
-                if (sb) {
-                    const { data: existingReq } = await sb.from('requests').select('*').eq('phone', currentCitizen.phone).maybeSingle();
-                    if (existingReq) {
-                        showToast("لديك طلب مسجل مسبقاً في النظام. لا يمكنك تقديم أكثر من طلب.", "error");
-                        showView('my-requests');
-                        return;
-                    }
-                }
-                showView('reg');
-            } else {
-                showView(targetView);
-            }
-        }
+            if (!sb) return;
 
-        async function requestWhatsAppOtp() {
-            const phone = sanitizeInput(document.getElementById('forgot-phone').value);
-            if (!validateIraqiPhone(phone)) {
-                showToast("يرجى إدخال رقم هاتف واتساب صحيح ومعتمد", "error");
-                return;
-            }
-
-            const sb = getSupabase();
-            if (sb) {
-                const { data: user } = await sb.from('citizens').select('*').eq('phone', phone).maybeSingle();
-                if (!user) {
-                    showToast("رقم الهاتف غير مسجل في النظام", "error");
-                    return;
-                }
-            }
-
-            generatedOtpCache = String(Math.floor(1000 + Math.random() * 9000));
-            const message = encodeURIComponent(`مرحباً بك في منظومة كفالة مشتريات الموظفين (اتحاد الغرف التجارية).\nرمز التحقق (OTP) لإعادة تعيين كلمة المرور هو: *${generatedOtpCache}*`);
-            const waLink = `https://wa.me/964${phone.substring(1)}?text=${message}`;
-            
-            window.open(waLink, '_blank');
-            document.getElementById('otp-verify-section').classList.remove('hidden');
-            showToast("تم فتح نافذة الواتساب لإرسال رمز التحقق", "success");
-        }
-
-        async function verifyAndResetPassword() {
-            const phone = sanitizeInput(document.getElementById('forgot-phone').value);
-            const enteredOtp = document.getElementById('forgot-otp-input').value.trim();
-            const newPass = document.getElementById('new-pass-input').value;
-
-            if (enteredOtp !== generatedOtpCache) {
-                showToast("رمز التحقق (OTP) غير صحيح", "error");
-                return;
-            }
-            if (!newPass || newPass.length < 6) {
-                showToast("كلمة المرور الجديدة يجب ألا تقل عن 6 خانات", "error");
-                return;
-            }
-
-            const sb = getSupabase();
             try {
-                const hashedPass = await hashPin(newPass);
-                if (sb) {
-                    const { error } = await sb.from('citizens').update({ password: hashedPass }).eq('phone', phone);
-                    if (error) throw error;
-                }
-                showToast("تم تغيير كلمة المرور بنجاح، يمكنك تسجيل الدخول الآن", "success");
-                switchAuthTab('login');
-            } catch(e) {
-                showToast(`فشل تغيير كلمة المرور: ${e.message}`, "error");
-            }
-        }
-
-        async function handleCitizenSignup() {
-            const name = sanitizeInput(document.getElementById('signup-name').value);
-            const phone = sanitizeInput(document.getElementById('signup-phone').value);
-            const pass = document.getElementById('signup-pass').value;
-
-            if (!name || !phone || !pass) {
-                showToast("يرجى ملء كافة الحقول الإجبارية بدقة", "error");
-                return;
-            }
-
-            if (!validateIraqiPhone(phone)) {
-                showToast("رقم الواتساب غير مطابق للصيغة العراقية المعتمدة", "error");
-                return;
-            }
-
-            if (pass.length < 6) {
-                showToast("كلمة المرور قصيرة (يجب أن تكون 6 خانات على الأقل)", "error");
-                return;
-            }
-
-            const sb = getSupabase();
-            try {
-                const hashedPass = await hashPin(pass);
-                if (sb) {
-                    const { data: existing } = await sb.from('citizens').select('id').eq('phone', phone).maybeSingle();
-                    if (existing) {
-                        showToast("رقم الهاتف مسجل مسبقاً، يرجى تسجيل الدخول", "error");
-                        return;
-                    }
-                    const { error } = await sb.from('citizens').insert([{ name, phone, password: hashedPass }]);
-                    if (error) throw error;
-                }
-
-                currentCitizen = { name, phone };
-                const sessionPayload = { data: currentCitizen, expiry: Date.now() + (12 * 3600 * 1000) };
-                localStorage.setItem('union_secure_citizen_session', JSON.stringify(sessionPayload));
-                
-                updateNavState();
-                showToast("تم إنشاء الحساب الرسمي بنجاح", "success");
-                showView('my-requests');
-            } catch(e) {
-                showToast(`خطأ في التسجيل: ${e.message}`, "error");
-            }
-        }
-
-        async function handleCitizenLogin() {
-            const now = Date.now();
-            if (now < lockoutUntil) {
-                const remainingSec = Math.ceil((lockoutUntil - now) / 1000);
-                showToast(`تم حظر المحاولات مؤقتاً. يرجى الانتظار ${remainingSec} ثانية.`, "error");
-                return;
-            }
-
-            const phone = sanitizeInput(document.getElementById('login-phone').value);
-            const pass = document.getElementById('login-pass').value;
-
-            if (!phone || !pass) {
-                showToast("يرجى إدخال رقم الواتساب وكلمة المرور", "error");
-                return;
-            }
-
-            const sb = getSupabase();
-            try {
-                const hashedPass = await hashPin(pass);
-                if (sb) {
-                    const { data: user, error } = await sb.from('citizens').select('*').eq('phone', phone).eq('password', hashedPass).maybeSingle();
-                    
-                    if (error) {
-                        showToast(`خطأ في الاتصال بقاعدة البيانات: ${error.message}`, "error");
-                        return;
-                    }
-
-                    if (!user) {
-                        loginAttempts++;
-                        if (loginAttempts >= 3) {
-                            lockoutUntil = Date.now() + 30000;
-                            loginAttempts = 0;
-                            showToast("تم إدخال بيانات خاطئة 3 مرات. تم حظر المحاولات لـ 30 ثانية.", "error");
-                        } else {
-                            showToast(`بيانات الدخول غير صحيحة. المحاولة ${loginAttempts} من 3`, "error");
-                        }
-                        return;
-                    }
-                    
-                    loginAttempts = 0;
-                    lockoutUntil = 0;
-                    currentCitizen = { name: user.name, phone: user.phone };
-
-                } else {
-                    loginAttempts = 0;
-                    lockoutUntil = 0;
-                    currentCitizen = { name: "مواطن معتمد", phone };
-                }
-
-                const sessionPayload = { data: currentCitizen, expiry: Date.now() + (12 * 3600 * 1000) };
-                localStorage.setItem('union_secure_citizen_session', JSON.stringify(sessionPayload));
-                
-                updateNavState();
-                showToast(`أهلاً بك، ${currentCitizen.name}`, "success");
-                showView('my-requests');
-            } catch(e) {
-                showToast(`فشل تسجيل الدخول: ${e.message}`, "error");
-            }
-        }
-
-        function handleCitizenLogout() {
-            currentCitizen = null;
-            localStorage.removeItem('union_secure_citizen_session');
-            const sb = getSupabase();
-            if (realtimeChannel && sb) {
-                try { sb.removeChannel(realtimeChannel); } catch(e){}
-            }
-            updateNavState();
-            showToast("تم تسجيل الخروج بأمان", "info");
-            showView('home');
-        }
-
-        function initRealtimeForCitizen() {
-            const sb = getSupabase();
-            if (!sb || !currentCitizen) return;
-            try {
-                if (realtimeChannel) sb.removeChannel(realtimeChannel);
-
-                realtimeChannel = sb
-                    .channel(`citizen-${currentCitizen.phone}`)
-                    .on('postgres_changes', {
-                        event: 'UPDATE',
-                        schema: 'public',
-                        table: 'requests',
-                        filter: `phone=eq.${currentCitizen.phone}`
-                    }, payload => {
-                        if (payload.new.status === 'approved') {
-                            playTone(880, 'triangle', 0.3);
-                            showToast("مبروك! تمت الموافقة على طلبك واعتماد الهوية الرقمية", "success");
-                        } else if (payload.new.status === 'rejected') {
-                            showToast(`عذراً، تم رفض الطلب: ${payload.new.decision_note || 'عدم الاكتمال'}`, "error");
-                        }
-                        renderMySingleRequest();
+                sb.channel('admin-live-updates')
+                    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'requests' }, payload => {
+                        playTone(600, 'sine', 0.25);
+                        showToast(`طلب سقف جديد وارد من المواطن: ${sanitizeInput(payload.new.name)}`, "info");
+                        loadAdminData();
+                    })
+                    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transactions' }, payload => {
+                        loadAdminData();
                     })
                     .subscribe();
             } catch(e) {}
         }
 
-        // عرض الطلب الوحيد للمواطن
-        async function renderMySingleRequest() {
-            const container = document.getElementById('my-requests-list');
-            if (!container) return;
-            container.innerHTML = `<div style="text-align:center; padding:18px; color:var(--text-sub);">جاري استعلام السيرفر المركزي...</div>`;
+        // تسجيل دخول سريع ومباشر من الضغطة الأولى دون أي إبطاء
+        async function handleLogin() {
+            const email = sanitizeInput(document.getElementById('adm-email').value).toLowerCase().trim();
+            const pass = document.getElementById('adm-pass').value.trim();
+
+            if (!email || !pass) {
+                showToast("أدخل البريد الإلكتروني وكلمة المرور", "error");
+                return;
+            }
 
             const sb = getSupabase();
             try {
-                let r = null;
-                if (sb && currentCitizen) {
-                    const { data, error } = await sb.from('requests').select('*').eq('phone', currentCitizen.phone).maybeSingle();
-                    if (!error) r = data;
+                await initAdminDatabase();
+                
+                let user = null;
+                if (sb) {
+                    const { data, error } = await sb.from('admin_users').select('*').eq('email', email).eq('password', pass).maybeSingle();
+                    if (!error && data) user = data;
                 }
 
-                container.innerHTML = "";
-                if (!r) {
-                    container.innerHTML = `
-                        <div style="text-align:center; padding:24px; color:var(--text-sub); font-size:12px;">
-                            <p style="margin-bottom:12px;">ليس لديك أي طلب سقف ائتماني مقدم حالياً.</p>
-                            <button class="btn btn-primary" onclick="checkAuthAndProceed('reg')">تقديم طلب جديد الآن</button>
-                        </div>
+                if (user) {
+                    if (user.is_frozen) {
+                        showToast("هذا الحساب مقيد حالياً من قبل الإدارة", "error");
+                        return;
+                    }
+                    currentActiveUser = user;
+
+                    if (sb) {
+                        try {
+                            await sb.from('audit_logs').insert([{
+                                action_type: 'SUCCESSFUL_ADMIN_LOGIN',
+                                description: `تم تسجيل دخول المسؤول: ${user.name} (${user.email}) بنجاح`,
+                                created_at: new Date().toISOString()
+                            }]);
+                        } catch(e){}
+                    }
+
+                    document.getElementById('adm-welcome-text').innerText = user.role === 'gm' ? "المدير العام" : user.name;
+                    document.getElementById('admin-login-screen').classList.add('hidden');
+                    document.getElementById('admin-main-dash').classList.remove('hidden');
+
+                    if (user.role === 'gm') {
+                        document.getElementById('gm-management-panel').classList.remove('hidden');
+                    } else {
+                        document.getElementById('gm-management-panel').classList.add('hidden');
+                    }
+
+                    initRealtimeAdmin();
+                    loadAdminData();
+                    showToast("تم تسجيل الدخول الآمن بنجاح", "success");
+                } else {
+                    showToast("البريد الإلكتروني أو كلمة المرور غير صحيحة", "error");
+                }
+            } catch(e) {
+                showToast(`خطأ في تسجيل الدخول: ${e.message}`, "error");
+            }
+        }
+
+        async function loadAdminData() {
+            const sb = getSupabase();
+            try {
+                let requests = [];
+                let transactions = [];
+                let stores = [];
+                let staff = [];
+
+                if (sb) {
+                    const { data: reqData } = await sb.from('requests').select('*').order('created_at', { ascending: false });
+                    const { data: txData } = await sb.from('transactions').select('*').order('created_at', { ascending: false });
+                    const { data: storeData } = await sb.from('stores').select('*').order('created_at', { ascending: false });
+                    const { data: staffData } = await sb.from('admin_users').select('*').order('created_at', { ascending: false });
+                    
+                    if (reqData) requests = reqData;
+                    if (txData) transactions = txData;
+                    if (storeData) stores = storeData;
+                    if (staffData) staff = staffData;
+                }
+
+                cachedAdminRequests = requests;
+                cachedAdminStores = stores;
+                cachedStaffList = staff;
+                displayFilteredAdminRequests(cachedAdminRequests, transactions, cachedAdminStores);
+
+                if (currentActiveUser && currentActiveUser.role === 'gm') {
+                    const staffTbody = document.getElementById('staff-table-body');
+                    staffTbody.innerHTML = "";
+                    staff.forEach((acc) => {
+                        if (acc.email === 'gm@union.iq') return;
+                        staffTbody.innerHTML += `
+                            <tr>
+                                <td><b>${sanitizeInput(acc.name)}</b></td>
+                                <td>${sanitizeInput(acc.email)}</td>
+                                <td>${sanitizeInput(acc.role)}</td>
+                                <td><span style="color:${acc.is_frozen ? 'var(--rose)' : 'var(--emerald)'}; font-weight:bold;">${acc.is_frozen ? 'مجمد' : 'نشط'}</span></td>
+                                <td>
+                                    <button class="btn-action btn-info" onclick="openStaffInfoModal(${acc.id})">اطلاع</button>
+                                    <button class="btn-action btn-freeze" onclick="toggleStaffFreeze(${acc.id}, ${acc.is_frozen})">${acc.is_frozen ? 'تفعيل' : 'تجميد'}</button>
+                                    <button class="btn-action btn-danger" onclick="deleteStaffAccount(${acc.id}, '${acc.name}')">حذف</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        function displayFilteredAdminRequests(requests, transactions = [], stores = []) {
+            const reqTable = document.getElementById('requests-table-body');
+            if (!reqTable) return;
+            const query = (document.getElementById('search-admin-reqs').value || "").toLowerCase().trim();
+
+            const filtered = requests.filter(r => {
+                const nameStr = String(r.name || "").toLowerCase();
+                const idStr = String(r.id || "").toLowerCase();
+                const deptStr = String(r.dept || "").toLowerCase();
+                return nameStr.includes(query) || idStr.includes(query) || deptStr.includes(query);
+            });
+
+            let activeTxs = transactions.filter(t => !t.is_refunded);
+            let pendingCount = requests.filter(r => r.status === 'pending').length;
+            let totalSpent = activeTxs.reduce((acc, t) => acc + (parseFloat(t.amount) || 0), 0);
+
+            document.getElementById('kpi-pending-count').innerText = pendingCount;
+            document.getElementById('kpi-total-spend').innerText = `${totalSpent.toLocaleString()} د.ع`;
+            document.getElementById('kpi-union-fee').innerText = `${(totalSpent * 0.03).toLocaleString()} د.ع`;
+            document.getElementById('kpi-merchants-net').innerText = `${(totalSpent * 0.97).toLocaleString()} د.ع`;
+
+            reqTable.innerHTML = "";
+
+            if (filtered.length === 0) {
+                reqTable.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--text-sub);">لا توجد طلبات مطابقة للبحث</td></tr>`;
+            } else {
+                filtered.forEach((req) => {
+                    let statusTxt = "";
+                    if (req.status === 'pending') statusTxt = `<span style="color:var(--amber); font-weight:bold;">قيد التدقيق</span>`;
+                    if (req.status === 'approved') statusTxt = `<span style="color:var(--emerald); font-weight:bold;">معتمد</span>`;
+                    if (req.status === 'rejected') statusTxt = `<span style="color:var(--rose); font-weight:bold;">مرفوض</span>`;
+
+                    reqTable.innerHTML += `
+                        <tr>
+                            <td><b>#${req.id}</b></td>
+                            <td>${sanitizeInput(req.name)}</td>
+                            <td>${sanitizeInput(req.phone || '-')}</td>
+                            <td>${sanitizeInput(req.dept)}</td>
+                            <td>${(parseFloat(req.net_salary) || 0).toLocaleString()} د.ع</td>
+                            <td><b>${(parseFloat(req.credit_limit) || 0).toLocaleString()} د.ع</b></td>
+                            <td>${statusTxt}</td>
+                            <td style="font-size:11px; color:var(--text-sub);">${sanitizeInput(req.audited_by || 'قيد الانتظار')}</td>
+                            <td>
+                                <button class="btn-action btn-audit" onclick="openAuditModal(${req.id})">تدقيق</button>
+                                ${req.status === 'approved' ? `<button class="btn-action btn-freeze" onclick="toggleFreezeReq(${req.id}, ${req.is_frozen})">${req.is_frozen ? 'إلغاء التجميد' : 'تجميد'}</button>` : ''}
+                                <button class="btn-action btn-danger" onclick="deleteCitizenRequest('${req.id}', '${req.phone}')">حذف</button>
+                            </td>
+                        </tr>
                     `;
+                });
+            }
+
+            // عرض وإدارة المتاجر (التجار)
+            const storesTable = document.getElementById('admin-stores-table-body');
+            if (storesTable) {
+                storesTable.innerHTML = "";
+                if (stores.length === 0) {
+                    storesTable.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-sub);">لا توجد متاجر مسجلة حالياً</td></tr>`;
+                } else {
+                    stores.forEach(st => {
+                        let stSales = activeTxs.filter(t => t.store_name === st.name).reduce((acc, t) => acc + parseFloat(t.amount), 0);
+                        storesTable.innerHTML += `
+                            <tr>
+                                <td><b>${sanitizeInput(st.name)}</b></td>
+                                <td>${sanitizeInput(st.phone || '-')}</td>
+                                <td>${sanitizeInput(st.address || '-')}</td>
+                                <td>${sanitizeInput(st.products || '-')}</td>
+                                <td style="color:var(--emerald); font-weight:bold;">${stSales.toLocaleString()} د.ع</td>
+                                <td>
+                                    <button class="btn-action btn-danger" onclick="deleteMerchantStore('${st.id}', '${st.name}')">حذف المتجر</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+            }
+
+            // تحديث جدول تسويات المتاجر
+            const merTable = document.getElementById('merchants-table-body');
+            if (merTable) {
+                merTable.innerHTML = "";
+                if (activeTxs.length === 0) {
+                    merTable.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-sub);">لا توجد حركات مبيعات مسجلة</td></tr>`;
+                } else {
+                    let storeTotals = {};
+                    activeTxs.forEach(t => {
+                        if (!storeTotals[t.store_name]) storeTotals[t.store_name] = 0;
+                        storeTotals[t.store_name] += parseFloat(t.amount);
+                    });
+
+                    Object.values(storeTotals).forEach((amt, i) => {
+                        const sName = Object.keys(storeTotals)[i];
+                        merTable.innerHTML += `
+                            <tr>
+                                <td><b>${sanitizeInput(sName)}</b></td>
+                                <td>${amt.toLocaleString()} د.ع</td>
+                                <td style="color:var(--rose);">- ${(amt * 0.03).toLocaleString()} د.ع</td>
+                                <td style="color:var(--emerald); font-weight:bold;">${(amt * 0.97).toLocaleString()} د.ع</td>
+                                <td><span style="color:var(--emerald); font-weight:bold;">جاهز للمقاصة</span></td>
+                            </tr>
+                        `;
+                    });
+                }
+            }
+        }
+
+        function filterAdminRequestsLocally() {
+            loadAdminData();
+        }
+
+        async function openAuditModal(reqId) {
+            currentAuditedId = reqId;
+            const sb = getSupabase();
+            let c = null;
+
+            if (sb) {
+                const { data } = await sb.from('requests').select('*').eq('id', reqId).single();
+                c = data;
+            }
+            if (!c) return;
+
+            document.getElementById('modal-emp-id').innerText = "#" + c.id;
+            document.getElementById('modal-emp-name').innerText = sanitizeInput(c.name);
+            document.getElementById('modal-emp-phone').innerText = sanitizeInput(c.phone || "-");
+            document.getElementById('modal-emp-dept').innerText = sanitizeInput(c.dept);
+            document.getElementById('modal-emp-card').innerText = sanitizeInput(c.card_number || "غير متوفر");
+            document.getElementById('modal-emp-gross').innerText = `${(parseFloat(c.gross_salary) || 0).toLocaleString()} د.ع`;
+            document.getElementById('modal-emp-deduct').innerText = `${(parseFloat(c.deductions) || 0).toLocaleString()} د.ع`;
+            document.getElementById('modal-emp-net').innerText = `${(parseFloat(c.net_salary) || 0).toLocaleString()} د.ع`;
+            document.getElementById('modal-emp-limit').innerText = `${(parseFloat(c.credit_limit) || 0).toLocaleString()} د.ع`;
+            document.getElementById('modal-emp-date').innerText = new Date(c.created_at).toLocaleDateString('ar-EG');
+
+            const defaultImg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
+            
+            const getDirectUrl = (path) => {
+                if (!path) return defaultImg;
+                if (path.startsWith('http')) return path;
+                return `https://fttknbkhepebbavczwgb.supabase.co/storage/v1/object/public/union-docs/${path}`;
+            };
+
+            document.getElementById('modal-kyc-img').src = getDirectUrl(c.kyc_photo || c.kyc_photo_url);
+            document.getElementById('modal-card-front').src = getDirectUrl(c.card_front || c.card_front_url || c.front_image);
+            document.getElementById('modal-card-back').src = getDirectUrl(c.card_back || c.card_back_url || c.back_image);
+            document.getElementById('audit-modal').classList.remove('hidden');
+        }
+
+        function closeAuditModal() {
+            document.getElementById('audit-modal').classList.add('hidden');
+            currentAuditedId = null;
+        }
+
+        // نافذة الاطلاع على معلومات الموظف/الأدمن مع كلمة المرور الصريحة
+        function openStaffInfoModal(staffId) {
+            const staff = cachedStaffList.find(s => s.id === staffId);
+            if (!staff) return;
+
+            currentViewingStaffId = staffId;
+            document.getElementById('info-staff-name').innerText = sanitizeInput(staff.name);
+            document.getElementById('info-staff-email').innerText = sanitizeInput(staff.email);
+            document.getElementById('info-staff-phone').innerText = sanitizeInput(staff.phone || "غير مسجل");
+            document.getElementById('info-staff-role').innerText = sanitizeInput(staff.role);
+            document.getElementById('info-staff-status').innerText = staff.is_frozen ? "مجمد (موقوف)" : "نشط ومصرح له";
+            document.getElementById('info-staff-pass').innerText = sanitizeInput(staff.password || "-");
+            document.getElementById('info-staff-date').innerText = staff.created_at ? new Date(staff.created_at).toLocaleString('ar-EG') : "غير متوفر";
+
+            document.getElementById('staff-info-modal').classList.remove('hidden');
+        }
+
+        function closeStaffInfoModal() {
+            document.getElementById('staff-info-modal').classList.add('hidden');
+            currentViewingStaffId = null;
+        }
+
+        // تعديل معلومات الموظف/الأدمن من زر Edit
+        async function enableStaffEditMode() {
+            if (!currentViewingStaffId) return;
+            const staff = cachedStaffList.find(s => s.id === currentViewingStaffId);
+            if (!staff) return;
+
+            let newName = prompt("تعديل الاسم الكامل:", staff.name);
+            let newEmail = prompt("تعديل البريد الإلكتروني:", staff.email);
+            let newPhone = prompt("تعديل رقم الهاتف:", staff.phone || "");
+            let newRole = prompt("تعديل الدور الوظيفي:", staff.role);
+            let newPass = prompt("تعديل كلمة المرور:", staff.password || "");
+
+            if (newName && newEmail) {
+                const sb = getSupabase();
+                try {
+                    let updateData = {
+                        name: sanitizeInput(newName),
+                        email: sanitizeInput(newEmail).toLowerCase().trim(),
+                        phone: sanitizeInput(newPhone),
+                        role: sanitizeInput(newRole),
+                        password: sanitizeInput(newPass)
+                    };
+
+                    if (sb) {
+                        const { error } = await sb.from('admin_users').update(updateData).eq('id', currentViewingStaffId);
+                        if (error) throw error;
+                    }
+
+                    showToast("تم تحديث معلومات الموظف بنجاح", "success");
+                    closeStaffInfoModal();
+                    loadAdminData();
+                } catch(e) {
+                    showToast(`خطأ في التعديل: ${e.message}`, "error");
+                }
+            }
+        }
+
+        async function modalDecision(type) {
+            if (!currentAuditedId) return;
+            const auditorName = currentActiveUser ? currentActiveUser.name : "المدير العام";
+            const sb = getSupabase();
+
+            try {
+                if (type === 'accept') {
+                    if (sb) {
+                        await sb.from('requests').update({
+                            status: 'approved',
+                            audited_by: `${auditorName} (${new Date().toLocaleDateString('ar-EG')})`
+                        }).eq('id', currentAuditedId);
+
+                        try {
+                            await sb.from('audit_logs').insert([{
+                                action_type: 'APPROVE_REQUEST',
+                                description: `قام المسؤول ${auditorName} بقبول واعتماد طلب المواطن برقم #${currentAuditedId}`,
+                                created_at: new Date().toISOString()
+                            }]);
+                        } catch(e){}
+                    }
+                    showToast("تم اعتماد طلب المواطن وتفعيل الهوية بنجاح", "success");
+                    closeAuditModal();
+                    loadAdminData();
+                } else if (type === 'reject') {
+                    const reason = prompt("يرجى إدخال سبب الرفض:", "عدم كفاية الراتب أو عدم تطابق الوثائق");
+                    if (reason !== null) {
+                        if (sb) {
+                            await sb.from('requests').update({
+                                status: 'rejected',
+                                decision_note: sanitizeInput(reason),
+                                audited_by: `${auditorName} (${new Date().toLocaleDateString('ar-EG')})`
+                            }).eq('id', currentAuditedId);
+
+                            try {
+                                await sb.from('audit_logs').insert([{
+                                    action_type: 'REJECT_REQUEST',
+                                    description: `قام المسؤول ${auditorName} برفض الطلب #${currentAuditedId}. السبب: ${sanitizeInput(reason)}`,
+                                    created_at: new Date().toISOString()
+                                }]);
+                            } catch(e){}
+                        }
+                        showToast("تم رفض الطلب وتوثيق السبب", "error");
+                        closeAuditModal();
+                        loadAdminData();
+                    }
+                } else if (type === 'edit') {
+                    let newName = prompt("تعديل اسم المواطن:");
+                    let newDept = prompt("تعديل جهة الانتساب:");
+                    let newLimit = prompt("تعديل السقف المالي المتاح:");
+
+                    if (newName && newDept && newLimit) {
+                        const parsedLimit = parseFloat(newLimit);
+                        if (sb) {
+                            await sb.from('requests').update({
+                                name: sanitizeInput(newName),
+                                dept: sanitizeInput(newDept),
+                                credit_limit: parsedLimit,
+                                balance: parsedLimit,
+                                audited_by: `${auditorName} [تعديل]`
+                            }).eq('id', currentAuditedId);
+
+                            try {
+                                await sb.from('audit_logs').insert([{
+                                    action_type: 'EDIT_REQUEST',
+                                    description: `قام المسؤول ${auditorName} بتعديل بيانات الطلب #${currentAuditedId}`,
+                                    created_at: new Date().toISOString()
+                                }]);
+                            } catch(e){}
+                        }
+                        showToast("تم حفظ التعديلات بنجاح", "success");
+                        closeAuditModal();
+                        loadAdminData();
+                    }
+                }
+            } catch(e) {
+                showToast(`خطأ في الإجراء: ${e.message}`, "error");
+            }
+        }
+
+      async function deleteCitizenRequest(reqId, citizenPhone) {
+    if (!confirm(`هل أنت متأكد من حذف الطلب #${reqId} وحساب المواطن المرتبط به نهائياً؟`)) return;
+    const sb = getSupabase();
+    try {
+        if (sb) {
+            // حذف الطلب
+            await sb.from('requests').delete().eq('id', reqId);
+            // حذف حساب المواطن المسجل بالهاتف لمنع تداخل البيانات القديمة
+            if (citizenPhone && citizenPhone !== '-') {
+                await sb.from('citizens').delete().eq('phone', citizenPhone);
+            }
+        }
+        showToast("تم مسح الحساب والطلب من جذورهما بنجاح", "success");
+        loadAdminData();
+    } catch(e) {
+        showToast(`تعذر الحذف: ${e.message}`, "error");
+    }
+}
+
+        // إضافة تاجر جديد يدوياً من لوحة الأدمن
+        async function showNewMerchantModal() {
+            let name = prompt("اسم المنشأة التجارية / السوبرماركت:");
+            let phone = prompt("رقم الهاتف:");
+            let address = prompt("العنوان بالتفصيل:");
+            let products = prompt("النشاط / المنتجات:");
+            let pass = prompt("كلمة المرور (6 خانات على الأقل):");
+
+            if (name && pass) {
+                if (pass.length < 6) {
+                    showToast("كلمة المرور قصيرة جداً", "error");
+                    return;
+                }
+                const sb = getSupabase();
+                try {
+                    if (sb) {
+                        const { error } = await sb.from('stores').insert([{
+                            name: sanitizeInput(name),
+                            phone: sanitizeInput(phone),
+                            address: sanitizeInput(address),
+                            products: sanitizeInput(products),
+                            password: pass
+                        }]);
+                        if (error) throw error;
+                    }
+                    showToast("تمت إضافة التاجر بنجاح", "success");
+                    loadAdminData();
+                } catch(e) {
+                    showToast(`خطأ في إضافة التاجر: ${e.message}`, "error");
+                }
+            }
+        }
+
+        // حذف تاجر نهائياً
+        async function deleteMerchantStore(storeId, storeName) {
+            if (!confirm(`هل أنت متأكد من حذف المتجر "${storeName}" نهائياً من النظام؟`)) return;
+            const sb = getSupabase();
+            try {
+                if (sb) {
+                    await sb.from('stores').delete().eq('id', storeId);
+                }
+                showToast("تم حذف المتجر بنجاح", "success");
+                loadAdminData();
+            } catch(e) {
+                showToast(`تعذر حذف المتجر: ${e.message}`, "error");
+            }
+        }
+
+        async function exportSettlementsExcel() {
+            const sb = getSupabase();
+            try {
+                let transactions = [];
+                if (sb) {
+                    const { data } = await sb.from('transactions').select('*').eq('is_refunded', false);
+                    if (data) transactions = data;
+                }
+
+                if (transactions.length === 0) {
+                    showToast("لا توجد مبيعات لتصديرها", "error");
                     return;
                 }
 
-                let statusBadge = "";
-                let actionBtn = "";
-
-                if (r.status === 'pending') {
-                    statusBadge = `<span class="req-status status-pending">قيد التدقيق المركزي</span>`;
-                } else if (r.status === 'approved') {
-                    statusBadge = `<span class="req-status status-approved">معتمد رسمياً</span>`;
-                    actionBtn = `<button class="btn btn-emerald" style="padding:8px 14px; font-size:11px; margin-top:10px;" onclick="openCardView('${r.id}')">استعراض الهوية الرقمية والـ QR Code</button>`;
-                } else if (r.status === 'rejected') {
-                    statusBadge = `<span class="req-status status-rejected">مرفوض</span>`;
-                }
-
-                container.innerHTML = `
-                    <div class="req-card" style="border-color: var(--primary);">
-                        <div class="req-head">
-                            <b style="font-size:13px;">الطلب الوحيد المعتمد: #${r.id}</b>
-                            ${statusBadge}
-                        </div>
-                        <div style="font-size:11px; color:var(--text-sub); display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                            <div>الدائرة: <b>${sanitizeInput(r.dept)}</b></div>
-                            <div>صافي الراتب: <b>${(parseFloat(r.net_salary) || 0).toLocaleString()} د.ع</b></div>
-                            <div>السقف الممنوح: <b>${(parseFloat(r.credit_limit) || 0).toLocaleString()} د.ع</b></div>
-                            <div>الرصيد المتاح: <b style="color:var(--emerald);">${(parseFloat(r.balance) || 0).toLocaleString()} د.ع</b></div>
-                        </div>
-                        ${r.decision_note ? `<div style="font-size:10px; color:var(--rose); margin-top:8px;">سبب الرفض: ${sanitizeInput(r.decision_note)}</div>` : ''}
-                        ${actionBtn}
-                    </div>
-                `;
-            } catch(e) {
-                container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--rose);">خطأ في جلب بيانات السيرفر</div>`;
-            }
-        }
-
-        async function openCardView(reqId) {
-            const sb = getSupabase();
-            try {
-                let r = null;
-                if (sb) {
-                    const { data } = await sb.from('requests').select('*').eq('id', reqId).single();
-                    r = data;
-                }
-                if (!r) return;
-                activeCardReq = r;
-
-                document.getElementById('pass-name').innerText = r.name;
-                document.getElementById('pass-dept').innerText = `${r.dept} | #${r.id}`;
-                document.getElementById('pass-limit').innerText = `${(parseFloat(r.credit_limit) || 0).toLocaleString()} د.ع`;
-
-                const totalLimit = parseFloat(r.credit_limit) || 1;
-                const currentBal = parseFloat(r.balance) || 0;
-                const spent = Math.max(0, totalLimit - currentBal);
-                const remainPercent = Math.max(0, Math.min(100, (currentBal / totalLimit) * 100));
-
-                document.getElementById('prog-spent').innerText = `${spent.toLocaleString()} د.ع`;
-                document.getElementById('prog-remain').innerText = `${currentBal.toLocaleString()} د.ع (${Math.round(remainPercent)}%)`;
-                document.getElementById('prog-fill').style.width = `${remainPercent}%`;
-
-                updateDynamicOtp();
-                if (otpInterval) clearInterval(otpInterval);
-                let timerSec = 60;
-                otpInterval = setInterval(() => {
-                    timerSec--;
-                    const tEl = document.getElementById('dyn-timer');
-                    if (tEl) tEl.innerText = `(${timerSec}s)`;
-                    if (timerSec <= 0) {
-                        updateDynamicOtp();
-                        timerSec = 60;
-                    }
-                }, 1000);
-
-                const statementBox = document.getElementById('mini-statement-body');
-                statementBox.innerHTML = "";
-                if (sb) {
-                    const { data: txs } = await sb.from('transactions').select('*').eq('request_id', r.id).eq('is_refunded', false).order('created_at', { ascending: false }).limit(3);
-                    if (!txs || txs.length === 0) {
-                        statementBox.innerHTML = `<div style="color:var(--text-sub); font-size:10px; text-align:center;">لا توجد حركات شراء منفذة حتى الآن</div>`;
-                    } else {
-                        txs.forEach(t => {
-                            statementBox.innerHTML += `
-                                <div class="statement-row">
-                                    <span><b>${sanitizeInput(t.store_name)}</b> (${new Date(t.created_at).toLocaleDateString('ar-EG')})</span>
-                                    <b style="color:var(--rose);">- ${(parseFloat(t.amount) || 0).toLocaleString()} د.ع</b>
-                                </div>
-                            `;
-                        });
-                    }
-                }
-
-                showView('card-modal');
-            } catch(e){}
-        }
-
-        async function updateDynamicOtp() {
-            if (!activeCardReq) return;
-            const code = String(Math.floor(100 + Math.random() * 900));
-            const cEl = document.getElementById('dyn-sec-code');
-            if (cEl) cEl.innerText = code;
-
-            const sb = getSupabase();
-            if (sb) {
-                try {
-                    await sb.from('requests').update({ current_otp: code }).eq('id', activeCardReq.id);
-                } catch(e){}
-            }
-
-            const canvas = document.getElementById('emp-qr-code');
-            if (canvas) {
-                new QRious({
-                    element: canvas,
-                    value: encodeURIComponent(JSON.stringify({ id: activeCardReq.id, name: activeCardReq.name, otp: code, ts: Date.now() })),
-                    size: 110,
-                    level: 'L'
+                let stores = {};
+                transactions.forEach(t => {
+                    if (!stores[t.store_name]) stores[t.store_name] = 0;
+                    stores[t.store_name] += parseFloat(t.amount);
                 });
-            }
-        }
 
-        async function renderStoresDirectory() {
-            const container = document.getElementById('stores-directory-list');
-            container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub);">جاري استعراض المتاجر المعتمدة...</div>`;
+                let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+                csvContent += "اسم المنشأة / السوبرماركت,إجمالي المبيعات (د.ع),عمولة الاتحاد 3% (د.ع),صافي المستحق للمتجر (د.ع)\n";
 
-            const sb = getSupabase();
-            if (sb) {
-                const { data: stores } = await sb.from('stores').select('*').order('created_at', { ascending: false });
-                if (stores) cachedStores = stores;
-                displayFilteredStores(cachedStores);
-            }
-        }
+                Object.keys(stores).forEach(st => {
+                    let gross = stores[st];
+                    let fee = gross * 0.03;
+                    let net = gross * 0.97;
+                    csvContent += `"${sanitizeInput(st)}",${gross},${fee},${net}\n`;
+                });
 
-        function displayFilteredStores(stores) {
-            const container = document.getElementById('stores-directory-list');
-            if (!container) return;
-            const query = (document.getElementById('search-stores').value || "").toLowerCase().trim();
-
-            const filtered = stores.filter(st => {
-                const nameStr = String(st.name || "").toLowerCase();
-                const addrStr = String(st.address || "").toLowerCase();
-                const prodStr = String(st.products || "").toLowerCase();
-                return nameStr.includes(query) || addrStr.includes(query) || prodStr.includes(query);
-            });
-
-            container.innerHTML = "";
-            if (filtered.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub); font-size:12px;">لا توجد متاجر مطابقة للبحث.</div>`;
-                return;
-            }
-
-            filtered.forEach(st => {
-                container.innerHTML += `
-                    <div class="req-card">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                            <b style="font-size:13px; color:var(--primary);">${sanitizeInput(st.name)}</b>
-                            <span style="font-size:10px; color:var(--emerald); font-weight:700;">معتمد رسمياً</span>
-                        </div>
-                        <div style="font-size:11px; color:var(--text-sub);">العنوان: ${sanitizeInput(st.address || 'غير محدد')}</div>
-                        <div style="font-size:10px; color:var(--text-sub); margin-top:2px;">النشاط: ${sanitizeInput(st.products || 'مواد استهلاكية عامة')}</div>
-                    </div>
-                `;
-            });
-        }
-
-        function filterStoresLocally() {
-            displayFilteredStores(cachedStores);
-        }
-
-        function downloadSmartCard() {
-            html2canvas(document.getElementById('card-to-export'), { scale: 3 }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `Government-Smart-Card-${currentCitizen ? currentCitizen.name : 'Citizen'}.png`;
-                link.href = canvas.toDataURL();
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `Settlement-Report-${new Date().toLocaleDateString('ar-EG')}.csv`);
+                document.body.appendChild(link);
                 link.click();
-                showToast("تم حفظ البطاقة الرقمية الرسمية بنجاح", "success");
-            });
-        }
-
-        function validateAndPreviewFile(file, previewId) {
-            const maxSize = 3 * 1024 * 1024;
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-
-            if (!allowedTypes.includes(file.type)) {
-                showToast("صيغة الملف غير مقبولة (يُقبل JPEG/PNG/WEBP فقط)", "error");
-                return false;
-            }
-            if (file.size > maxSize) {
-                showToast("حجم الملف يتجاوز الحد الأقصى المسموح (3MB)", "error");
-                return false;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.getElementById(previewId);
-                img.src = e.target.result;
-                img.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-            return true;
-        }
-
-        function previewCard(input, previewId) {
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                if (validateAndPreviewFile(file, previewId)) {
-                    if (previewId === 'front-prev') cardFrontFile = file;
-                    if (previewId === 'back-prev') cardBackFile = file;
-                } else {
-                    input.value = "";
-                }
-            }
-        }
-
-        async function startCamera() {
-            try {
-                cameraStream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } } });
-                const video = document.getElementById('live-stream');
-                video.srcObject = cameraStream;
-                video.style.display = 'block';
-                document.getElementById('btn-cam-open').classList.add('hidden');
-                document.getElementById('btn-cam-snap').classList.remove('hidden');
-            } catch (err) {
-                showToast("يرجى منح صلاحية الكاميرا لإتمام التحقق البيومتري", "error");
-            }
-        }
-
-        function snapPhoto() {
-            const video = document.getElementById('live-stream');
-            const canvas = document.getElementById('pic-canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            capturedPhotoUrl = canvas.toDataURL('image/png');
-            document.getElementById('captured-photo').src = capturedPhotoUrl;
-            document.getElementById('captured-photo').style.display = 'block';
-            video.style.display = 'none';
-            if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
-            document.getElementById('btn-cam-snap').classList.add('hidden');
-            showToast("تم توثيق الصورة البيومترية بنجاح", "success");
-        }
-
-        async function uploadFileToStorage(fileOrBlob, prefix) {
-            const sb = getSupabase();
-            if (!fileOrBlob || !sb) return "";
-            const ext = fileOrBlob.name ? fileOrBlob.name.split('.').pop() : 'png';
-            const fileName = `${prefix}_${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
-            const { error } = await sb.storage.from('union-docs').upload(fileName, fileOrBlob);
-            if (error) throw error;
-            const { data } = sb.storage.from('union-docs').getPublicUrl(fileName);
-            return data.publicUrl;
-        }
-
-        async function submitRegistration() {
-            const dept = sanitizeInput(document.getElementById('reg-dept').value);
-            const card = sanitizeInput(document.getElementById('reg-card').value);
-            const gross = parseFloat(document.getElementById('reg-gross').value);
-            const deduct = parseFloat(document.getElementById('reg-deduct').value) || 0;
-            const pin = document.getElementById('reg-pin').value.trim();
-            const submitBtn = document.getElementById('btn-submit-reg');
-
-            if (!dept || isNaN(gross) || gross <= 0 || !pin) {
-                showToast("يرجى ملء جميع الحقول الإجبارية وإدخال رمز الـ PIN", "error");
-                return;
-            }
-
-            if (card.length !== 16 || isNaN(card)) {
-                showToast("رقم بطاقة الماستركارد غير صحيح (يجب أن يكون 16 رقماً)", "error");
-                return;
-            }
-
-            if (pin.length !== 4 || isNaN(pin)) {
-                showToast("رمز PIN السري يجب أن يتكون من 4 أرقام", "error");
-                return;
-            }
-
-            if (!cardFrontFile || !cardBackFile || !capturedPhotoUrl) {
-                showToast("يرجى إرفاق صور المستمسكات وصورة التحقق البيومتري", "error");
-                return;
-            }
-
-            const sb = getSupabase();
-            try {
-                // فحص أخير للتأكد من عدم وجود طلب مسبق قبل الإرسال
-                if (sb) {
-                    const { data: existingReq } = await sb.from('requests').select('*').eq('phone', currentCitizen.phone).maybeSingle();
-                    if (existingReq) {
-                        showToast("عذراً، لديك طلب مسجل مسبقاً بالفعل.", "error");
-                        showView('my-requests');
-                        return;
-                    }
-                }
-
-                submitBtn.disabled = true;
-                submitBtn.innerText = "جاري التشفير والرفع الآمن للسيرفر...";
-                showToast("جاري معالجة المستندات...", "info");
-
-                let kycBlob = null;
-                if (capturedPhotoUrl) {
-                    const res = await fetch(capturedPhotoUrl);
-                    kycBlob = await res.blob();
-                }
-
-                const [frontUrl, backUrl, kycUrl] = await Promise.all([
-                    uploadFileToStorage(cardFrontFile, `front_${currentCitizen.phone}`),
-                    uploadFileToStorage(cardBackFile, `back_${currentCitizen.phone}`),
-                    uploadFileToStorage(kycBlob, `kyc_${currentCitizen.phone}`)
-                ]);
-
-                const hashedPin = await hashPin(pin);
-                const netSalary = Math.max(0, gross - deduct);
-                const limit = netSalary * 0.5;
-
-                if (sb) {
-                    const { data, error } = await sb.from('requests').insert([{
-                        phone: currentCitizen.phone,
-                        name: currentCitizen.name,
-                        dept: dept,
-                        card_number: card,
-                        card_front_url: frontUrl,
-                        card_back_url: backUrl,
-                        kyc_photo_url: kycUrl,
-                        gross_salary: gross,
-                        deductions: deduct,
-                        net_salary: netSalary,
-                        credit_limit: limit,
-                        balance: limit,
-                        pin: hashedPin,
-                        status: "pending",
-                        is_frozen: false
-                    }]).select();
-                    if (error) throw error;
-
-                    try {
-                        await sb.from('audit_logs').insert([{
-                            action_type: 'SUBMIT_REQUEST',
-                            description: `قام المواطن ${currentCitizen.name} بتقديم طلب سقف ائتماني برقم #${data[0].id}`,
-                            created_at: new Date().toISOString()
-                        }]);
-                    } catch (logErr) {
-                        console.warn("Audit log notice:", logErr);
-                    }
-                    showToast(`تم إرسال الطلب #${data[0].id} بنجاح للتدقيق`, "success");
-                }
-
-                showView('my-requests');
+                document.body.removeChild(link);
+                showToast("تم تحميل كشف المقاصة بنجاح", "success");
             } catch(e) {
-                showToast(`فشل الإرسال: ${e.message}`, "error");
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = "إرسال الطلب رسمياً للتدقيق المركزي";
+                showToast("فشل تصدير الكشف", "error");
             }
         }
 
-        window.onload = function() {
-            updateNavState();
-        };
+        async function toggleFreezeReq(reqId, currentFrozen) {
+            const sb = getSupabase();
+            try {
+                if (sb) {
+                    await sb.from('requests').update({ is_frozen: !currentFrozen }).eq('id', reqId);
+                }
+                showToast(!currentFrozen ? "تم تجميد حساب الموظف" : "تم إلغاء التجميد بنجاح", "info");
+                loadAdminData();
+            } catch(e) {
+                showToast("تعذر تغيير حالة التجميد", "error");
+            }
+        }
+
+        // إضافة موظف / أدمن جديد بكلمة مرور صريحة غير مشفرة
+        async function showNewStaffModal() {
+            let name = prompt("اسم الموظف / الأدمن:");
+            let email = prompt("البريد الإلكتروني المهني:");
+            let phone = prompt("رقم الهاتف:");
+            let pass = prompt("كلمة المرور (6 خانات على الأقل):");
+            let role = prompt("الدور (معاون / مدقق / أدمن):", "مدقق");
+
+            if (name && email && pass) {
+                if (pass.length < 6) {
+                    showToast("كلمة المرور قصيرة جداً", "error");
+                    return;
+                }
+                const sb = getSupabase();
+                try {
+                    if (sb) {
+                        const { error } = await sb.from('admin_users').insert([{
+                            name: sanitizeInput(name),
+                            email: sanitizeInput(email).toLowerCase().trim(),
+                            phone: sanitizeInput(phone),
+                            password: pass,
+                            role: sanitizeInput(role),
+                            is_frozen: false
+                        }]);
+                        if (error) throw error;
+                    }
+                    showToast("تمت إضافة حساب الموظف/الأدمن بنجاح", "success");
+                    loadAdminData();
+                } catch(e) {
+                    showToast(`خطأ في إضافة الموظف: ${e.message}`, "error");
+                }
+            }
+        }
+
+        async function toggleStaffFreeze(staffId, currentFrozen) {
+            const sb = getSupabase();
+            try {
+                if (sb) {
+                    await sb.from('admin_users').update({ is_frozen: !currentFrozen }).eq('id', staffId);
+                }
+                showToast("تم تحديث حالة حساب الموظف", "info");
+                loadAdminData();
+            } catch(e) {
+                showToast("تعذر تغيير حالة الحساب", "error");
+            }
+        }
+
+        // حذف حساب الموظف / الأدمن من قاعدة البيانات
+        async function deleteStaffAccount(staffId, staffName) {
+            if (!confirm(`هل أنت متأكد من حذف حساب الموظف "${staffName}" نهائياً من النظام؟`)) return;
+            const sb = getSupabase();
+            try {
+                if (sb) {
+                    await sb.from('admin_users').delete().eq('id', staffId);
+                }
+                showToast("تم حذف حساب الموظف بنجاح", "success");
+                loadAdminData();
+            } catch(e) {
+                showToast(`تعذر الحذف: ${e.message}`, "error");
+            }
+        }
+
+        function logoutAdmin() {
+            document.getElementById('admin-main-dash').classList.add('hidden');
+            document.getElementById('admin-login-screen').classList.remove('hidden');
+            document.getElementById('adm-email').value = "gm@union.iq";
+            document.getElementById('adm-pass').value = "admin1234";
+            showToast("تم تسجيل الخروج", "info");
+        }
     </script>
 </body>
 </html>
