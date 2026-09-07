@@ -545,7 +545,6 @@
             }
         }
 
-        // منطق التحقق وفحص الطلب الواحد قبل السماح بالتقديم
         async function checkAuthAndProceed(targetView) {
             if (!currentCitizen) {
                 showToast("يرجى تسجيل الدخول أو إنشاء حساب للوصول للخدمة", "error");
@@ -759,16 +758,12 @@
                         } else if (payload.new.status === 'rejected') {
                             showToast(`عذراً، تم رفض الطلب: ${payload.new.decision_note || 'عدم الاكتمال'}`, "error");
                         }
-                        // مسح الكاش عند حدوث تحديث فوري لكي يتم سحب البيانات الجديدة مباشرة
-                        sessionStorage.removeItem(`citizen_cache_${currentCitizen.phone}`);
-                        sessionStorage.removeItem(`citizen_cache_time_${currentCitizen.phone}`);
                         renderMySingleRequest();
                     })
                     .subscribe();
             } catch(e) {}
         }
 
-        // عرض الطلب الوحيد للمواطن مع دعم الـ Caching (تخزين مؤقت لمدة 10 دقائق)
         async function renderMySingleRequest() {
             const container = document.getElementById('my-requests-list');
             if (!container) return;
@@ -778,30 +773,8 @@
             try {
                 let r = null;
                 if (sb && currentCitizen) {
-                    const cacheKey = `citizen_cache_${currentCitizen.phone}`;
-                    const cacheTimeKey = `citizen_cache_time_${currentCitizen.phone}`;
-                    
-                    const cachedData = sessionStorage.getItem(cacheKey);
-                    const cachedTime = sessionStorage.getItem(cacheTimeKey);
-                    
-                    const now = Date.now();
-                    const tenMinutes = 10 * 60 * 1000; // 10 دقائق بالميلي ثانية
-
-                    // التحقق من الذاكرة المؤقتة (Cache) أولاً
-                    if (cachedData && cachedTime && (now - parseInt(cachedTime) < tenMinutes)) {
-                        console.log("Serving from Browser Cache 🚀 (بدون إزعاج قاعدة البيانات)");
-                        r = JSON.parse(cachedData);
-                    } else {
-                        // جلب البيانات من قاعدة بيانات Supabase في حال عدم وجودها أو انتهاء الوقت
-                        const { data, error } = await sb.from('requests').select('*').eq('phone', currentCitizen.phone).maybeSingle();
-                        if (!error) {
-                            r = data;
-                            // حفظ البيانات في ذاكرة المتصفح المؤقتة
-                            sessionStorage.setItem(cacheKey, JSON.stringify(data));
-                            sessionStorage.setItem(cacheTimeKey, now);
-                            console.log("Fetched from Supabase Database 🗄️");
-                        }
-                    }
+                    const { data, error } = await sb.from('requests').select('*').eq('phone', currentCitizen.phone).maybeSingle();
+                    if (!error) r = data;
                 }
 
                 container.innerHTML = "";
@@ -1141,12 +1114,6 @@
                         is_frozen: false
                     }]).select();
                     if (error) throw error;
-
-                    // مسح الكاش عند إرسال طلب جديد لتحديث البيانات في المرة القادمة
-                    if (currentCitizen) {
-                        sessionStorage.removeItem(`citizen_cache_${currentCitizen.phone}`);
-                        sessionStorage.removeItem(`citizen_cache_time_${currentCitizen.phone}`);
-                    }
 
                     try {
                         await sb.from('audit_logs').insert([{
