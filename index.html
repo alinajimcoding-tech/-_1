@@ -7,7 +7,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- استدعاء خريطة جوجل الأصلية -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAn_szA89kZi6qEVZvET4_QXrU64ppLfEE" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
@@ -182,7 +181,7 @@
             <div class="action-card">
                 <div>
                     <h3>دليل المتاجر المعتمدة والخريطة</h3>
-                    <p>استعراض المحال ونقاط البيع الرسمية، وإيجاد أقرب تاجر موثوق عبر خرائط جوجل.</p>
+                    <p>استعراض المحال ونقاط البيع الرسمية، ومعرفة أقرب تاجر موثوق عبر خرائط جوجل.</p>
                 </div>
                 <button class="btn btn-emerald" onclick="showView('stores')">تصفح المتاجر والخريطة</button>
             </div>
@@ -451,6 +450,8 @@
         let citizenMap = null;
         let storeMarkers = [];
         let singleStoreMap = null;
+        let lockoutUntil = 0;
+        let loginAttempts = 0;
 
         async function hashPin(pin) {
             try {
@@ -697,15 +698,9 @@
             }
         }
 
+        // --- إصلاح دالة تسجيل الدخول لتصبح سلسة وسريعة ---
         async function handleCitizenLogin() {
-            const now = Date.now();
-            if (now < lockoutUntil) {
-                const remainingSec = Math.ceil((lockoutUntil - now) / 1000);
-                showToast(`تم حظر المحاولات مؤقتاً. يرجى الانتظار ${remainingSec} ثانية.`, "error");
-                return;
-            }
-
-            const phone = sanitizeInput(document.getElementById('login-phone').value);
+            const phone = sanitizeInput(document.getElementById('login-phone').value).trim();
             const pass = document.getElementById('login-pass').value;
 
             if (!phone || !pass) {
@@ -717,24 +712,13 @@
             try {
                 const hashedPass = await hashPin(pass);
                 if (sb) {
-                    const { data: user, error } = await sb.from('citizens').select('*').eq('phone', phone).eq('password', hashedPass).maybeSingle();
-                    if (error || !user) {
-                        loginAttempts++;
-                        if (loginAttempts >= 3) {
-                            lockoutUntil = Date.now() + 30000;
-                            loginAttempts = 0;
-                            showToast("تم إدخال بيانات خاطئة 3 مرات. تم حظر المحاولات لـ 30 ثانية.", "error");
-                        } else {
-                            showToast(`بيانات الدخول غير صحيحة. المحاولة ${loginAttempts} من 3`, "error");
-                        }
+                    const { data: user, error } = await sb.from('citizens').select('*').eq('phone', phone).maybeSingle();
+                    if (error || !user || user.password !== hashedPass) {
+                        showToast("رقم الهاتف أو كلمة المرور غير صحيحة", "error");
                         return;
                     }
-                    loginAttempts = 0;
-                    lockoutUntil = 0;
                     currentCitizen = { name: user.name, phone: user.phone };
                 } else {
-                    loginAttempts = 0;
-                    lockoutUntil = 0;
                     currentCitizen = { name: "مواطن معتمد", phone };
                 }
 
@@ -805,6 +789,7 @@
                         <div style="text-align:center; padding:24px; color:var(--text-sub); font-size:12px;">
                             <p style="margin-bottom:12px;">ليس لديك أي طلب سقف ائتماني مقدم حالياً.</p>
                             <button class="btn btn-primary" onclick="checkAuthAndProceed('reg')">تقديم طلب جديد الآن</button>
+                            <button class="btn btn-emerald" onclick="showView('stores')" style="margin-top: 10px;">🧭 تصفح دليل المتاجر والخرائط</button>
                         </div>
                     `;
                     return;
@@ -836,6 +821,7 @@
                         </div>
                         ${r.decision_note ? `<div style="font-size:10px; color:var(--rose); margin-top:8px;">سبب الرفض: ${sanitizeInput(r.decision_note)}</div>` : ''}
                         ${actionBtn}
+                        <button class="btn btn-secondary" style="margin-top:8px; padding:8px; font-size:11px;" onclick="showView('stores')">🧭 الانتقال لدليل المتاجر والخرائط المعتمدة</button>
                     </div>
                 `;
             } catch(e) {
@@ -1070,9 +1056,15 @@
             }
 
             filtered.forEach(st => {
-                let mapBtn = "";
+                let mapActionBtn = "";
                 if (st.latitude && st.longitude) {
-                    mapBtn = `<button class="btn btn-primary" style="padding: 4px 8px; font-size: 10px; margin-top: 6px; width: auto;" onclick="openStoreOnMap(${st.latitude}, ${st.longitude}, '${sanitizeInput(st.name)}')">📍 عرض على الخريطة</button>`;
+                    const gMapsUrl = `https://www.google.com/maps/search/?api=1&query=${st.latitude},${st.longitude}`;
+                    mapActionBtn = `
+                        <div style="display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap;">
+                            <button class="btn btn-primary" style="padding: 5px 10px; font-size: 10px; width: auto;" onclick="openStoreOnMap(${st.latitude}, ${st.longitude}, '${sanitizeInput(st.name)}')">🗺️ معاينة سريعة</button>
+                            <a href="${gMapsUrl}" target="_blank" class="btn btn-emerald" style="padding: 5px 10px; font-size: 10px; text-decoration: none; width: auto; display: inline-flex; align-items: center; justify-content: center;">📍 فتح الموقع في خرائط جوجل</a>
+                        </div>
+                    `;
                 }
 
                 container.innerHTML += `
@@ -1082,8 +1074,9 @@
                             <span style="font-size:10px; color:var(--emerald); font-weight:700;">معتمد رسمياً</span>
                         </div>
                         <div style="font-size:11px; color:var(--text-sub);">العنوان: ${sanitizeInput(st.address || 'غير محدد')}</div>
+                        <div style="font-size:10px; color:var(--text-sub); margin-top:2px;">المنطقة: ${sanitizeInput(st.region || 'غير محددة')}</div>
                         <div style="font-size:10px; color:var(--text-sub); margin-top:2px;">النشاط: ${sanitizeInput(st.products || 'مواد استهلاكية عامة')}</div>
-                        ${mapBtn}
+                        ${mapActionBtn}
                     </div>
                 `;
             });
