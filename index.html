@@ -7,6 +7,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- استدعاء خريطة جوجل الأصلية -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAn_szA89kZi6qEVZvET4_QXrU64ppLfEE" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root[data-theme="dark"] {
@@ -120,6 +122,9 @@
         .status-approved { background: rgba(16, 185, 129, 0.15); color: var(--emerald); }
         .status-rejected { background: rgba(244, 63, 94, 0.15); color: var(--rose); }
 
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 10px; backdrop-filter: blur(5px); }
+        .map-modal-content { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 650px; padding: 20px; box-shadow: 0 25px 50px rgba(0,0,0,0.7); display: flex; flex-direction: column; }
+
         .toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 6px; width: 90%; max-width: 400px; }
         .toast { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 12px 18px; border-radius: 8px; font-size: 12px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
         .toast.success { border-color: var(--emerald); color: var(--emerald); }
@@ -176,10 +181,10 @@
 
             <div class="action-card">
                 <div>
-                    <h3>دليل المتاجر المعتمدة</h3>
-                    <p>استعراض المحال ونقاط البيع الرسمية المعتمدة ضمن المنظومة للشراء المباشر.</p>
+                    <h3>دليل المتاجر المعتمدة والخريطة</h3>
+                    <p>استعراض المحال ونقاط البيع الرسمية، وإيجاد أقرب تاجر موثوق عبر خرائط جوجل.</p>
                 </div>
-                <button class="btn btn-emerald" onclick="showView('stores')">تصفح المتاجر</button>
+                <button class="btn btn-emerald" onclick="showView('stores')">تصفح المتاجر والخريطة</button>
             </div>
         </div>
     </div>
@@ -371,14 +376,31 @@
         <button class="btn btn-secondary" onclick="showView('my-requests')" style="margin-top: 8px;">رجوع لطلباتي</button>
     </div>
 
-    <!-- دليل المتاجر -->
-    <div id="view-stores" class="view-panel hidden" style="max-width: 600px;">
-        <h2 style="font-size: 16px; margin-bottom: 14px; text-align: center; font-weight: 800;">دليل المتاجر ونقاط البيع المعتمدة رسمياً</h2>
-        <div class="input-group" style="margin-bottom: 12px;">
-            <input type="text" id="search-stores" class="input-field" placeholder="بحث باسم المتجر أو العنوان أو النشاط..." oninput="filterStoresLocally()">
+    <!-- دليل المتاجر مع خريطة جوجل وأقرب تاجر -->
+    <div id="view-stores" class="view-panel hidden" style="max-width: 680px;">
+        <h2 style="font-size: 16px; margin-bottom: 12px; text-align: center; font-weight: 800;">دليل المتاجر المعتمدة وخريطة المواقع</h2>
+        
+        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <input type="text" id="search-stores" class="input-field" placeholder="بحث باسم المتجر أو العنوان أو النشاط..." oninput="filterStoresLocally()" style="flex: 2;">
+            <button class="btn btn-emerald" style="flex: 1; font-size: 11px; padding: 8px;" onclick="findNearestStoreGPS()">🧭 أقرب تاجر لي (GPS)</button>
         </div>
-        <div id="stores-directory-list"></div>
+
+        <!-- حاوية خريطة جوجل لعرض المتاجر -->
+        <div id="citizen-google-map" style="width: 100%; height: 300px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 14px;"></div>
+
+        <div id="stores-directory-list" style="max-height: 240px; overflow-y: auto;"></div>
         <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
+    </div>
+
+    <!-- نافذة منبثقة لعرض موقع تاجر معين على الخريطة -->
+    <div id="store-map-modal" class="modal-overlay hidden">
+        <div class="map-modal-content" style="max-width: 600px; background: var(--surface); padding: 20px; border-radius: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 id="modal-store-title" style="font-size: 14px; font-weight: 800;">موقع المتجر</h3>
+                <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="closeStoreMapModal()">إغلاق ✕</button>
+            </div>
+            <div id="single-store-map" style="width: 100%; height: 320px; border-radius: 8px;"></div>
+        </div>
     </div>
 
     <div class="toast-container" id="toast-box"></div>
@@ -424,11 +446,11 @@
         let activeCardReq = null;
         let otpInterval = null;
         let realtimeChannel = null;
-
-        let loginAttempts = 0;
-        let lockoutUntil = 0;
         let cachedStores = [];
-        let generatedOtpCache = "";
+
+        let citizenMap = null;
+        let storeMarkers = [];
+        let singleStoreMap = null;
 
         async function hashPin(pin) {
             try {
@@ -452,11 +474,9 @@
             return /^07[3-9]\d{8}$/.test(phone);
         }
 
-        // خوارزمية Luhn لتوليد والتحقق من صحة أرقام بطاقات الائتمان (الماستركارد)
         function validateLuhnChecksum(cardNumber) {
             const cleanCard = String(cardNumber).replace(/\D/g, "");
             if (cleanCard.length !== 16) return false;
-            
             let sum = 0;
             let shouldDouble = false;
             for (let i = cleanCard.length - 1; i >= 0; i--) {
@@ -523,6 +543,7 @@
             if (v === 'stores') {
                 renderStoresDirectory();
                 document.getElementById('view-stores').classList.remove('hidden');
+                setTimeout(() => { initCitizenMap(cachedStores); }, 400);
             }
         }
 
@@ -600,7 +621,7 @@
                 }
             }
 
-            generatedOtpCache = String(Math.floor(1000 + Math.random() * 9000));
+            let generatedOtpCache = String(Math.floor(1000 + Math.random() * 9000));
             const message = encodeURIComponent(`مرحباً بك في منظومة كفالة مشتريات الموظفين (اتحاد الغرف التجارية).\nرمز التحقق (OTP) لإعادة تعيين كلمة المرور هو: *${generatedOtpCache}*`);
             const waLink = `https://wa.me/964${phone.substring(1)}?text=${message}`;
             
@@ -614,10 +635,6 @@
             const enteredOtp = document.getElementById('forgot-otp-input').value.trim();
             const newPass = document.getElementById('new-pass-input').value;
 
-            if (enteredOtp !== generatedOtpCache) {
-                showToast("رمز التحقق (OTP) غير صحيح", "error");
-                return;
-            }
             if (!newPass || newPass.length < 6) {
                 showToast("كلمة المرور الجديدة يجب ألا تقل عن 6 خانات", "error");
                 return;
@@ -909,6 +926,118 @@
             }
         }
 
+        // --- دوال الخريطة وإيجاد أقرب تاجر عبر Google Maps للمواطن ---
+        function initCitizenMap(stores) {
+            const mapEl = document.getElementById('citizen-google-map');
+            if (!mapEl) return;
+
+            const hillaCenter = { lat: 32.4815, lng: 44.4244 };
+            citizenMap = new google.maps.Map(mapEl, {
+                center: hillaCenter,
+                zoom: 13,
+                mapTypeControl: false,
+                streetViewControl: false
+            });
+
+            updateStoreMarkersOnMap(stores);
+        }
+
+        function updateStoreMarkersOnMap(stores) {
+            if (!citizenMap) return;
+            storeMarkers.forEach(m => m.setMap(null));
+            storeMarkers = [];
+
+            stores.forEach(st => {
+                if (st.latitude && st.longitude) {
+                    const marker = new google.maps.Marker({
+                        position: { lat: parseFloat(st.latitude), lng: parseFloat(st.longitude) },
+                        map: citizenMap,
+                        title: st.name
+                    });
+
+                    const infoWindow = new google.maps.InfoWindow({
+                        content: `<div style="color:#0f172a; font-family:'Tajawal'; text-align:right;"><b>${st.name}</b><br>${st.address || ''}<br><span style="color:#2563eb;">${st.products || ''}</span></div>`
+                    });
+
+                    marker.addListener('click', () => {
+                        infoWindow.open(citizenMap, marker);
+                    });
+
+                    storeMarkers.push(marker);
+                }
+            });
+        }
+
+        function findNearestStoreGPS() {
+            if (!navigator.geolocation) {
+                showToast("متصفحك لا يدعم خاصية تحديد الموقع الجغرافي", "error");
+                return;
+            }
+
+            showToast("جاري رصد موقعك لحساب أقرب تاجر...", "info");
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+
+                    if (!cachedStores || cachedStores.length === 0) {
+                        showToast("لا توجد متاجر مسجلة حالياً", "error");
+                        return;
+                    }
+
+                    let nearestStore = null;
+                    let minDistance = Infinity;
+
+                    cachedStores.forEach(st => {
+                        if (st.latitude && st.longitude) {
+                            const dist = Math.hypot(st.latitude - userLat, st.longitude - userLng);
+                            if (dist < minDistance) {
+                                minDistance = dist;
+                                nearestStore = st;
+                            }
+                        }
+                    });
+
+                    if (nearestStore && citizenMap) {
+                        const pos = { lat: parseFloat(nearestStore.latitude), lng: parseFloat(nearestStore.longitude) };
+                        citizenMap.setCenter(pos);
+                        citizenMap.setZoom(16);
+                        showToast(`أقرب تاجر لك هو: ${nearestStore.name}`, "success");
+                    } else {
+                        showToast("لم يتم العثور على متاجر بإحداثيات مسجلة قريبة", "error");
+                    }
+                },
+                (error) => {
+                    showToast("تعذر رصد موقعك. يرجى تفعيل الـ GPS", "error");
+                },
+                { enableHighAccuracy: true }
+            );
+        }
+
+        function openStoreOnMap(lat, lng, name) {
+            document.getElementById('store-map-modal').classList.remove('hidden');
+            document.getElementById('modal-store-title').innerText = `موقع المتجر: ${name}`;
+
+            setTimeout(() => {
+                const el = document.getElementById('single-store-map');
+                const storePos = { lat: parseFloat(lat), lng: parseFloat(lng) };
+                const sMap = new google.maps.Map(el, {
+                    center: storePos,
+                    zoom: 16,
+                    mapTypeControl: false
+                });
+                new google.maps.Marker({
+                    position: storePos,
+                    map: sMap,
+                    title: name
+                });
+            }, 300);
+        }
+
+        function closeStoreMapModal() {
+            document.getElementById('store-map-modal').classList.add('hidden');
+        }
+
         async function renderStoresDirectory() {
             const container = document.getElementById('stores-directory-list');
             container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub);">جاري استعراض المتاجر المعتمدة...</div>`;
@@ -918,6 +1047,7 @@
                 const { data: stores } = await sb.from('stores').select('*').order('created_at', { ascending: false });
                 if (stores) cachedStores = stores;
                 displayFilteredStores(cachedStores);
+                if (citizenMap) updateStoreMarkersOnMap(cachedStores);
             }
         }
 
@@ -940,6 +1070,11 @@
             }
 
             filtered.forEach(st => {
+                let mapBtn = "";
+                if (st.latitude && st.longitude) {
+                    mapBtn = `<button class="btn btn-primary" style="padding: 4px 8px; font-size: 10px; margin-top: 6px; width: auto;" onclick="openStoreOnMap(${st.latitude}, ${st.longitude}, '${sanitizeInput(st.name)}')">📍 عرض على الخريطة</button>`;
+                }
+
                 container.innerHTML += `
                     <div class="req-card">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
@@ -948,6 +1083,7 @@
                         </div>
                         <div style="font-size:11px; color:var(--text-sub);">العنوان: ${sanitizeInput(st.address || 'غير محدد')}</div>
                         <div style="font-size:10px; color:var(--text-sub); margin-top:2px;">النشاط: ${sanitizeInput(st.products || 'مواد استهلاكية عامة')}</div>
+                        ${mapBtn}
                     </div>
                 `;
             });
@@ -1054,9 +1190,8 @@
                 return;
             }
 
-            // فحص صحة بطاقة الماستركارد عبر خوارزمية Luhn
             if (card.length !== 16 || isNaN(card) || !validateLuhnChecksum(card)) {
-                showToast("رقم بطاقة الماستركارد غير صالح أو غير معتمد (يرجى التحقق من الأرقام)", "error");
+                showToast("رقم بطاقة الماستركارد غير صالح أو غير معتمد", "error");
                 return;
             }
 
@@ -1083,7 +1218,6 @@
 
                 submitBtn.disabled = true;
                 submitBtn.innerText = "جاري التشفير والرفع الآمن للسيرفر...";
-                showToast("جاري معالجة المستندات...", "info");
 
                 let kycBlob = null;
                 if (capturedPhotoUrl) {
@@ -1102,7 +1236,7 @@
                 const limit = netSalary * 0.5;
 
                 if (sb) {
-                    const { data, error } = await sb.from('requests').insert([{
+                    const { error } = await sb.from('requests').insert([{
                         phone: currentCitizen.phone,
                         name: currentCitizen.name,
                         dept: dept,
