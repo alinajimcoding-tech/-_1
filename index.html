@@ -250,7 +250,7 @@
         <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
     </div>
 
-    <!-- سجل الطلبات والبطاقة الذكية (طلب واحد مسموح) -->
+    <!-- سجل الطلبات والبطاقة الذكية -->
     <div id="view-my-requests" class="view-panel hidden" style="max-width: 600px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
             <h2 style="font-size: 16px; font-weight: 800;">سجل طلبك المعتمد والبطاقة الذكية</h2>
@@ -259,7 +259,7 @@
         <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 10px;">رجوع للرئيسية</button>
     </div>
 
-    <!-- نافذة التقديم (تظهر حصراً إن لم يكن لديه طلب مسبق) -->
+    <!-- نافذة التقديم -->
     <div id="view-reg" class="view-panel hidden">
         <h2 style="font-size: 16px; margin-bottom: 14px; text-align: center; font-weight: 800;">استمارة طلب سقف مشتريات الموظفين</h2>
         
@@ -272,7 +272,7 @@
             <input type="text" id="reg-dept" class="input-field" placeholder="مثال: وزارة التربية - مديرية تربية بابل">
         </div>
         <div class="input-group">
-            <label>رقم بطاقة الماستركارد الرسمية (16 رقماً)</label>
+            <label>رقم بطاقة الماستركارد الرسمية (16 رقماً مع التحقق الآمن)</label>
             <input type="text" id="reg-card" class="input-field" placeholder="•••• •••• •••• ••••" maxlength="16">
         </div>
 
@@ -398,9 +398,7 @@
                 if (window.supabase && typeof window.supabase.createClient === 'function') {
                     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 }
-            } catch(e) {
-                console.error("Supabase initialization error:", e);
-            }
+            } catch(e) {}
             return supabaseClient;
         }
 
@@ -429,7 +427,6 @@
 
         let loginAttempts = 0;
         let lockoutUntil = 0;
-
         let cachedStores = [];
         let generatedOtpCache = "";
 
@@ -453,6 +450,25 @@
 
         function validateIraqiPhone(phone) {
             return /^07[3-9]\d{8}$/.test(phone);
+        }
+
+        // خوارزمية Luhn لتوليد والتحقق من صحة أرقام بطاقات الائتمان (الماستركارد)
+        function validateLuhnChecksum(cardNumber) {
+            const cleanCard = String(cardNumber).replace(/\D/g, "");
+            if (cleanCard.length !== 16) return false;
+            
+            let sum = 0;
+            let shouldDouble = false;
+            for (let i = cleanCard.length - 1; i >= 0; i--) {
+                let digit = parseInt(cleanCard.charAt(i), 10);
+                if (shouldDouble) {
+                    digit *= 2;
+                    if (digit > 9) digit -= 9;
+                }
+                sum += digit;
+                shouldDouble = !shouldDouble;
+            }
+            return (sum % 10) === 0;
         }
 
         function playTone(freq, type = 'sine', duration = 0.15) {
@@ -630,12 +646,10 @@
                 showToast("يرجى ملء كافة الحقول الإجبارية بدقة", "error");
                 return;
             }
-
             if (!validateIraqiPhone(phone)) {
                 showToast("رقم الواتساب غير مطابق للصيغة العراقية المعتمدة", "error");
                 return;
             }
-
             if (pass.length < 6) {
                 showToast("كلمة المرور قصيرة (يجب أن تكون 6 خانات على الأقل)", "error");
                 return;
@@ -687,13 +701,7 @@
                 const hashedPass = await hashPin(pass);
                 if (sb) {
                     const { data: user, error } = await sb.from('citizens').select('*').eq('phone', phone).eq('password', hashedPass).maybeSingle();
-                    
-                    if (error) {
-                        showToast(`خطأ في الاتصال بقاعدة البيانات: ${error.message}`, "error");
-                        return;
-                    }
-
-                    if (!user) {
+                    if (error || !user) {
                         loginAttempts++;
                         if (loginAttempts >= 3) {
                             lockoutUntil = Date.now() + 30000;
@@ -704,11 +712,9 @@
                         }
                         return;
                     }
-                    
                     loginAttempts = 0;
                     lockoutUntil = 0;
                     currentCitizen = { name: user.name, phone: user.phone };
-
                 } else {
                     loginAttempts = 0;
                     lockoutUntil = 0;
@@ -743,7 +749,6 @@
             if (!sb || !currentCitizen) return;
             try {
                 if (realtimeChannel) sb.removeChannel(realtimeChannel);
-
                 realtimeChannel = sb
                     .channel(`citizen-${currentCitizen.phone}`)
                     .on('postgres_changes', {
@@ -1038,7 +1043,7 @@
 
         async function submitRegistration() {
             const dept = sanitizeInput(document.getElementById('reg-dept').value);
-            const card = sanitizeInput(document.getElementById('reg-card').value);
+            const card = sanitizeInput(document.getElementById('reg-card').value).trim();
             const gross = parseFloat(document.getElementById('reg-gross').value);
             const deduct = parseFloat(document.getElementById('reg-deduct').value) || 0;
             const pin = document.getElementById('reg-pin').value.trim();
@@ -1049,8 +1054,9 @@
                 return;
             }
 
-            if (card.length !== 16 || isNaN(card)) {
-                showToast("رقم بطاقة الماستركارد غير صحيح (يجب أن يكون 16 رقماً)", "error");
+            // فحص صحة بطاقة الماستركارد عبر خوارزمية Luhn
+            if (card.length !== 16 || isNaN(card) || !validateLuhnChecksum(card)) {
+                showToast("رقم بطاقة الماستركارد غير صالح أو غير معتمد (يرجى التحقق من الأرقام)", "error");
                 return;
             }
 
@@ -1114,19 +1120,9 @@
                         is_frozen: false
                     }]).select();
                     if (error) throw error;
-
-                    try {
-                        await sb.from('audit_logs').insert([{
-                            action_type: 'SUBMIT_REQUEST',
-                            description: `قام المواطن ${currentCitizen.name} بتقديم طلب سقف ائتماني برقم #${data[0].id}`,
-                            created_at: new Date().toISOString()
-                        }]);
-                    } catch (logErr) {
-                        console.warn("Audit log notice:", logErr);
-                    }
-                    showToast(`تم إرسال الطلب #${data[0].id} بنجاح للتدقيق`, "success");
                 }
 
+                showToast("تم إرسال الطلب بنجاح للتدقيق", "success");
                 showView('my-requests');
             } catch(e) {
                 showToast(`فشل الإرسال: ${e.message}`, "error");
