@@ -114,12 +114,37 @@
         .statement-row { display: flex; justify-content: space-between; font-size: 11px; padding: 6px 0; border-bottom: 1px solid var(--border); gap: 10px; }
         .statement-row:last-child { border-bottom: none; }
 
-        .req-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 12px; text-align: start; }
+        .req-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 12px; text-align: start; cursor: pointer; }
+        .req-card:hover { border-color: var(--primary); }
         .req-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 6px; flex-wrap: wrap; gap: 6px; }
         .req-status { font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
         .status-pending { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
         .status-approved { background: rgba(16, 185, 129, 0.15); color: var(--emerald); }
         .status-rejected { background: rgba(244, 63, 94, 0.15); color: var(--rose); }
+
+        /* زر الواتساب العائم */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background-color: #25d366;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 28px;
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+            z-index: 9999;
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+        }
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 10px; backdrop-filter: blur(5px); }
         .map-modal-content { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 650px; padding: 20px; box-shadow: 0 25px 50px rgba(0,0,0,0.7); display: flex; flex-direction: column; }
@@ -139,6 +164,13 @@
     </style>
 </head>
 <body>
+
+    <!-- زر الواتساب العائم للدعم الفني -->
+    <a href="https://wa.me/9647811662140?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B%D8%8C%20%D8%B9%D9%86%D8%AF%D9%8A%20%D9%85%D8%B4%D9%83%D9%84%D8%A9%20%D8%A8%20%D9%85%D9%86%D8%B5%D8%A9%20%D8%A7%D9%84%D9%85%D9%88%D8%B8%D9%81%20%D8%A3%D9%88%20%D8%A7%D9%84%D9%85%D9%88%D8%A7%D8%B7%D9%86" class="whatsapp-float" target="_blank" title="تواصل مع الدعم الفني عبر الواتساب">
+        <svg style="width:32px;height:32px;fill:currentColor;" viewBox="0 0 24 24">
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+        </svg>
+    </a>
 
     <nav class="navbar">
         <div class="brand">
@@ -162,9 +194,9 @@
         </section>
 
         <div class="grid-options">
-            <div class="action-card">
+            <div class="action-card" id="card-reg-wrapper">
                 <div>
-                    <h3>تقديم طلب سقف مشتريات</h3>
+                    <h3 id="reg-card-main-title">تقديم طلب سقف مشتريات</h3>
                     <p>إرفاق مفردات الراتب، بطاقة الماستركارد الرسمية، والتحقق البيومتري الحي لإصدار الهوية الرقمية.</p>
                 </div>
                 <button class="btn btn-primary" onclick="checkAuthAndProceed('reg')">تقديم الطلب</button>
@@ -172,10 +204,18 @@
 
             <div class="action-card">
                 <div>
-                    <h3>سجل طلباتي والبطاقة الذكية</h3>
+                    <h3>إدارة الهوية الرقمية وسقف المشتريات</h3>
                     <p>متابعة حالة المعاملات، استعراض الهوية الرقمية المشفرة، والاطلاع على كشف الحركات اللحظي.</p>
                 </div>
-                <button class="btn btn-secondary" onclick="checkAuthAndProceed('my-requests')">عرض طلباتي</button>
+                <button class="btn btn-secondary" onclick="checkAuthAndProceed('my-requests')">عرض طلباتي والهوية</button>
+            </div>
+
+            <div class="action-card">
+                <div>
+                    <h3>سجل العمليات والحركات الشامل</h3>
+                    <p>اكتشف أين ذهبت، كم صرفت، ومتابعة كافة العمليات المالية الشرائية والمسترجعة بدقة.</p>
+                </div>
+                <button class="btn btn-emerald" onclick="checkAuthAndProceed('history')">سجل العمليات والصرف</button>
             </div>
 
             <div class="action-card">
@@ -195,7 +235,6 @@
             <button id="tab-signup" class="btn btn-secondary" style="flex:1;" onclick="switchAuthTab('signup')">إنشاء حساب جديد</button>
         </div>
 
-        <!-- نموذج تسجيل الدخول -->
         <div id="auth-login-form">
             <div class="input-group">
                 <label>رقم هاتف الواتساب الرسمي:</label>
@@ -211,7 +250,6 @@
             </div>
         </div>
 
-        <!-- نموذج إنشاء حساب جديد -->
         <div id="auth-signup-form" class="hidden">
             <div class="input-group">
                 <label>الاسم الرباعي واللقب (رسمي):</label>
@@ -228,7 +266,6 @@
             <button class="btn btn-emerald" onclick="handleCitizenSignup()">إنشاء الحساب المعتمد</button>
         </div>
 
-        <!-- نموذج استعادة وإعادة تعيين كلمة المرور عبر الواتساب -->
         <div id="auth-forgot-form" class="hidden">
             <h3 style="font-size: 13px; font-weight: 800; margin-bottom: 10px; text-align: center; color: var(--amber);">استعادة كلمة المرور عبر الواتساب</h3>
             <div class="input-group">
@@ -261,6 +298,27 @@
         </div>
         <div id="my-requests-list"></div>
         <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 10px;">رجوع للرئيسية</button>
+    </div>
+
+    <!-- سجل العمليات والصرف الشامل -->
+    <div id="view-history" class="view-panel hidden" style="max-width: 680px;">
+        <h2 style="font-size: 16px; margin-bottom: 12px; text-align: center; font-weight: 800;">سجل العمليات والحركات المالية الكامل</h2>
+        <p style="font-size: 11px; color: var(--text-sub); text-align: center; margin-bottom: 14px;">اضغط على أي عملية أدناه لعرض تفاصيل التاجر والموقع والمبلغ بدقة.</p>
+        <div id="history-content-list" style="max-height: 340px; overflow-y: auto;"></div>
+        <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
+    </div>
+
+    <!-- نافذة منبثقة لتفاصيل العملية عند الضغط عليها -->
+    <div id="transaction-detail-modal" class="modal-overlay hidden">
+        <div class="map-modal-content" style="max-width: 450px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-size: 14px; font-weight: 800; color: var(--primary);">تفاصيل تفصيلية للعملية المالية</h3>
+                <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="closeTransactionModal()">إغلاق ✕</button>
+            </div>
+            <div id="transaction-detail-body" style="font-size: 12px; display: flex; flex-direction: column; gap: 8px; text-align: start;">
+                <!-- يتم تعبئتها ديناميكياً -->
+            </div>
+        </div>
     </div>
 
     <!-- نافذة التقديم -->
@@ -384,7 +442,6 @@
             <button class="btn btn-emerald" style="flex: 1; font-size: 11px; padding: 8px;" onclick="findNearestStoreGPS()">🧭 أقرب تاجر لي (GPS)</button>
         </div>
 
-        <!-- حاوية خريطة جوجل لعرض المتاجر -->
         <div id="citizen-google-map" style="width: 100%; height: 300px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 14px;"></div>
 
         <div id="stores-directory-list" style="max-height: 240px; overflow-y: auto;"></div>
@@ -522,7 +579,7 @@
         }
 
         function showView(v) {
-            const views = ['view-home', 'view-auth', 'view-my-requests', 'view-reg', 'view-card-modal', 'view-stores'];
+            const views = ['view-home', 'view-auth', 'view-my-requests', 'view-history', 'view-reg', 'view-card-modal', 'view-stores'];
             views.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.add('hidden');
@@ -539,6 +596,10 @@
                 renderMySingleRequest();
                 document.getElementById('view-my-requests').classList.remove('hidden');
             }
+            if (v === 'history') {
+                renderCitizenOperationsHistory();
+                document.getElementById('view-history').classList.remove('hidden');
+            }
             if (v === 'card-modal') document.getElementById('view-card-modal').classList.remove('hidden');
             if (v === 'stores') {
                 renderStoresDirectory();
@@ -547,7 +608,7 @@
             }
         }
 
-        function updateNavState() {
+        async function updateNavState() {
             const userInfo = document.getElementById('nav-user-info');
             const loginBtn = document.getElementById('nav-login-btn');
             const userName = document.getElementById('nav-user-name');
@@ -557,10 +618,31 @@
                 if (loginBtn) loginBtn.classList.add('hidden');
                 if (userName) userName.innerText = currentCitizen.name;
                 initRealtimeForCitizen();
+                checkIfUserHasActiveRequest();
             } else {
                 if (userInfo) userInfo.classList.add('hidden');
                 if (loginBtn) loginBtn.classList.remove('hidden');
+                const regWrapper = document.getElementById('card-reg-wrapper');
+                if (regWrapper) regWrapper.style.display = 'flex';
             }
+        }
+
+        async function checkIfUserHasActiveRequest() {
+            const sb = getSupabase();
+            if (!sb || !currentCitizen) return;
+            try {
+                const { data: r } = await sb.from('requests').select('*').eq('phone', currentCitizen.phone).maybeSingle();
+                const regWrapper = document.getElementById('card-reg-wrapper');
+                const mainTitle = document.getElementById('reg-card-main-title');
+                if (regWrapper) {
+                    if (r && r.status !== 'rejected') {
+                        regWrapper.style.display = 'none';
+                    } else {
+                        regWrapper.style.display = 'flex';
+                        if (mainTitle) mainTitle.innerText = "تقديم طلب سقف مشتريات";
+                    }
+                }
+            } catch(e){}
         }
 
         function switchAuthTab(tab) {
@@ -602,6 +684,8 @@
                     }
                 }
                 showView('reg');
+            } else if (targetView === 'history') {
+                showView('history');
             } else {
                 showView(targetView);
             }
@@ -764,6 +848,7 @@
                             showToast(`عذراً، تم رفض الطلب: ${payload.new.decision_note || 'عدم الاكتمال'}`, "error");
                         }
                         renderMySingleRequest();
+                        checkIfUserHasActiveRequest();
                     })
                     .subscribe();
             } catch(e) {}
@@ -821,12 +906,113 @@
                         </div>
                         ${r.decision_note ? `<div style="font-size:10px; color:var(--rose); margin-top:8px;">سبب الرفض: ${sanitizeInput(r.decision_note)}</div>` : ''}
                         ${actionBtn}
+                        <button class="btn btn-secondary" style="margin-top:8px; padding:8px; font-size:11px;" onclick="showView('history')">📊 سجل العمليات الشامل والصرف</button>
                         <button class="btn btn-secondary" style="margin-top:8px; padding:8px; font-size:11px;" onclick="showView('stores')">🧭 الانتقال لدليل المتاجر والخرائط المعتمدة</button>
                     </div>
                 `;
             } catch(e) {
                 container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--rose);">خطأ في جلب بيانات السيرفر</div>`;
             }
+        }
+
+        // --- سجل العمليات (الهاشتاقات تبدأ من #1 وتتصاعد تصاعدياً لكل مواطن) ---
+        async function renderCitizenOperationsHistory() {
+            const container = document.getElementById('history-content-list');
+            if (!container) return;
+            container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub);">جاري استخراج سجل العمليات والحركات المالية...</div>`;
+
+            const sb = getSupabase();
+            if (!sb || !currentCitizen) {
+                container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub);">يرجى تسجيل الدخول أولاً</div>`;
+                return;
+            }
+
+            try {
+                const { data: reqData } = await sb.from('requests').select('*').eq('phone', currentCitizen.phone).maybeSingle();
+                if (!reqData) {
+                    container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub); font-size:12px;">لا توجد معاملات أو سقف ائتماني مفعل لعرض الحركات.</div>`;
+                    return;
+                }
+
+                const { data: storesList } = await sb.from('stores').select('*');
+                const storesMap = {};
+                if (storesList) {
+                    storesList.forEach(s => { storesMap[s.name] = s; });
+                }
+
+                // جلب العمليات مرتبطة بطلب المواطن (تصاعدياً لتبدأ من #1)
+                const { data: txs, error } = await sb.from('transactions').select('*').eq('request_id', reqData.id).order('created_at', { ascending: true });
+                
+                container.innerHTML = "";
+                
+                container.innerHTML += `
+                    <div class="req-card" style="background: var(--surface-card); margin-bottom: 14px; cursor: default;">
+                        <b style="font-size: 12px; color: var(--primary); display: block; margin-bottom: 6px;">ملخص الحساب والسقف المالي:</b>
+                        <div style="font-size: 11px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                            <div>السقف الكلي: <b>${(parseFloat(reqData.credit_limit) || 0).toLocaleString()} د.ع</b></div>
+                            <div>المتبقي بحسابك: <b style="color:var(--emerald);">${(parseFloat(reqData.balance) || 0).toLocaleString()} د.ع</b></div>
+                        </div>
+                    </div>
+                `;
+
+                if (error || !txs || txs.length === 0) {
+                    container.innerHTML += `<div style="text-align:center; padding:20px; color:var(--text-sub); font-size:12px;">لا توجد عمليات شراء مسجلة حتى الآن.</div>`;
+                    return;
+                }
+
+                txs.forEach((t, index) => {
+                    const isRefund = t.is_refunded === true;
+                    const badgeColor = isRefund ? 'var(--amber)' : 'var(--rose)';
+                    const statusText = isRefund ? 'مسترجعة' : 'ناجحة';
+                    
+                    // الترقيم يبدأ من #1 ويصعد حسب تسلسل عمليات الصرف
+                    const simpleTxId = `#${index + 1}`;
+                    const storeObj = storesMap[t.store_name] || {};
+
+                    const txPayload = encodeURIComponent(JSON.stringify({
+                        id: simpleTxId,
+                        storeName: t.store_name || 'متجر معتمد',
+                        address: storeObj.address || 'العنوان الرسمي المعتمد',
+                        region: storeObj.region || 'بابل - الحلة',
+                        amount: (parseFloat(t.amount) || 0).toLocaleString(),
+                        date: new Date(t.created_at).toLocaleString('ar-EG'),
+                        status: statusText
+                    }));
+
+                    container.innerHTML += `
+                        <div class="req-card" onclick="openTransactionDetail(decodeURIComponent('${txPayload}'))">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                <b style="font-size:13px; color:var(--primary);">عملية صرف ${simpleTxId} - ${sanitizeInput(t.store_name)}</b>
+                                <span style="font-size:10px; color:${badgeColor}; font-weight:800;">${statusText}</span>
+                            </div>
+                            <div style="font-size:11px; color:var(--text-sub);">المبلغ: <b style="color:${badgeColor};">${isRefund ? '+' : '-'} ${(parseFloat(t.amount) || 0).toLocaleString()} د.ع</b></div>
+                            <div style="font-size:10px; color:var(--text-sub); margin-top:3px;">التاريخ: ${new Date(t.created_at).toLocaleString('ar-EG')}</div>
+                            <div style="font-size:10px; color:var(--primary); margin-top:4px; font-weight: 700;">👆 اضغط لعرض التفاصيل الكاملة والموقع</div>
+                        </div>
+                    `;
+                });
+
+            } catch(e) {
+                container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--rose);">تعذر جلب سجل العمليات من السيرفر</div>`;
+            }
+        }
+
+        function openTransactionDetail(jsonStr) {
+            const tx = JSON.parse(jsonStr);
+            const body = document.getElementById('transaction-detail-body');
+            body.innerHTML = `
+                <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">معرف العملية: <b>${tx.id}</b></div>
+                <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">اسم التاجر: <b style="color:var(--primary);">${tx.storeName}</b></div>
+                <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">عنوان التاجر / الموقع: <b>${tx.address} (${tx.region})</b></div>
+                <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">مبلغ الحركة: <b style="color:var(--rose);">${tx.amount} د.ع</b></div>
+                <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">وقت التنفيذ: <b>${tx.date}</b></div>
+                <div style="padding: 6px 0;">حالة التدقيق: <b style="color:var(--emerald);">معتمد وموثق مركزياً</b></div>
+            `;
+            document.getElementById('transaction-detail-modal').classList.remove('hidden');
+        }
+
+        function closeTransactionModal() {
+            document.getElementById('transaction-detail-modal').classList.add('hidden');
         }
 
         async function openEditRejectedRequest(reqId) {
@@ -895,14 +1081,14 @@
                 const statementBox = document.getElementById('mini-statement-body');
                 statementBox.innerHTML = "";
                 if (sb) {
-                    const { data: txs } = await sb.from('transactions').select('*').eq('request_id', r.id).eq('is_refunded', false).order('created_at', { ascending: false }).limit(3);
+                    const { data: txs } = await sb.from('transactions').select('*').eq('request_id', r.id).eq('is_refunded', false).order('created_at', { ascending: true }).limit(3);
                     if (!txs || txs.length === 0) {
                         statementBox.innerHTML = `<div style="color:var(--text-sub); font-size:10px; text-align:center;">لا توجد حركات شراء منفذة حتى الآن</div>`;
                     } else {
-                        txs.forEach(t => {
+                        txs.forEach((t, i) => {
                             statementBox.innerHTML += `
                                 <div class="statement-row">
-                                    <span><b>${sanitizeInput(t.store_name)}</b> (${new Date(t.created_at).toLocaleDateString('ar-EG')})</span>
+                                    <span><b>#${i + 1} - ${sanitizeInput(t.store_name)}</b></span>
                                     <b style="color:var(--rose);">- ${(parseFloat(t.amount) || 0).toLocaleString()} د.ع</b>
                                 </div>
                             `;
@@ -938,7 +1124,6 @@
             }
         }
 
-        // --- تعديل حفظ البطاقة لتنزيل كود الـ QR حصراً ---
         function downloadSmartCard() {
             const qrCanvas = document.getElementById('emp-qr-code');
             if (!qrCanvas) {
@@ -952,7 +1137,6 @@
             showToast("تم تنزيل كود الـ QR حصراً بنجاح", "success");
         }
 
-        // --- دوال الخريطة وإيجاد أقرب تاجر عبر Google Maps للمواطن ---
         function initCitizenMap(stores) {
             const mapEl = document.getElementById('citizen-google-map');
             if (!mapEl) return;
@@ -1301,6 +1485,7 @@
 
                 editingRequestId = null;
                 showToast("تم إرسال الطلب بنجاح للتدقيق المركزي", "success");
+                checkIfUserHasActiveRequest();
                 showView('my-requests');
             } catch(e) {
                 showToast(`فشل الإرسال: ${e.message}`, "error");
