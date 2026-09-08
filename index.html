@@ -11,22 +11,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root[data-theme="dark"] {
-            --bg: #050811;
-            --surface: #0b1329;
-            --surface-card: #111c38;
-            --border: #1b2c52;
+            --bg: #030712;
+            --surface: #0f172a;
+            --surface-card: #1e293b;
+            --border: #334155;
             --text-main: #f8fafc;
             --text-sub: #94a3b8;
-            --primary: #2563eb;
-            --primary-glow: rgba(37, 99, 235, 0.4);
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.3);
             --emerald: #10b981;
             --rose: #f43f5e;
             --amber: #f59e0b;
         }
         :root[data-theme="light"] {
-            --bg: #f1f4f9;
+            --bg: #f8fafc;
             --surface: #ffffff;
-            --surface-card: #f8fafc;
+            --surface-card: #f1f5f9;
             --border: #cbd5e1;
             --text-main: #0f172a;
             --text-sub: #475569;
@@ -36,85 +36,95 @@
             --rose: #e11d48;
             --amber: #d97706;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; transition: 0.2s ease; }
-        body { background: var(--bg); color: var(--text-main); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; padding: 14px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; transition: all 0.2s ease; }
+        body { background: var(--bg); color: var(--text-main); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; padding: 16px; align-items: center; }
         .hidden { display: none !important; }
 
-        .navbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); border-radius: 12px; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-        .brand { font-weight: 900; font-size: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        /* الحاوية العامة الموحدة لضمان ثبات الشكل بين الموبايل والآيباد والحاسبة */
+        .app-container { width: 100%; max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+        .navbar { background: var(--surface); border: 1px solid var(--border); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; width: 100%; backdrop-filter: blur(16px); border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
+        .brand { font-weight: 900; font-size: 13px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .live-status { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; color: var(--emerald); font-weight: 700; background: rgba(16,185,129,0.12); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(16,185,129,0.3); }
         .pulse-dot { width: 6px; height: 6px; background: var(--emerald); border-radius: 50%; box-shadow: 0 0 8px var(--emerald); animation: pulse 1.8s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
 
         .nav-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .user-tag { background: var(--surface-card); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; color: var(--primary); }
-        .btn-ctrl { background: var(--surface-card); border: 1px solid var(--border); color: var(--text-main); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 700; }
+        .btn-ctrl { background: var(--surface-card); border: 1px solid var(--border); color: var(--text-main); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 700; }
         .btn-ctrl:hover { border-color: var(--primary); background: var(--primary-glow); }
 
-        .hero { text-align: center; padding: 35px 10px 25px; max-width: 850px; margin: 0 auto; }
-        .hero h1 { font-size: 24px; font-weight: 900; margin-bottom: 10px; letter-spacing: -0.5px; }
-        .hero p { color: var(--text-sub); font-size: 13px; margin-bottom: 16px; max-width: 700px; margin-inline: auto; }
+        .hero { text-align: center; padding: 25px 10px 15px; width: 100%; }
+        .hero h1 { font-size: 22px; font-weight: 900; margin-bottom: 8px; letter-spacing: -0.5px; }
+        .hero p { color: var(--text-sub); font-size: 12px; margin-bottom: 14px; max-width: 600px; margin-inline: auto; }
 
-        .grid-options { max-width: 950px; margin: 0 auto 30px; padding: 0 10px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-        .action-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
-        .action-card:hover { border-color: var(--primary); transform: translateY(-3px); }
-        .action-card h3 { font-size: 15px; margin-bottom: 6px; font-weight: 800; }
-        .action-card p { font-size: 12px; color: var(--text-sub); margin-bottom: 16px; flex-grow: 1; }
+        .grid-options { width: 100%; display: grid; grid-template-columns: 1fr; gap: 14px; }
+        .action-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .action-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .action-card h3 { font-size: 14px; margin-bottom: 6px; font-weight: 800; }
+        .action-card p { font-size: 11px; color: var(--text-sub); margin-bottom: 14px; flex-grow: 1; }
 
-        .btn { width: 100%; padding: 11px 16px; border-radius: 9px; font-size: 12px; font-weight: 800; cursor: pointer; border: none; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn { width: 100%; padding: 11px 16px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; border: none; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
         .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 14px var(--primary-glow); }
         .btn-primary:hover { opacity: 0.92; }
         .btn-secondary { background: var(--surface-card); color: var(--text-main); border: 1px solid var(--border); }
         .btn-secondary:hover { border-color: var(--primary); }
         .btn-emerald { background: var(--emerald); color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,0.3); }
 
-        .view-panel { max-width: 540px; width: 100%; margin: 10px auto; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 14px 35px rgba(0,0,0,0.3); }
-        .input-group { margin-bottom: 14px; text-align: start; }
+        .view-panel { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 22px; box-shadow: 0 15px 35px rgba(0,0,0,0.25); }
+        .input-group { margin-bottom: 12px; text-align: start; }
         .input-group label { display: block; font-size: 11px; font-weight: 700; color: var(--text-sub); margin-bottom: 5px; }
-        .input-field { width: 100%; background: var(--bg); border: 1px solid var(--border); padding: 11px 14px; border-radius: 8px; color: var(--text-main); font-size: 12px; outline: none; }
+        .input-field { width: 100%; background: var(--bg); border: 1px solid var(--border); padding: 10px 14px; border-radius: 10px; color: var(--text-main); font-size: 12px; outline: none; }
         .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
 
-        .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-        .upload-box { background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 12px; text-align: center; }
+        .analytics-dashboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+        .metric-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; }
+        .metric-card span { font-size: 10px; color: var(--text-sub); display: block; margin-bottom: 3px; }
+        .metric-card b { font-size: 12px; font-weight: 800; color: var(--primary); }
+
+        .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .upload-box { background: var(--bg); border: 1px dashed var(--border); border-radius: 10px; padding: 10px; text-align: center; }
         .upload-box input { display: none; }
         .upload-box label { font-size: 10px; color: var(--primary); cursor: pointer; display: block; font-weight: 700; }
-        .upload-preview { width: 100%; height: 65px; object-fit: cover; border-radius: 6px; margin-top: 6px; display: none; border: 1px solid var(--border); }
+        .upload-preview { width: 100%; height: 60px; object-fit: cover; border-radius: 6px; margin-top: 6px; display: none; border: 1px solid var(--border); }
 
-        .camera-box { background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 12px; text-align: center; margin-bottom: 14px; }
-        video { width: 100%; max-height: 160px; border-radius: 6px; object-fit: cover; display: none; }
-        #captured-photo { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); margin: 6px auto; display: none; }
+        .camera-box { background: var(--bg); border: 1px dashed var(--border); border-radius: 12px; padding: 12px; text-align: center; margin-bottom: 12px; position: relative; overflow: hidden; }
+        .camera-container { position: relative; width: 100%; max-height: 180px; border-radius: 8px; overflow: hidden; display: none; margin-bottom: 8px; }
+        video { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+        .face-guide-overlay { position: absolute; inset: 10px; border: 2px dashed rgba(59, 130, 246, 0.7); border-radius: 50% / 40%; pointer-events: none; box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.4); }
+        #captured-photo { width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); margin: 6px auto; display: none; }
 
         .fintech-card {
-            background: linear-gradient(135deg, rgba(20, 45, 110, 0.98) 0%, rgba(8, 14, 30, 0.99) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.98) 0%, rgba(15, 23, 42, 0.99) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(16px);
             border-radius: 16px;
-            padding: 18px;
+            padding: 16px;
             color: #fff;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 18px 35px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
             text-align: start;
-            max-width: 100%;
+            width: 100%;
         }
-        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .chip-emv { width: 36px; height: 26px; background: linear-gradient(135deg, #fcd34d 0%, #b45309 100%); border-radius: 4px; border: 1px solid #78350f; position: relative; }
+        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .chip-emv { width: 34px; height: 24px; background: linear-gradient(135deg, #fcd34d 0%, #b45309 100%); border-radius: 4px; border: 1px solid #78350f; position: relative; }
         .chip-emv::after { content: ""; position: absolute; inset: 3px; border: 1px solid rgba(0,0,0,0.3); border-radius: 2px; }
-        .card-body { text-align: center; margin: 10px 0; }
-        .qr-card-holder { background: #ffffff; padding: 6px; border-radius: 10px; display: inline-block; box-shadow: 0 6px 14px rgba(0,0,0,0.3); }
+        .card-body { text-align: center; margin: 8px 0; }
+        .qr-card-holder { background: #ffffff; padding: 6px; border-radius: 10px; display: inline-block; box-shadow: 0 6px 16px rgba(0,0,0,0.3); }
 
         .credit-progress-box { margin-top: 10px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
         .progress-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow: hidden; margin: 4px 0; }
         .progress-bar-fill { height: 100%; background: var(--emerald); width: 100%; transition: width 0.4s ease; }
 
-        .dynamic-code-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); margin-top: 8px; font-size: 10px; justify-content: center; }
-        .card-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 10px; gap: 10px; }
+        .dynamic-code-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.4); padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); margin-top: 8px; font-size: 10px; justify-content: center; }
+        .card-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 10px; gap: 10px; }
 
-        .mini-statement { margin-top: 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+        .mini-statement { margin-top: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px; }
         .statement-row { display: flex; justify-content: space-between; font-size: 11px; padding: 6px 0; border-bottom: 1px solid var(--border); gap: 10px; }
         .statement-row:last-child { border-bottom: none; }
 
-        .req-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 12px; text-align: start; cursor: pointer; }
+        .req-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 10px; text-align: start; cursor: pointer; }
         .req-card:hover { border-color: var(--primary); }
         .req-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 6px; flex-wrap: wrap; gap: 6px; }
         .req-status { font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
@@ -122,348 +132,377 @@
         .status-approved { background: rgba(16, 185, 129, 0.15); color: var(--emerald); }
         .status-rejected { background: rgba(244, 63, 94, 0.15); color: var(--rose); }
 
-        /* زر الواتساب العائم */
+        .offline-banner { position: fixed; top: 0; left: 0; right: 0; background: var(--amber); color: #000; font-size: 11px; font-weight: 800; text-align: center; padding: 4px; z-index: 99999; display: none; }
+
         .whatsapp-float {
             position: fixed;
-            bottom: 25px;
-            right: 25px;
+            bottom: 20px;
+            right: 20px;
             background-color: #25d366;
             color: #FFF;
             border-radius: 50px;
             text-align: center;
-            font-size: 28px;
+            font-size: 26px;
             box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
             z-index: 9999;
-            width: 55px;
-            height: 55px;
+            width: 52px;
+            height: 52px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-decoration: none;
             transition: transform 0.3s ease;
         }
-        .whatsapp-float:hover {
-            transform: scale(1.1);
-        }
+        .whatsapp-float:hover { transform: scale(1.1); }
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 10px; backdrop-filter: blur(5px); }
-        .map-modal-content { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 650px; padding: 20px; box-shadow: 0 25px 50px rgba(0,0,0,0.7); display: flex; flex-direction: column; }
+        .map-modal-content { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 600px; padding: 20px; box-shadow: 0 25px 50px rgba(0,0,0,0.7); display: flex; flex-direction: column; }
 
-        .toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 6px; width: 90%; max-width: 400px; }
-        .toast { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 12px 18px; border-radius: 8px; font-size: 12px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
+        .toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 6px; width: 90%; max-width: 380px; }
+        .toast { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); padding: 11px 16px; border-radius: 10px; font-size: 12px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
         .toast.success { border-color: var(--emerald); color: var(--emerald); }
         .toast.error { border-color: var(--rose); color: var(--rose); }
 
-        footer { margin-top: auto; padding: 18px; text-align: center; font-size: 11px; color: var(--text-sub); border-top: 1px solid var(--border); background: var(--surface); border-radius: 12px; }
-
-        @media screen and (min-width: 768px) {
-            body { padding: 20px; }
-            .hero h1 { font-size: 28px; }
-            .view-panel { max-width: 580px; padding: 28px; }
-        }
+        footer { margin-top: auto; padding: 16px; text-align: center; font-size: 11px; color: var(--text-sub); border-top: 1px solid var(--border); background: var(--surface); border-radius: 14px; width: 100%; }
     </style>
 </head>
 <body>
 
+    <div id="offline-bar" class="offline-banner">⚠️ تنبيه: أنت تعمل الآن بوضع عدم الاتصال (Offline Mode). يتم استخدام البيانات المخزنة مؤقتاً.</div>
+
     <!-- زر الواتساب العائم للدعم الفني -->
     <a href="https://wa.me/9647811662140?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B%D8%8C%20%D8%B9%D9%86%D8%AF%D9%8A%20%D9%85%D8%B4%D9%83%D9%84%D8%A9%20%D8%A8%20%D9%85%D9%86%D8%B5%D8%A9%20%D8%A7%D9%84%D9%85%D9%88%D8%B8%D9%81%20%D8%A3%D9%88%20%D8%A7%D9%84%D9%85%D9%88%D8%A7%D8%B7%D9%86" class="whatsapp-float" target="_blank" title="تواصل مع الدعم الفني عبر الواتساب">
-        <svg style="width:32px;height:32px;fill:currentColor;" viewBox="0 0 24 24">
+        <svg style="width:30px;height:30px;fill:currentColor;" viewBox="0 0 24 24">
             <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
         </svg>
     </a>
 
-    <nav class="navbar">
-        <div class="brand">
-            <span>اتحاد الغرف التجارية | بوابة المواطن الرسمية</span>
-            <div class="live-status"><div class="pulse-dot"></div> النظام مؤمن ومشفر بالكامل</div>
-        </div>
-        <div class="nav-actions">
-            <div id="nav-user-info" class="hidden">
-                <span id="nav-user-name" class="user-tag">المواطن</span>
-                <button class="btn-ctrl" onclick="handleCitizenLogout()">خروج</button>
+    <div class="app-container">
+        <nav class="navbar">
+            <div class="brand">
+                <span>اتحاد الغرف التجارية | البوابة الموحدة</span>
+                <div class="live-status"><div class="pulse-dot"></div> مؤمن ومشفر بالكامل</div>
             </div>
-            <button id="nav-login-btn" class="btn-ctrl" onclick="showView('auth')">دخول / تسجيل</button>
-            <button class="btn-ctrl" onclick="toggleTheme()">المظهر</button>
-        </div>
-    </nav>
-
-    <div id="view-home">
-        <section class="hero">
-            <h1>المنظومة الرقمية الرسمية لكفالة مشتريات الموظفين</h1>
-            <p>سقف ائتماني استهلاكي حكومي بنسبة 50% من صافي الراتب، مُدار ببروتوكول QR Code الذكي وتدقيق مركزي مباشر.</p>
-        </section>
-
-        <div class="grid-options">
-            <div class="action-card" id="card-reg-wrapper">
-                <div>
-                    <h3 id="reg-card-main-title">تقديم طلب سقف مشتريات</h3>
-                    <p>إرفاق مفردات الراتب، بطاقة الماستركارد الرسمية، والتحقق البيومتري الحي لإصدار الهوية الرقمية.</p>
+            <div class="nav-actions">
+                <div id="nav-user-info" class="hidden">
+                    <span id="nav-user-name" class="user-tag">المواطن</span>
+                    <button class="btn-ctrl" onclick="handleCitizenLogout()">خروج</button>
                 </div>
-                <button class="btn btn-primary" onclick="checkAuthAndProceed('reg')">تقديم الطلب</button>
+                <button id="nav-login-btn" class="btn-ctrl" onclick="showView('auth')">دخول / تسجيل</button>
+                <button class="btn-ctrl" onclick="toggleTheme()">المظهر</button>
             </div>
+        </nav>
 
-            <div class="action-card">
-                <div>
-                    <h3>إدارة الهوية الرقمية وسقف المشتريات</h3>
-                    <p>متابعة حالة المعاملات، استعراض الهوية الرقمية المشفرة، والاطلاع على كشف الحركات اللحظي.</p>
+        <div id="view-home">
+            <section class="hero">
+                <h1>المنظومة الرقمية الرسمية لكفالة مشتريات الموظفين</h1>
+                <p>سقف ائتماني استهلاكي حكومي بنسبة 50% من صافي الراتب، مُدار ببروتوكول QR Code الذكي وتدقيق مركزي مباشر.</p>
+            </section>
+
+            <div class="analytics-dashboard">
+                <div class="metric-card">
+                    <span>حالة النظام</span>
+                    <b style="color:var(--emerald);">مفعل وآمن</b>
                 </div>
-                <button class="btn btn-secondary" onclick="checkAuthAndProceed('my-requests')">عرض طلباتي والهوية</button>
-            </div>
-
-            <div class="action-card">
-                <div>
-                    <h3>سجل العمليات والحركات الشامل</h3>
-                    <p>اكتشف أين ذهبت، كم صرفت، ومتابعة كافة العمليات المالية الشرائية والمسترجعة بدقة.</p>
+                <div class="metric-card">
+                    <span>بروتوكول الأمان</span>
+                    <b>AES-256</b>
                 </div>
-                <button class="btn btn-emerald" onclick="checkAuthAndProceed('history')">سجل العمليات والصرف</button>
-            </div>
-
-            <div class="action-card">
-                <div>
-                    <h3>دليل المتاجر المعتمدة والخريطة</h3>
-                    <p>استعراض المحال ونقاط البيع الرسمية، ومعرفة أقرب تاجر موثوق عبر خرائط جوجل.</p>
+                <div class="metric-card">
+                    <span>المتاجر النشطة</span>
+                    <b id="dash-stores-count">جاري التحميل...</b>
                 </div>
-                <button class="btn btn-emerald" onclick="showView('stores')">تصفح المتاجر والخريطة</button>
+            </div>
+
+            <div class="grid-options">
+                <div class="action-card" id="card-reg-wrapper">
+                    <div>
+                        <h3 id="reg-card-main-title">تقديم طلب سقف مشتريات</h3>
+                        <p>إرفاق مفردات الراتب، بطاقة الماستركارد الرسمية، والتحقق البيومتري الحي لإصدار الهوية الرقمية.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="checkAuthAndProceed('reg')">تقديم الطلب</button>
+                </div>
+
+                <div class="action-card">
+                    <div>
+                        <h3>إدارة الهوية الرقمية وسقف المشتريات</h3>
+                        <p>متابعة حالة المعاملات، استعراض الهوية الرقمية المشفرة، والاطلاع على كشف الحركات اللحظي.</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="checkAuthAndProceed('my-requests')">عرض طلباتي والهوية</button>
+                </div>
+
+                <div class="action-card">
+                    <div>
+                        <h3>سجل العمليات والحركات الشامل</h3>
+                        <p>اكتشف أين ذهبت، كم صرفت، ومتابعة كافة العمليات المالية الشرائية والمسترجعة بدقة.</p>
+                    </div>
+                    <button class="btn btn-emerald" onclick="checkAuthAndProceed('history')">سجل العمليات والصرف</button>
+                </div>
+
+                <div class="action-card">
+                    <div>
+                        <h3>دليل المتاجر المعتمدة والخريطة</h3>
+                        <p>استعراض المحال ونقاط البيع الرسمية، ومعرفة أقرب تاجر موثوق عبر خرائط جوجل.</p>
+                    </div>
+                    <button class="btn btn-emerald" onclick="showView('stores')">تصفح المتاجر والخريطة</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- نافذة المصادقة -->
-    <div id="view-auth" class="view-panel hidden">
-        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-            <button id="tab-login" class="btn btn-primary" style="flex:1;" onclick="switchAuthTab('login')">تسجيل الدخول</button>
-            <button id="tab-signup" class="btn btn-secondary" style="flex:1;" onclick="switchAuthTab('signup')">إنشاء حساب جديد</button>
-        </div>
+        <!-- نافذة المصادقة -->
+        <div id="view-auth" class="view-panel hidden">
+            <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+                <button id="tab-login" class="btn btn-primary" style="flex:1;" onclick="switchAuthTab('login')">تسجيل الدخول</button>
+                <button id="tab-signup" class="btn btn-secondary" style="flex:1;" onclick="switchAuthTab('signup')">إنشاء حساب جديد</button>
+            </div>
 
-        <div id="auth-login-form">
-            <div class="input-group">
-                <label>رقم هاتف الواتساب الرسمي:</label>
-                <input type="text" id="login-phone" class="input-field" placeholder="07XXXXXXXXX" maxlength="11">
-            </div>
-            <div class="input-group">
-                <label>كلمة المرور:</label>
-                <input type="password" id="login-pass" class="input-field" placeholder="كلمة المرور الآمنة">
-            </div>
-            <button class="btn btn-primary" onclick="handleCitizenLogin()">دخول للحساب</button>
-            <div style="text-align: center; margin-top: 10px;">
-                <a href="javascript:void(0);" onclick="switchAuthTab('forgot')" style="font-size: 11px; color: var(--primary); text-decoration: none; font-weight: 700;">نسيت كلمة المرور؟ استعادة عبر الواتساب</a>
-            </div>
-        </div>
-
-        <div id="auth-signup-form" class="hidden">
-            <div class="input-group">
-                <label>الاسم الرباعي واللقب (رسمي):</label>
-                <input type="text" id="signup-name" class="input-field" placeholder="الاسم الكامل كما في المستمسكات">
-            </div>
-            <div class="input-group">
-                <label>رقم هاتف الواتساب (عراقي معتمد):</label>
-                <input type="text" id="signup-phone" class="input-field" placeholder="07XXXXXXXXX" maxlength="11">
-            </div>
-            <div class="input-group">
-                <label>كلمة المرور (6 خانات على الأقل):</label>
-                <input type="password" id="signup-pass" class="input-field" placeholder="كلمة مرور معقدة">
-            </div>
-            <button class="btn btn-emerald" onclick="handleCitizenSignup()">إنشاء الحساب المعتمد</button>
-        </div>
-
-        <div id="auth-forgot-form" class="hidden">
-            <h3 style="font-size: 13px; font-weight: 800; margin-bottom: 10px; text-align: center; color: var(--amber);">استعادة كلمة المرور عبر الواتساب</h3>
-            <div class="input-group">
-                <label>رقم هاتف الواتساب المسجل:</label>
-                <input type="text" id="forgot-phone" class="input-field" placeholder="07XXXXXXXXX" maxlength="11">
-            </div>
-            <button class="btn btn-primary" onclick="requestWhatsAppOtp()">إرسال رمز OTP عبر الواتساب</button>
-            
-            <div id="otp-verify-section" class="hidden" style="margin-top: 14px; border-top: 1px solid var(--border); padding-top: 10px;">
+            <div id="auth-login-form">
                 <div class="input-group">
-                    <label>أدخل رمز التحقق (OTP) المُرسل:</label>
-                    <input type="text" id="forgot-otp-input" class="input-field" placeholder="أدخل الأرقام هنا" maxlength="4">
+                    <label>رقم هاتف الواتساب الرسمي:</label>
+                    <input type="text" id="login-phone" class="input-field" placeholder="07XXXXXXXXX" maxlength="11">
                 </div>
                 <div class="input-group">
-                    <label>كلمة المرور الجديدة:</label>
-                    <input type="password" id="new-pass-input" class="input-field" placeholder="كلمة المرور الجديدة">
+                    <label>كلمة المرور:</label>
+                    <input type="password" id="login-pass" class="input-field" placeholder="كلمة المرور الآمنة">
                 </div>
-                <button class="btn btn-emerald" onclick="verifyAndResetPassword()">تأكيد وتغيير كلمة المرور</button>
-            </div>
-            <button class="btn btn-secondary" onclick="switchAuthTab('login')" style="margin-top: 8px;">العودة لتسجيل الدخول</button>
-        </div>
-
-        <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
-    </div>
-
-    <!-- سجل الطلبات والبطاقة الذكية -->
-    <div id="view-my-requests" class="view-panel hidden" style="max-width: 600px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
-            <h2 style="font-size: 16px; font-weight: 800;">سجل طلبك المعتمد والبطاقة الذكية</h2>
-        </div>
-        <div id="my-requests-list"></div>
-        <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 10px;">رجوع للرئيسية</button>
-    </div>
-
-    <!-- سجل العمليات والصرف الشامل -->
-    <div id="view-history" class="view-panel hidden" style="max-width: 680px;">
-        <h2 style="font-size: 16px; margin-bottom: 12px; text-align: center; font-weight: 800;">سجل العمليات والحركات المالية الكامل</h2>
-        <p style="font-size: 11px; color: var(--text-sub); text-align: center; margin-bottom: 14px;">اضغط على أي عملية أدناه لعرض تفاصيل التاجر والموقع والمبلغ بدقة.</p>
-        <div id="history-content-list" style="max-height: 340px; overflow-y: auto;"></div>
-        <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
-    </div>
-
-    <!-- نافذة منبثقة لتفاصيل العملية عند الضغط عليها -->
-    <div id="transaction-detail-modal" class="modal-overlay hidden">
-        <div class="map-modal-content" style="max-width: 450px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h3 style="font-size: 14px; font-weight: 800; color: var(--primary);">تفاصيل تفصيلية للعملية المالية</h3>
-                <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="closeTransactionModal()">إغلاق ✕</button>
-            </div>
-            <div id="transaction-detail-body" style="font-size: 12px; display: flex; flex-direction: column; gap: 8px; text-align: start;">
-                <!-- يتم تعبئتها ديناميكياً -->
-            </div>
-        </div>
-    </div>
-
-    <!-- نافذة التقديم -->
-    <div id="view-reg" class="view-panel hidden">
-        <h2 id="reg-form-title" style="font-size: 16px; margin-bottom: 14px; text-align: center; font-weight: 800;">استمارة طلب سقف مشتريات الموظفين</h2>
-        
-        <div class="input-group">
-            <label>الاسم الرباعي (المسجل في الحساب)</label>
-            <input type="text" id="reg-name" class="input-field" readonly>
-        </div>
-        <div class="input-group">
-            <label>الوزارة / الجهة غير المرتبطة بوزارة / الدائرة</label>
-            <input type="text" id="reg-dept" class="input-field" placeholder="مثال: وزارة التربية - مديرية تربية بابل">
-        </div>
-        <div class="input-group">
-            <label>رقم بطاقة الماستركارد الرسمية (16 رقماً مع التحقق الآمن)</label>
-            <input type="text" id="reg-card" class="input-field" placeholder="•••• •••• •••• ••••" maxlength="16">
-        </div>
-
-        <div class="upload-grid">
-            <div class="upload-box">
-                <label for="card-front-file">صورة الماستر (الأمامية) - حد أقصى 3MB</label>
-                <input type="file" id="card-front-file" accept="image/png, image/jpeg, image/webp" onchange="previewCard(this, 'front-prev')">
-                <img id="front-prev" class="upload-preview">
-            </div>
-            <div class="upload-box">
-                <label for="card-back-file">صورة الماستر (الخلفية) - حد أقصى 3MB</label>
-                <input type="file" id="card-back-file" accept="image/png, image/jpeg, image/webp" onchange="previewCard(this, 'back-prev')">
-                <img id="back-prev" class="upload-preview">
-            </div>
-        </div>
-
-        <div class="input-group">
-            <label>الراتب الإجمالي (د.ع)</label>
-            <input type="number" id="reg-gross" class="input-field" placeholder="1000000">
-        </div>
-        <div class="input-group">
-            <label>مجموع الاستقطاعات والسلف الحالية (د.ع)</label>
-            <input type="number" id="reg-deduct" class="input-field" value="0">
-        </div>
-        <div class="input-group">
-            <label>رمز PIN السري المخصص لعمليات الشراء (4 أرقام)</label>
-            <input type="password" id="reg-pin" maxlength="4" class="input-field" placeholder="****">
-        </div>
-
-        <div class="camera-box">
-            <span style="font-size: 10px; color: var(--text-sub); display: block; margin-bottom: 6px;">التحقق البيومتري الحي المباشر (KYC)</span>
-            <video id="live-stream" autoplay playsinline></video>
-            <img id="captured-photo">
-            <canvas id="pic-canvas" class="hidden"></canvas>
-            <button type="button" class="btn btn-secondary" id="btn-cam-open" onclick="startCamera()">تشغيل الكاميرا للتحقق</button>
-            <button type="button" class="btn btn-primary hidden" id="btn-cam-snap" onclick="snapPhoto()">اعتماد وثبات الصورة البيومترية</button>
-        </div>
-
-        <button class="btn btn-primary" id="btn-submit-reg" onclick="submitRegistration()">إرسال الطلب رسمياً للتدقيق المركزي</button>
-        <button class="btn btn-secondary" onclick="showView('my-requests')" style="margin-top: 10px;">إلغاء والعودة</button>
-    </div>
-
-    <!-- نافذة البطاقة الرقمية -->
-    <div id="view-card-modal" class="view-panel hidden" style="max-width: 480px;">
-        <div id="card-to-export" class="fintech-card">
-            <div class="card-top">
-                <div class="chip-emv"></div>
-                <div style="text-align: left;">
-                    <span style="font-size: 9px; opacity: 0.8; letter-spacing: 1px; display: block;">GOVERNMENT SECURE PASS</span>
-                    <b style="font-size: 10px; color: #93c5fd;">اتحاد الغرف التجارية العراقية</b>
+                <button class="btn btn-primary" onclick="handleCitizenLogin()">دخول للحساب</button>
+                <div style="text-align: center; margin-top: 10px;">
+                    <a href="javascript:void(0);" onclick="switchAuthTab('forgot')" style="font-size: 11px; color: var(--primary); text-decoration: none; font-weight: 700;">نسيت كلمة المرور؟ استعادة عبر الواتساب</a>
                 </div>
             </div>
+
+            <div id="auth-signup-form" class="hidden">
+                <div class="input-group">
+                    <label>الاسم الرباعي واللقب (رسمي):</label>
+                    <input type="text" id="signup-name" class="input-field" placeholder="الاسم الكامل كما في المستمسكات">
+                </div>
+                <div class="input-group">
+                    <label>رقم هاتف الواتساب (عراقي معتمد):</label>
+                    <input type="text" id="signup-phone" class="input-field" placeholder="07XXXXXXXXX" maxlength="11">
+                </div>
+                <div class="input-group">
+                    <label>كلمة المرور (6 خانات على الأقل):</label>
+                    <input type="password" id="signup-pass" class="input-field" placeholder="كلمة مرور معقدة">
+                </div>
+                <button class="btn btn-emerald" onclick="handleCitizenSignup()">إنشاء الحساب المعتمد</button>
+            </div>
+
+            <div id="auth-forgot-form" class="hidden">
+                <h3 style="font-size: 13px; font-weight: 800; margin-bottom: 10px; text-align: center; color: var(--amber);">استعادة كلمة المرور عبر الواتساب</h3>
+                <div class="input-group">
+                    <label>رقم هاتف الواتساب المسجل:</label>
+                    <input type="text" id="forgot-phone" class="input-field" placeholder="07XXXXXXXXX" maxlength="11">
+                </div>
+                <button class="btn btn-primary" onclick="requestWhatsAppOtp()">إرسال رمز OTP عبر الواتساب</button>
+                
+                <div id="otp-verify-section" class="hidden" style="margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px;">
+                    <div class="input-group">
+                        <label>أدخل رمز التحقق (OTP) المُرسل:</label>
+                        <input type="text" id="forgot-otp-input" class="input-field" placeholder="أدخل الأرقام هنا" maxlength="4">
+                    </div>
+                    <div class="input-group">
+                        <label>كلمة المرور الجديدة:</label>
+                        <input type="password" id="new-pass-input" class="input-field" placeholder="كلمة المرور الجديدة">
+                    </div>
+                    <button class="btn btn-emerald" onclick="verifyAndResetPassword()">تأكيد وتغيير كلمة المرور</button>
+                </div>
+                <button class="btn btn-secondary" onclick="switchAuthTab('login')" style="margin-top: 8px;">العودة لتسجيل الدخول</button>
+            </div>
+
+            <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
+        </div>
+
+        <!-- سجل الطلبات والبطاقة الذكية -->
+        <div id="view-my-requests" class="view-panel hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                <h2 style="font-size: 15px; font-weight: 800;">سجل طلبك المعتمد والبطاقة الذكية</h2>
+            </div>
+            <div id="my-requests-list"></div>
+            <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 10px;">رجوع للرئيسية</button>
+        </div>
+
+        <!-- سجل العمليات والصرف الشامل -->
+        <div id="view-history" class="view-panel hidden">
+            <h2 style="font-size: 15px; margin-bottom: 10px; text-align: center; font-weight: 800;">سجل العمليات والحركات المالية الكامل</h2>
             
-            <div class="card-body">
-                <div class="qr-card-holder">
-                    <canvas id="emp-qr-code"></canvas>
+            <div class="analytics-dashboard" style="margin-bottom: 12px;">
+                <div class="metric-card">
+                    <span>إجمالي السقف</span>
+                    <b id="stat-limit" style="color:var(--primary);">0 د.ع</b>
+                </div>
+                <div class="metric-card">
+                    <span>المستهلك</span>
+                    <b id="stat-spent" style="color:var(--rose);">0 د.ع</b>
+                </div>
+                <div class="metric-card">
+                    <span>المتبقي</span>
+                    <b id="stat-remain" style="color:var(--emerald);">0 د.ع</b>
+                </div>
+            </div>
+
+            <p style="font-size: 11px; color: var(--text-sub); text-align: center; margin-bottom: 12px;">اضغط على أي عملية أدناه لعرض تفاصيل التاجر والموقع والمبلغ بدقة.</p>
+            <div id="history-content-list" style="max-height: 280px; overflow-y: auto;"></div>
+            <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
+        </div>
+
+        <!-- نافذة تفاصيل العملية -->
+        <div id="transaction-detail-modal" class="modal-overlay hidden">
+            <div class="map-modal-content" style="max-width: 420px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="font-size: 14px; font-weight: 800; color: var(--primary);">تفاصيل تفصيلية للعملية المالية</h3>
+                    <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="closeTransactionModal()">إغلاق ✕</button>
+                </div>
+                <div id="transaction-detail-body" style="font-size: 12px; display: flex; flex-direction: column; gap: 8px; text-align: start;"></div>
+            </div>
+        </div>
+
+        <!-- نافذة التقديم -->
+        <div id="view-reg" class="view-panel hidden">
+            <h2 id="reg-form-title" style="font-size: 15px; margin-bottom: 14px; text-align: center; font-weight: 800;">استمارة طلب سقف مشتريات الموظفين</h2>
+            
+            <div class="input-group">
+                <label>الاسم الرباعي (المسجل في الحساب)</label>
+                <input type="text" id="reg-name" class="input-field" readonly>
+            </div>
+            <div class="input-group">
+                <label>الوزارة / الجهة غير المرتبطة بوزارة / الدائرة</label>
+                <input type="text" id="reg-dept" class="input-field" placeholder="مثال: وزارة التربية - مديرية تربية بابل">
+            </div>
+            <div class="input-group">
+                <label>رقم بطاقة الماستركارد الرسمية (16 رقماً مع التحقق الآمن)</label>
+                <input type="text" id="reg-card" class="input-field" placeholder="•••• •••• •••• ••••" maxlength="16">
+            </div>
+
+            <div class="upload-grid">
+                <div class="upload-box">
+                    <label for="card-front-file">صورة الماستر (الأمامية) - حد أقصى 3MB</label>
+                    <input type="file" id="card-front-file" accept="image/png, image/jpeg, image/webp" onchange="previewCard(this, 'front-prev')">
+                    <img id="front-prev" class="upload-preview">
+                </div>
+                <div class="upload-box">
+                    <label for="card-back-file">صورة الماستر (الخلفية) - حد أقصى 3MB</label>
+                    <input type="file" id="card-back-file" accept="image/png, image/jpeg, image/webp" onchange="previewCard(this, 'back-prev')">
+                    <img id="back-prev" class="upload-preview">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>الراتب الإجمالي (د.ع)</label>
+                <input type="number" id="reg-gross" class="input-field" placeholder="1000000">
+            </div>
+            <div class="input-group">
+                <label>مجموع الاستقطاعات والسلف الحالية (د.ع)</label>
+                <input type="number" id="reg-deduct" class="input-field" value="0">
+            </div>
+            <div class="input-group">
+                <label>رمز PIN السري المخصص لعمليات الشراء (4 أرقام)</label>
+                <input type="password" id="reg-pin" maxlength="4" class="input-field" placeholder="****">
+            </div>
+
+            <div class="camera-box">
+                <span style="font-size: 10px; color: var(--text-sub); display: block; margin-bottom: 6px;">التحقق البيومتري الحي (KYC) - ضع وجهك داخل الإطار</span>
+                <div class="camera-container" id="cam-container">
+                    <video id="live-stream" autoplay playsinline></video>
+                    <div class="face-guide-overlay"></div>
+                </div>
+                <img id="captured-photo">
+                <canvas id="pic-canvas" class="hidden"></canvas>
+                <button type="button" class="btn btn-secondary" id="btn-cam-open" onclick="startCamera()">تشغيل الكاميرا للتحقق</button>
+                <button type="button" class="btn btn-primary hidden" id="btn-cam-snap" onclick="snapPhoto()">اعتماد وثبات الصورة البيومترية</button>
+            </div>
+
+            <button class="btn btn-primary" id="btn-submit-reg" onclick="submitRegistration()">إرسال الطلب رسمياً للتدقيق المركزي</button>
+            <button class="btn btn-secondary" onclick="showView('my-requests')" style="margin-top: 10px;">إلغاء والعودة</button>
+        </div>
+
+        <!-- نافذة البطاقة الرقمية -->
+        <div id="view-card-modal" class="view-panel hidden">
+            <div id="card-to-export" class="fintech-card">
+                <div class="card-top">
+                    <div class="chip-emv"></div>
+                    <div style="text-align: left;">
+                        <span style="font-size: 9px; opacity: 0.8; letter-spacing: 1px; display: block;">GOVERNMENT SECURE PASS</span>
+                        <b style="font-size: 10px; color: #93c5fd;">اتحاد الغرف التجارية العراقية</b>
+                    </div>
                 </div>
                 
-                <div class="dynamic-code-badge">
-                    <span>رمز الأمان اللحظي (OTP):</span>
-                    <b id="dyn-sec-code" style="color: #fcd34d; font-size: 14px; letter-spacing: 2px;">---</b>
-                    <span id="dyn-timer" style="opacity: 0.7;">(60s)</span>
+                <div class="card-body">
+                    <div class="qr-card-holder">
+                        <canvas id="emp-qr-code"></canvas>
+                    </div>
+                    
+                    <div class="dynamic-code-badge">
+                        <span>رمز الأمان اللحظي (OTP):</span>
+                        <b id="dyn-sec-code" style="color: #fcd34d; font-size: 14px; letter-spacing: 2px;">---</b>
+                        <span id="dyn-timer" style="opacity: 0.7;">(60s)</span>
+                    </div>
+                </div>
+
+                <div class="credit-progress-box">
+                    <div style="display: flex; justify-content: space-between; font-size: 10px;">
+                        <span>المستهلك: <b id="prog-spent">0 د.ع</b></span>
+                        <span>الرصيد المتبقي: <b id="prog-remain" style="color:#34d399;">0 د.ع</b></span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="prog-fill" class="progress-bar-fill"></div>
+                    </div>
+                </div>
+
+                <div class="card-bottom">
+                    <div>
+                        <span style="font-size: 9px; opacity: 0.7; display: block;">حامل البطاقة المعتمد</span>
+                        <b id="pass-name" style="font-size: 12px;">-</b>
+                        <div id="pass-dept" style="font-size: 9px; color: #94a3b8;">-</div>
+                    </div>
+                    <div style="text-align: left;">
+                        <span style="font-size: 9px; opacity: 0.7; display: block;">السقف المعتمد</span>
+                        <b id="pass-limit" style="font-size: 12px; color: #93c5fd;">-</b>
+                        <div style="font-size: 9px; color: #fcd34d;">دورة التحديث: فورية</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="credit-progress-box">
-                <div style="display: flex; justify-content: space-between; font-size: 10px;">
-                    <span>المستهلك: <b id="prog-spent">0 د.ع</b></span>
-                    <span>الرصيد المتبقي: <b id="prog-remain" style="color:#34d399;">0 د.ع</b></span>
-                </div>
-                <div class="progress-bar-bg">
-                    <div id="prog-fill" class="progress-bar-fill"></div>
-                </div>
+            <div class="mini-statement">
+                <b style="font-size: 11px; display: block; margin-bottom: 6px;">سجل حركات الشراء الأخيرة:</b>
+                <div id="mini-statement-body"></div>
             </div>
 
-            <div class="card-bottom">
-                <div>
-                    <span style="font-size: 9px; opacity: 0.7; display: block;">حامل البطاقة المعتمد</span>
-                    <b id="pass-name" style="font-size: 12px;">-</b>
-                    <div id="pass-dept" style="font-size: 9px; color: #94a3b8;">-</div>
+            <button class="btn btn-primary" onclick="downloadSmartCard()" style="margin-top: 12px;">تنزيل كود الـ QR حصراً</button>
+            <button class="btn btn-secondary" onclick="showView('my-requests')" style="margin-top: 8px;">رجوع لطلباتي</button>
+        </div>
+
+        <!-- دليل المتاجر مع خريطة جوجل -->
+        <div id="view-stores" class="view-panel hidden">
+            <h2 style="font-size: 15px; margin-bottom: 12px; text-align: center; font-weight: 800;">دليل المتاجر المعتمدة وخريطة المواقع</h2>
+            
+            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                <input type="text" id="search-stores" class="input-field" placeholder="بحث باسم المتجر أو العنوان أو النشاط..." oninput="filterStoresLocally()" style="flex: 2;">
+                <button class="btn btn-emerald" style="flex: 1; font-size: 11px; padding: 8px;" onclick="findNearestStoreGPS()">🧭 أقرب تاجر لي (GPS)</button>
+            </div>
+
+            <div id="citizen-google-map" style="width: 100%; height: 280px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 14px;"></div>
+
+            <div id="stores-directory-list" style="max-height: 220px; overflow-y: auto;"></div>
+            <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
+        </div>
+
+        <!-- نافذة منبثقة لعرض موقع تاجر معين على الخريطة -->
+        <div id="store-map-modal" class="modal-overlay hidden">
+            <div class="map-modal-content" style="max-width: 550px; padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 id="modal-store-title" style="font-size: 14px; font-weight: 800;">موقع المتجر</h3>
+                    <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="closeStoreMapModal()">إغلاق ✕</button>
                 </div>
-                <div style="text-align: left;">
-                    <span style="font-size: 9px; opacity: 0.7; display: block;">السقف المعتمد</span>
-                    <b id="pass-limit" style="font-size: 12px; color: #93c5fd;">-</b>
-                    <div style="font-size: 9px; color: #fcd34d;">دورة التحديث: فورية</div>
-                </div>
+                <div id="single-store-map" style="width: 100%; height: 300px; border-radius: 8px;"></div>
             </div>
         </div>
 
-        <div class="mini-statement">
-            <b style="font-size: 11px; display: block; margin-bottom: 6px;">سجل حركات الشراء الأخيرة:</b>
-            <div id="mini-statement-body"></div>
-        </div>
+        <div class="toast-container" id="toast-box"></div>
 
-        <button class="btn btn-primary" onclick="downloadSmartCard()" style="margin-top: 14px;">تنزيل كود الـ QR حصراً</button>
-        <button class="btn btn-secondary" onclick="showView('my-requests')" style="margin-top: 8px;">رجوع لطلباتي</button>
+        <footer>
+            المنظومة المركزية لكفالة مشتريات الموظفين | تشفير معتمد AES-256 | إشراف اتحاد الغرف التجارية العراقية
+        </footer>
     </div>
-
-    <!-- دليل المتاجر مع خريطة جوجل وأقرب تاجر -->
-    <div id="view-stores" class="view-panel hidden" style="max-width: 680px;">
-        <h2 style="font-size: 16px; margin-bottom: 12px; text-align: center; font-weight: 800;">دليل المتاجر المعتمدة وخريطة المواقع</h2>
-        
-        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-            <input type="text" id="search-stores" class="input-field" placeholder="بحث باسم المتجر أو العنوان أو النشاط..." oninput="filterStoresLocally()" style="flex: 2;">
-            <button class="btn btn-emerald" style="flex: 1; font-size: 11px; padding: 8px;" onclick="findNearestStoreGPS()">🧭 أقرب تاجر لي (GPS)</button>
-        </div>
-
-        <div id="citizen-google-map" style="width: 100%; height: 300px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 14px;"></div>
-
-        <div id="stores-directory-list" style="max-height: 240px; overflow-y: auto;"></div>
-        <button class="btn btn-secondary" onclick="showView('home')" style="margin-top: 12px;">رجوع للرئيسية</button>
-    </div>
-
-    <!-- نافذة منبثقة لعرض موقع تاجر معين على الخريطة -->
-    <div id="store-map-modal" class="modal-overlay hidden">
-        <div class="map-modal-content" style="max-width: 600px; background: var(--surface); padding: 20px; border-radius: 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <h3 id="modal-store-title" style="font-size: 14px; font-weight: 800;">موقع المتجر</h3>
-                <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="closeStoreMapModal()">إغلاق ✕</button>
-            </div>
-            <div id="single-store-map" style="width: 100%; height: 320px; border-radius: 8px;"></div>
-        </div>
-    </div>
-
-    <div class="toast-container" id="toast-box"></div>
-
-    <footer>
-        المنظومة المركزية لكفالة مشتريات الموظفين | تشفير معتمد AES-256 | إشراف اتحاد الغرف التجارية العراقية
-    </footer>
 
     <script>
         const SUPABASE_URL = "https://fttknbkhepebbavczwgb.supabase.co";
@@ -493,6 +532,18 @@
             }
         } catch(e) {
             localStorage.removeItem('union_secure_citizen_session');
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        function updateOnlineStatus() {
+            const bar = document.getElementById('offline-bar');
+            if (!navigator.onLine) {
+                if (bar) bar.style.display = 'block';
+                showToast("أنت تعمل حالياً بوضع عدم الاتصال (تخزين مؤقت)", "error");
+            } else {
+                if (bar) bar.style.display = 'none';
+            }
         }
 
         let cameraStream = null;
@@ -575,8 +626,13 @@
 
         function toggleTheme() {
             const cur = document.documentElement.getAttribute('data-theme');
-            document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+            const newTheme = cur === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('union_theme', newTheme);
         }
+
+        const savedTheme = localStorage.getItem('union_theme');
+        if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
 
         function showView(v) {
             const views = ['view-home', 'view-auth', 'view-my-requests', 'view-history', 'view-reg', 'view-card-modal', 'view-stores'];
@@ -625,18 +681,55 @@
                 const regWrapper = document.getElementById('card-reg-wrapper');
                 if (regWrapper) regWrapper.style.display = 'flex';
             }
+            loadDashboardMetrics();
+        }
+
+        async function loadDashboardMetrics() {
+            const sb = getSupabase();
+            const countEl = document.getElementById('dash-stores-count');
+            if (!sb) {
+                if (countEl) countEl.innerText = "غير متوفر";
+                return;
+            }
+            try {
+                const { count, error } = await sb.from('stores').select('*', { count: 'exact', head: true });
+                if (!error && count !== null) {
+                    if (countEl) countEl.innerText = `${count} متجر معتمد`;
+                    localStorage.setItem('cached_stores_count', count);
+                } else {
+                    const cachedCount = localStorage.getItem('cached_stores_count') || '0';
+                    if (countEl) countEl.innerText = `${cachedCount} متجر (محفوظ)`;
+                }
+            } catch(e) {
+                const cachedCount = localStorage.getItem('cached_stores_count') || '0';
+                if (countEl) countEl.innerText = `${cachedCount} متجر (محفوظ)`;
+            }
         }
 
         async function checkIfUserHasActiveRequest() {
             const sb = getSupabase();
-            if (!sb || !currentCitizen) return;
+            const regWrapper = document.getElementById('card-reg-wrapper');
+            const mainTitle = document.getElementById('reg-card-main-title');
+            
+            if (!currentCitizen) return;
+
+            const cachedReq = localStorage.getItem(`cached_req_${currentCitizen.phone}`);
+            if (cachedReq) {
+                try {
+                    const r = JSON.parse(cachedReq);
+                    if (r && r.status !== 'rejected' && regWrapper) {
+                        regWrapper.style.display = 'none';
+                    }
+                } catch(e){}
+            }
+
+            if (!sb) return;
             try {
                 const { data: r } = await sb.from('requests').select('*').eq('phone', currentCitizen.phone).maybeSingle();
-                const regWrapper = document.getElementById('card-reg-wrapper');
-                const mainTitle = document.getElementById('reg-card-main-title');
                 if (regWrapper) {
                     if (r && r.status !== 'rejected') {
                         regWrapper.style.display = 'none';
+                        localStorage.setItem(`cached_req_${currentCitizen.phone}`, JSON.stringify(r));
                     } else {
                         regWrapper.style.display = 'flex';
                         if (mainTitle) mainTitle.innerText = "تقديم طلب سقف مشتريات";
@@ -857,21 +950,29 @@
         async function renderMySingleRequest() {
             const container = document.getElementById('my-requests-list');
             if (!container) return;
-            container.innerHTML = `<div style="text-align:center; padding:18px; color:var(--text-sub);">جاري استعلام السيرفر المركزي...</div>`;
+            container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub);">جاري استعلام السيرفر المركزي...</div>`;
 
             const sb = getSupabase();
             try {
                 let r = null;
-                if (sb && currentCitizen) {
+                const cachedReq = localStorage.getItem(`cached_req_${currentCitizen.phone}`);
+                if (cachedReq && !navigator.onLine) {
+                    r = JSON.parse(cachedReq);
+                }
+
+                if (!r && sb && currentCitizen) {
                     const { data, error } = await sb.from('requests').select('*').eq('phone', currentCitizen.phone).maybeSingle();
-                    if (!error) r = data;
+                    if (!error && data) {
+                        r = data;
+                        localStorage.setItem(`cached_req_${currentCitizen.phone}`, JSON.stringify(data));
+                    }
                 }
 
                 container.innerHTML = "";
                 if (!r) {
                     container.innerHTML = `
-                        <div style="text-align:center; padding:24px; color:var(--text-sub); font-size:12px;">
-                            <p style="margin-bottom:12px;">ليس لديك أي طلب سقف ائتماني مقدم حالياً.</p>
+                        <div style="text-align:center; padding:20px; color:var(--text-sub); font-size:12px;">
+                            <p style="margin-bottom:10px;">ليس لديك أي طلب سقف ائتماني مقدم حالياً.</p>
                             <button class="btn btn-primary" onclick="checkAuthAndProceed('reg')">تقديم طلب جديد الآن</button>
                             <button class="btn btn-emerald" onclick="showView('stores')" style="margin-top: 10px;">🧭 تصفح دليل المتاجر والخرائط</button>
                         </div>
@@ -915,7 +1016,6 @@
             }
         }
 
-        // --- سجل العمليات (الهاشتاقات تبدأ من #1 وتتصاعد تصاعدياً لكل مواطن) ---
         async function renderCitizenOperationsHistory() {
             const container = document.getElementById('history-content-list');
             if (!container) return;
@@ -928,35 +1028,37 @@
             }
 
             try {
-                const { data: reqData } = await sb.from('requests').select('*').eq('phone', currentCitizen.phone).maybeSingle();
+                let reqData = null;
+                const cachedReq = localStorage.getItem(`cached_req_${currentCitizen.phone}`);
+                if (cachedReq) reqData = JSON.parse(cachedReq);
+
+                if (!reqData && sb) {
+                    const { data } = await sb.from('requests').select('*').eq('phone', currentCitizen.phone).maybeSingle();
+                    reqData = data;
+                }
+
                 if (!reqData) {
                     container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub); font-size:12px;">لا توجد معاملات أو سقف ائتماني مفعل لعرض الحركات.</div>`;
                     return;
                 }
 
+                const totalLimit = parseFloat(reqData.credit_limit) || 0;
+                const currentBal = parseFloat(reqData.balance) || 0;
+                const spentAmt = Math.max(0, totalLimit - currentBal);
+
+                document.getElementById('stat-limit').innerText = `${totalLimit.toLocaleString()} د.ع`;
+                document.getElementById('stat-spent').innerText = `${spentAmt.toLocaleString()} د.ع`;
+                document.getElementById('stat-remain').innerText = `${currentBal.toLocaleString()} د.ع`;
+
                 const { data: storesList } = await sb.from('stores').select('*');
                 const storesMap = {};
-                if (storesList) {
-                    storesList.forEach(s => { storesMap[s.name] = s; });
-                }
+                if (storesList) storesList.forEach(s => { storesMap[s.name] = s; });
 
-                // جلب العمليات مرتبطة بطلب المواطن (تصاعدياً لتبدأ من #1)
                 const { data: txs, error } = await sb.from('transactions').select('*').eq('request_id', reqData.id).order('created_at', { ascending: true });
                 
                 container.innerHTML = "";
-                
-                container.innerHTML += `
-                    <div class="req-card" style="background: var(--surface-card); margin-bottom: 14px; cursor: default;">
-                        <b style="font-size: 12px; color: var(--primary); display: block; margin-bottom: 6px;">ملخص الحساب والسقف المالي:</b>
-                        <div style="font-size: 11px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                            <div>السقف الكلي: <b>${(parseFloat(reqData.credit_limit) || 0).toLocaleString()} د.ع</b></div>
-                            <div>المتبقي بحسابك: <b style="color:var(--emerald);">${(parseFloat(reqData.balance) || 0).toLocaleString()} د.ع</b></div>
-                        </div>
-                    </div>
-                `;
-
                 if (error || !txs || txs.length === 0) {
-                    container.innerHTML += `<div style="text-align:center; padding:20px; color:var(--text-sub); font-size:12px;">لا توجد عمليات شراء مسجلة حتى الآن.</div>`;
+                    container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-sub); font-size:12px;">لا توجد عمليات شراء مسجلة حتى الآن.</div>`;
                     return;
                 }
 
@@ -965,7 +1067,6 @@
                     const badgeColor = isRefund ? 'var(--amber)' : 'var(--rose)';
                     const statusText = isRefund ? 'مسترجعة' : 'ناجحة';
                     
-                    // الترقيم يبدأ من #1 ويصعد حسب تسلسل عمليات الصرف
                     const simpleTxId = `#${index + 1}`;
                     const storeObj = storesMap[t.store_name] || {};
 
@@ -982,7 +1083,7 @@
                     container.innerHTML += `
                         <div class="req-card" onclick="openTransactionDetail(decodeURIComponent('${txPayload}'))">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                                <b style="font-size:13px; color:var(--primary);">عملية صرف ${simpleTxId} - ${sanitizeInput(t.store_name)}</b>
+                                <b style="font-size:12px; color:var(--primary);">عملية صرف ${simpleTxId} - ${sanitizeInput(t.store_name)}</b>
                                 <span style="font-size:10px; color:${badgeColor}; font-weight:800;">${statusText}</span>
                             </div>
                             <div style="font-size:11px; color:var(--text-sub);">المبلغ: <b style="color:${badgeColor};">${isRefund ? '+' : '-'} ${(parseFloat(t.amount) || 0).toLocaleString()} د.ع</b></div>
@@ -1001,12 +1102,12 @@
             const tx = JSON.parse(jsonStr);
             const body = document.getElementById('transaction-detail-body');
             body.innerHTML = `
-                <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">معرف العملية: <b>${tx.id}</b></div>
-                <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">اسم التاجر: <b style="color:var(--primary);">${tx.storeName}</b></div>
-                <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">عنوان التاجر / الموقع: <b>${tx.address} (${tx.region})</b></div>
-                <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">مبلغ الحركة: <b style="color:var(--rose);">${tx.amount} د.ع</b></div>
-                <div style="padding: 6px 0; border-bottom: 1px solid var(--border);">وقت التنفيذ: <b>${tx.date}</b></div>
-                <div style="padding: 6px 0;">حالة التدقيق: <b style="color:var(--emerald);">معتمد وموثق مركزياً</b></div>
+                <div style="padding: 5px 0; border-bottom: 1px solid var(--border);">معرف العملية: <b>${tx.id}</b></div>
+                <div style="padding: 5px 0; border-bottom: 1px solid var(--border);">اسم التاجر: <b style="color:var(--primary);">${tx.storeName}</b></div>
+                <div style="padding: 5px 0; border-bottom: 1px solid var(--border);">عنوان التاجر / الموقع: <b>${tx.address} (${tx.region})</b></div>
+                <div style="padding: 5px 0; border-bottom: 1px solid var(--border);">مبلغ الحركة: <b style="color:var(--rose);">${tx.amount} د.ع</b></div>
+                <div style="padding: 5px 0; border-bottom: 1px solid var(--border);">وقت التنفيذ: <b>${tx.date}</b></div>
+                <div style="padding: 5px 0;">حالة التدقيق: <b style="color:var(--emerald);">معتمد وموثق مركزياً</b></div>
             `;
             document.getElementById('transaction-detail-modal').classList.remove('hidden');
         }
@@ -1045,7 +1146,10 @@
             const sb = getSupabase();
             try {
                 let r = null;
-                if (sb) {
+                const cachedReq = localStorage.getItem(`cached_req_${currentCitizen.phone}`);
+                if (cachedReq && !navigator.onLine) r = JSON.parse(cachedReq);
+
+                if (!r && sb) {
                     const { data } = await sb.from('requests').select('*').eq('id', reqId).single();
                     r = data;
                 }
@@ -1118,7 +1222,7 @@
                 new QRious({
                     element: canvas,
                     value: encodeURIComponent(JSON.stringify({ id: activeCardReq.id, name: activeCardReq.name, otp: code, ts: Date.now() })),
-                    size: 110,
+                    size: 105,
                     level: 'L'
                 });
             }
@@ -1255,10 +1359,16 @@
             const sb = getSupabase();
             if (sb) {
                 const { data: stores } = await sb.from('stores').select('*').order('created_at', { ascending: false });
-                if (stores) cachedStores = stores;
-                displayFilteredStores(cachedStores);
-                if (citizenMap) updateStoreMarkersOnMap(cachedStores);
+                if (stores) {
+                    cachedStores = stores;
+                    localStorage.setItem('cached_stores_list', JSON.stringify(stores));
+                }
+            } else {
+                const localStores = localStorage.getItem('cached_stores_list');
+                if (localStores) cachedStores = JSON.parse(localStores);
             }
+            displayFilteredStores(cachedStores);
+            if (citizenMap) updateStoreMarkersOnMap(cachedStores);
         }
 
         function displayFilteredStores(stores) {
@@ -1350,9 +1460,10 @@
                 cameraStream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } } });
                 const video = document.getElementById('live-stream');
                 video.srcObject = cameraStream;
-                video.style.display = 'block';
+                document.getElementById('cam-container').style.display = 'block';
                 document.getElementById('btn-cam-open').classList.add('hidden');
                 document.getElementById('btn-cam-snap').classList.remove('hidden');
+                showToast("يرجى ضبط وجهك داخل إطار التحقق والضغط على التقاط", "info");
             } catch (err) {
                 showToast("يرجى منح صلاحية الكاميرا لإتمام التحقق البيومتري", "error");
             }
@@ -1367,7 +1478,7 @@
             capturedPhotoUrl = canvas.toDataURL('image/png');
             document.getElementById('captured-photo').src = capturedPhotoUrl;
             document.getElementById('captured-photo').style.display = 'block';
-            video.style.display = 'none';
+            document.getElementById('cam-container').style.display = 'none';
             if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
             document.getElementById('btn-cam-snap').classList.add('hidden');
             showToast("تم توثيق الصورة البيومترية بنجاح", "success");
@@ -1497,6 +1608,7 @@
 
         window.onload = function() {
             updateNavState();
+            updateOnlineStatus();
         };
     </script>
 </body>
